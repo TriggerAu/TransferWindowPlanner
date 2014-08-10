@@ -9,7 +9,7 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
-namespace LaunchWindowPlanner
+namespace TransferWindowPlanner
 {
     internal class Resources
     {

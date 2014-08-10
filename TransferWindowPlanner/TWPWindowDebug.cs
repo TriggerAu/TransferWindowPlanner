@@ -7,11 +7,11 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
-namespace LaunchWindowPlanner
+namespace TransferWindowPlanner
 {
-    class LWPWindowDebug : MonoBehaviourWindowPlus
+    class TWPWindowDebug : MonoBehaviourWindowPlus
     {
-        internal LaunchWindowPlanner mbLWP;
+        internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
         public Int32 intTest1 = 0;

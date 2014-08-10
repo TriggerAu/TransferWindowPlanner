@@ -9,14 +9,14 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
-namespace LaunchWindowPlanner
+namespace TransferWindowPlanner
 {
-    [WindowInitials(Caption="Launch Window Planner",
+    [WindowInitials(Caption="Transfer Window Planner",
         Visible=true,
         DragEnabled=true,
         TooltipsEnabled=true,
         WindowMoveEventsEnabled=true)]
-    class LWPWindow:MonoBehaviourWindowPlus
+    class TWPWindow:MonoBehaviourWindowPlus
     {
         List<String> lstPlanets = new List<String>() { "Moho", "Eve", "Kerbin", "Duna", "Dres", "Jool", "Eeloo" };
         List<String> lstXFerTypes = new List<String>() { "Ballistic","Mid Course","Optimal"};

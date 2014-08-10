@@ -7,8 +7,8 @@
     <ProjectGuid>{942B92F0-C682-424E-814E-C2DDD1E84E2F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LaunchWindowPlanner</RootNamespace>
-    <AssemblyName>LaunchWindowPlanner</AssemblyName>
+    <RootNamespace>TransferWindowPlanner</RootNamespace>
+    <AssemblyName>TransferWindowPlanner</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -51,13 +51,13 @@
     <Compile Include="Framework\MonoBehaviourExtended.cs" />
     <Compile Include="Framework\MonoBehaviourWindow.cs" />
     <Compile Include="Framework\SkinsLibrary.cs" />
-    <Compile Include="LWPWindow.cs" />
-    <Compile Include="LWPWindowDebug.cs" />
+    <Compile Include="TWPWindow.cs" />
+    <Compile Include="TWPWindowDebug.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="StylesAndSkins.cs" />
-    <Compile Include="ToolbarWrapper.cs" />
-    <Compile Include="LWP.cs" />
+    <Compile Include="SharedStuff\ToolbarWrapper.cs" />
+    <Compile Include="TWP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

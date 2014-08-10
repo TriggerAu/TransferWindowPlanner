@@ -7,18 +7,18 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
-namespace LaunchWindowPlanner
+namespace TransferWindowPlanner
 {
     [KSPAddon(KSPAddon.Startup.SpaceCentre,false)]
-    public class LaunchWindowPlanner:MonoBehaviourExtended
+    public class TransferWindowPlanner:MonoBehaviourExtended
     {
         internal static Settings settings;
 
-        internal LWPWindow LWPWindow;
+        internal TWPWindow TWPWindow;
 
         internal override void Awake()
         {
-            LogFormatted("Awakening the LaunchWindowPlanner (LWP)");
+            LogFormatted("Awakening the TransferWindowPlanner (TWP)");
 
             LogFormatted("Loading Settings");
             settings = new Settings("settings.cfg");
@@ -40,28 +40,28 @@ namespace LaunchWindowPlanner
 
         internal override void OnDestroy()
         {
-            LogFormatted("Destroying the LaunchWindowPlanner (LWP)");
+            LogFormatted("Destroying the TransferWindowPlanner (TWP)");
 
             RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
         }
         private void InitWindows()
         {
-            LWPWindow = AddComponent<LWPWindow>();
-            LWPWindow.WindowRect = new Rect(100, 200, 750, 400);
+            TWPWindow = AddComponent<TWPWindow>();
+            TWPWindow.WindowRect = new Rect(100, 200, 750, 400);
 
             InitDebugWindow();
         }
 
 #if DEBUG
-        internal LWPWindowDebug windowDebug;
+        internal TWPWindowDebug windowDebug;
 #endif
         [System.Diagnostics.Conditional("DEBUG")]
         private void InitDebugWindow()
         {
 #if DEBUG
-            windowDebug = AddComponent<LWPWindowDebug>();
-            windowDebug.mbLWP = this;
+            windowDebug = AddComponent<TWPWindowDebug>();
+            windowDebug.mbTWP = this;
             windowDebug.Visible = true;
             windowDebug.WindowRect = new Rect(Screen.width-300, 50, 300, 200);
             windowDebug.DragEnabled = true;

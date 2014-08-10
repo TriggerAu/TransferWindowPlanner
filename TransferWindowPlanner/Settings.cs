@@ -9,7 +9,7 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
-namespace LaunchWindowPlanner
+namespace TransferWindowPlanner
 {
     internal class Settings : ConfigNodeStorage
     {
@@ -43,13 +43,13 @@ namespace LaunchWindowPlanner
             }
         }
         [Persistent] internal ButtonStyleEnum ButtonStyleChosen = ButtonStyleEnum.Basic;
-        [Persistent] internal Boolean AppLauncherMutuallyExclusive = true;
+        [Persistent] internal Boolean AppTransfererMutuallyExclusive = true;
 
                 internal enum ButtonStyleEnum
         {
             [Description("Basic button")]                       Basic,
             [Description("Common Toolbar (by Blizzy78)")]       Toolbar,
-            [Description("KSP App Launcher Button")]            Launcher,
+            [Description("KSP App Transferer Button")]            Transferer,
         }
 
 
