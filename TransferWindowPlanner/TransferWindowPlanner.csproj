@@ -59,6 +59,7 @@
     <Compile Include="SharedStuff\ToolbarWrapper.cs" />
     <Compile Include="TWP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SharedStuff\LambertSolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
