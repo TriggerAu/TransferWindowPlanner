@@ -54,7 +54,7 @@ public static class LambertSolver
         double gravParameter = origin.referenceBody.gravParameter;
         Vector3d originPositionAtDeparture = origin.orbit.getRelativePositionAtUT(ut);
         Vector3d destinationPositionAtArrival = destination.orbit.getRelativePositionAtUT(ut + dt);
-        bool longWay = Vector3d.Cross(originPositionAtDeparture, destinationPositionAtArrival).z < 0;
+        bool longWay = Vector3d.Cross(originPositionAtDeparture, destinationPositionAtArrival).y < 0;
 
         Vector3d velocityBeforeInsertion;
         Vector3d velocityAfterEjection = Solve(gravParameter, originPositionAtDeparture, destinationPositionAtArrival, dt, longWay, out velocityBeforeInsertion);
@@ -77,8 +77,8 @@ public static class LambertSolver
                 return Double.NaN; // There is no orbit that leaves the SoI with a velocity of vsoi
             }
 
-            if (ejectionDeltaVector.z != 0) {
-                double sinEjectionInclination = ejectionDeltaVector.z / ejectionDeltaV;
+            if (ejectionDeltaVector.y != 0) {
+                double sinEjectionInclination = ejectionDeltaVector.y / ejectionDeltaV;
                 ejectionDeltaV = Math.Sqrt(v0 * v0 + v1 * v1 - 2 * v0 * v1 * Math.Sqrt(1 - sinEjectionInclination * sinEjectionInclination));
             } else {
                 ejectionDeltaV = v1 - v0;
