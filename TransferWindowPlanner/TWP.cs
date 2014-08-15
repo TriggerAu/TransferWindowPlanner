@@ -9,7 +9,7 @@ using KSPPluginFramework;
 
 namespace TransferWindowPlanner
 {
-    [KSPAddon(KSPAddon.Startup.SpaceCentre,false)]
+    [KSPAddon(KSPAddon.Startup.EveryScene,false)]
     public class TransferWindowPlanner:MonoBehaviourExtended
     {
         internal static Settings settings;
@@ -65,6 +65,7 @@ namespace TransferWindowPlanner
             windowDebug.Visible = true;
             windowDebug.WindowRect = new Rect(Screen.width-300, 50, 300, 200);
             windowDebug.DragEnabled = true;
+            windowDebug.ClampToScreen = false;
             windowDebug.settings = settings;
 #endif
         }

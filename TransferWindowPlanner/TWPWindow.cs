@@ -16,32 +16,73 @@ namespace TransferWindowPlanner
         DragEnabled=true,
         TooltipsEnabled=true,
         WindowMoveEventsEnabled=true)]
-    class TWPWindow:MonoBehaviourWindowPlus
+    internal partial class TWPWindow:MonoBehaviourWindowPlus
     {
-        List<String> lstPlanets = new List<String>() { "Moho", "Eve", "Kerbin", "Duna", "Dres", "Jool", "Eeloo" };
-        List<String> lstXFerTypes = new List<String>() { "Ballistic","Mid Course","Optimal"};
         DropDownList ddlOrigin;
         DropDownList ddlDestination;
-        DropDownList ddlXferType;
+        //DropDownList ddlXferType;
 
-        int intTest = 100;
+        CelestialBody cbStar = null;
+        List<cbItem> lstBodies = new List<cbItem>();
 
         internal override void Awake()
         {
-            ddlOrigin = new DropDownList(lstPlanets, this);
-            ddlDestination = new DropDownList(lstPlanets, this);
-            ddlXferType = new DropDownList(lstXFerTypes, this);
+            foreach (CelestialBody item in FlightGlobals.Bodies)
+            {
+                //if(item.name!="Sun")
+                //    LogFormatted("{0}-{1}", item.bodyName, item.orbit.semiMajorAxis);
+                lstBodies.Add(new cbItem(item));
+            }
+            //The star is the body that has no reference
+            cbStar = FlightGlobals.Bodies.FirstOrDefault(x => x.referenceBody == x.referenceBody);
+            if (cbStar == null)
+            {
+                //RuRo
+                LogFormatted("Error: Couldn't detect a Star (ref body is itself)");
+            }
+            else
+            {
+                BodyParseChildren(cbStar);
+            }
+
+            ddlOrigin = new DropDownList(lstPlanets.Select(x => x.NameFormatted), 2, this);
+            ddlDestination = new DropDownList(lstPlanets.Select(x => x.NameFormatted), 0, this);
+            SetupDestinationControls();
+            SetupTransferParams();
+
+            ddlOrigin.OnSelectionChanged += ddlOrigin_OnSelectionChanged;
+            ddlDestination.OnSelectionChanged += ddlDestination_OnSelectionChanged;
 
             ddlManager.AddDDL(ddlOrigin);
             ddlManager.AddDDL(ddlDestination);
-            ddlManager.AddDDL(ddlXferType);
+
+            //ddlXferType = new DropDownList(lstXFerTypes, this);
+            //ddlManager.AddDDL(ddlXferType);
+
+
+
+            //Set the defaults
         }
-        
+
+        void ddlOrigin_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
+        {
+            LogFormatted_DebugOnly("New Origin Selected:{0}",ddlOrigin.SelectedValue.Trim(' '));
+
+            SetupDestinationControls();
+        }
+        void ddlDestination_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
+        {
+            LogFormatted_DebugOnly("New Destination Selected:{0}", ddlDestination.SelectedValue.Trim(' '));
+            SetupTransferParams();
+        }
+
         internal override void OnGUIOnceOnly()
         {
             ddlManager.DropDownGlyphs = new GUIContentWithStyle(Resources.btnDropDown, Styles.styleDropDownGlyph);
             ddlManager.DropDownSeparators = new GUIContentWithStyle("", Styles.styleSeparatorV);
         }
+
+        Int32 intTest1 = 100, intTest2 = 100;
 
         internal override void DrawWindow(int id)
         {
@@ -92,6 +133,12 @@ namespace TransferWindowPlanner
 
         }
 
+        internal static Vector3d getAbsolutePositionAtUT(Orbit orbit, double UT)
+        {
+            Vector3d pos = orbit.getRelativePositionAtUT(UT);
+            pos += orbit.referenceBody.position;
+            return pos;
+        }
         internal Boolean Running = false;
         internal Boolean Done = false;
         internal Single workingpercent = 0;
