@@ -102,15 +102,121 @@ namespace TransferWindowPlanner
 
             GUILayout.BeginVertical();
             ddlOrigin.DrawButton();
-            DrawTextBox(ref intTest);
+            DrawTextBox(ref intTest1);
             ddlDestination.DrawButton();
-            DrawTextBox(ref intTest);
-            ddlXferType.DrawButton();
+            DrawTextBox(ref intTest2);
+            //ddlXferType.DrawButton();
+
+
+            DrawLabel("DepartureMin:{0}", DepartureMin);
+            DrawLabel("DepartureRange:{0}", DepartureRange);
+            DrawLabel("DepartureMax:{0}", DepartureMax);
+            DrawLabel("TravelMin:{0}", TravelMin);
+            DrawLabel("TravelMax:{0}", TravelMax);
+
+            DrawLabel("Hohmann:{0}", hohmannTransferTime);
+            DrawLabel("synodic:{0}", synodicPeriod);
+
+            
+
+
             GUILayout.EndVertical();
             
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Plot It!"))
                 StartWorker();
+
+            //if (GUILayout.Button("A number!"))
+            //{
+            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
+            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
+            //    LogFormatted_DebugOnly("Next UT:{0}->{1}: {2}",cbO.bodyName,cbD.bodyName,LambertSolver.NextLaunchWindowUT(cbO,cbD));
+            //}
+
+            //if (GUILayout.Button("A DV!"))
+            //{
+            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
+            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
+            //    LogFormatted_DebugOnly("DV:{0}->{1}: {2}", cbO.bodyName, cbD.bodyName, LambertSolver.TransferDeltaV(cbO, cbD, 5030208, 5718672, 100000, 100000));
+            //}
+
+            //if (GUILayout.Button("Solve!"))
+            //{
+            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
+            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
+            //    Vector3d originPositionAtDeparture = cbO.orbit.getRelativePositionAtUT(5030208);
+            //    Vector3d destinationPositionAtArrival = cbD.orbit.getRelativePositionAtUT(5030208 + 5718672);
+            //    bool longWay = Vector3d.Cross(originPositionAtDeparture, destinationPositionAtArrival).y < 0;
+
+            //    LogFormatted_DebugOnly("DV:{0}->{1}: {2}", cbO.bodyName, cbD.bodyName, LambertSolver.Solve(cbO.referenceBody.gravParameter, originPositionAtDeparture, destinationPositionAtArrival, 5718672, longWay));
+            //    LogFormatted_DebugOnly("Origin:{0}", originPositionAtDeparture);
+            //    LogFormatted_DebugOnly("Dest:{0}", destinationPositionAtArrival);
+            //}
+
+            //if (GUILayout.Button("Maths"))
+            //{
+            //    CelestialBody cbK = FlightGlobals.Bodies[0];
+            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
+            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
+
+            //    LogFormatted_DebugOnly("TAat0:{0}: {1}", cbO.bodyName, cbO.orbit.TrueAnomalyAtUT(0));
+            //    LogFormatted_DebugOnly("TAat0:{0}: {1}", cbD.bodyName, cbD.orbit.TrueAnomalyAtUT(0));
+            //    LogFormatted_DebugOnly("TAat5030208:{0}: {1}", cbO.bodyName, cbO.orbit.TrueAnomalyAtUT(5030208));
+            //    LogFormatted_DebugOnly("TAat5030208:{0}: {1}", cbD.bodyName, cbD.orbit.TrueAnomalyAtUT(5030208));
+            //    LogFormatted_DebugOnly("OVat5030208:{0}: {1}", cbO.bodyName, cbO.orbit.getOrbitalVelocityAtUT(5030208).magnitude);
+            //    LogFormatted_DebugOnly("OVat5030208:{0}: {1}", cbD.bodyName, cbD.orbit.getOrbitalVelocityAtUT(5030208).magnitude);
+            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbO.bodyName, cbO.orbit.getRelativePositionAtUT(5030208).x, cbO.orbit.getRelativePositionAtUT(5030208).y, cbO.orbit.getRelativePositionAtUT(5030208).z);
+            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbD.bodyName, cbD.orbit.getRelativePositionAtUT(5030208).x, cbD.orbit.getRelativePositionAtUT(5030208).y, cbD.orbit.getRelativePositionAtUT(5030208).z);
+
+            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbO.bodyName, cbO.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).x, cbO.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).y, cbO.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).z);
+            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbD.bodyName, cbD.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).x, cbD.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).y, cbD.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).z);
+
+            //    //LogFormatted_DebugOnly("SwapRPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbO.bodyName, cbO.orbit.SwappedRelativePositionAtUT(5030208).x, cbO.orbit.SwappedRelativePositionAtUT(5030208).y, cbO.orbit.SwappedRelativePositionAtUT(5030208).z);
+            //    //LogFormatted_DebugOnly("SwapRPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbD.bodyName, cbD.orbit.SwappedRelativePositionAtUT(5030208).x, cbD.orbit.SwappedRelativePositionAtUT(5030208).y, cbD.orbit.SwappedRelativePositionAtUT(5030208).z);
+
+            //    ////LogFormatted_DebugOnly("Absat5030208:{0}: {1}", cbK.bodyName, getAbsolutePositionAtUT(cbK.orbit, 5030208));
+            //    //LogFormatted_DebugOnly("Absat5030208:{0}: {1}", cbO.bodyName, getAbsolutePositionAtUT(cbO.orbit,5030208));
+            //    //LogFormatted_DebugOnly("Absat5030208:{0}: {1}", cbD.bodyName, getAbsolutePositionAtUT(cbD.orbit, 5030208));
+
+            //    //LogFormatted_DebugOnly("Posat5030208:{0}: {1}", cbO.bodyName, cbO.getPositionAtUT(5030208));
+            //    //LogFormatted_DebugOnly("TPosat5030208:{0}: {1}", cbO.bodyName, cbO.getTruePositionAtUT(5030208));
+            //    //LogFormatted_DebugOnly("Posat5030208:{0}: {1}", cbD.bodyName, cbD.getPositionAtUT(5030208));
+            //    //LogFormatted_DebugOnly("TPosat5030208:{0}: {1}", cbD.bodyName, cbD.getTruePositionAtUT(5030208));
+            //    //LogFormatted_DebugOnly("Posat5030208:{0}: {1}", cbK.bodyName, cbK.getPositionAtUT(5030208));
+            //    //LogFormatted_DebugOnly("TPosat5030208:{0}: {1}", cbK.bodyName, cbK.getTruePositionAtUT(5030208));
+
+
+
+            //    Vector3d pos1 = new Vector3d(13028470326,3900591743,0);
+            //    Vector3d pos2 = new Vector3d(-19970745720,-1082561296,15466922.92);
+            //    double tof = 5718672;
+
+            //    Vector3d vdest;
+            //    Vector3d vinit = LambertSolver.Solve(cbK.gravParameter, pos1, pos2, tof, false, out vdest);
+            //    LogFormatted_DebugOnly("Init:{0} - {1}", vinit.magnitude, vinit);
+            //    LogFormatted_DebugOnly("vdest:{0} - {1}", vdest.magnitude, vdest);
+
+
+            //    Vector3d vr1 = cbO.orbit.getOrbitalVelocityAtUT(5030208);
+            //    Vector3d vr2 = cbD.orbit.getOrbitalVelocityAtUT(5030208 + 5718672);
+
+            //    Vector3d vdest2;
+            //    Vector3d vinit2;
+            //    LambertSolver2.Solve(pos1, pos2, tof,cbK, true,out vinit2, out vdest2);
+
+            //    LogFormatted_DebugOnly("Origin:{0} - {1}", vr1.magnitude, vr1);
+            //    LogFormatted_DebugOnly("Dest:{0} - {1}", vr2.magnitude, vr2);
+
+            //    LogFormatted_DebugOnly("Depart:{0} - {1}", vinit2.magnitude, vinit2);
+            //    LogFormatted_DebugOnly("Arrive:{0} - {1}", vdest2.magnitude, vdest2);
+
+            //    LogFormatted_DebugOnly("Eject:{0} - {1}", (vinit2 - vr1).magnitude, vinit2 - vr1);
+            //    LogFormatted_DebugOnly("Inject:{0} - {1}", (vdest2 - vr2).magnitude, vdest2 - vr2);
+
+            //}
+
+
+
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical(GUILayout.Width(10));
@@ -166,12 +272,22 @@ namespace TransferWindowPlanner
 
         void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            do
+            for (int y = 0; y < 300; y++)
             {
-                System.Threading.Thread.Sleep(30);
-                LogFormatted("{0:0.000}", workingpercent);
-                workingpercent += (Single)0.01;
-            } while (workingpercent<1);
+                for (int x = 0; x < 300; x++)
+                {
+                    LogFormatted("{0:0.000}", workingpercent);
+
+
+                }
+            }
+
+            //do
+            //{
+            //    System.Threading.Thread.Sleep(30);
+            //    LogFormatted("{0:0.000}", workingpercent);
+            //    workingpercent += (Single)0.01;
+            //} while (workingpercent<1);
         }
 
 
