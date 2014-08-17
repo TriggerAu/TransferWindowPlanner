@@ -1,9 +1,10 @@
 TransferWindowPlanner
 ======================
-An ingame implementation of AluxMun's Launch Window Planner WebApp for [Kerbal Space Program](http://www.kerbalspaceprogram.com/)
+An ingame implementation of [AluxMun's Launch Window Planner WebApp](http://alexmoon.github.io/ksp/) for [Kerbal Space Program](http://www.kerbalspaceprogram.com/)
 
 Forum Thread: 
 Author: TriggerAu
+LaunchWindowPlanner Forum Thread: http://forum.kerbalspaceprogram.com/threads/33023-WEB-APP-Launch-Window-Planner
 
 Licensing
 Plugin Code License provided in project LICENSE file
