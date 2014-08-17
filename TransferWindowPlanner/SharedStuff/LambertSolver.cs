@@ -36,6 +36,11 @@ public static class LambertSolver
 	public static double MachineEpsilon = CalculateMachineEpsilon();
 	public static double SqrtMachineEpsilon = Math.Sqrt(MachineEpsilon);
 
+    public static Vector3d ZAxis = new Vector3d(0, 0, 1);
+
+    public const double Rad2Deg = 180.0d / Math.PI;
+    public const double Deg2Rad = Math.PI / 180.0d;
+
     /// <summary>
     /// Find the delta-v required for a ballistic transfer from <paramref name="origin"/> to <paramref name="destination"/>,
     /// departing at <paramref name="ut"/> UT, with a time of flight of <paramref name="dt"/> seconds, starting from a circular
@@ -52,14 +57,17 @@ public static class LambertSolver
     public static double TransferDeltaV(CelestialBody origin, CelestialBody destination, double ut, double dt, double initialOrbitAltitude, double? finalOrbitAltitude)
     {
         double gravParameter = origin.referenceBody.gravParameter;
-        Vector3d originPositionAtDeparture = origin.orbit.getRelativePositionAtUT(ut);
-        Vector3d destinationPositionAtArrival = destination.orbit.getRelativePositionAtUT(ut + dt);
+        double tA = origin.orbit.TrueAnomalyAtUT(ut);
+        Vector3d originPositionAtDeparture = OrbitPositionFromTrueAnomaly(origin.orbit, tA);
+        Vector3d originVelocity = OrbitVelocityFromTrueAnomaly(origin.orbit, tA);
+
+        tA = destination.orbit.TrueAnomalyAtUT(ut + dt);
+        Vector3d destinationPositionAtArrival = OrbitPositionFromTrueAnomaly(destination.orbit, tA);
+
         bool longWay = Vector3d.Cross(originPositionAtDeparture, destinationPositionAtArrival).z < 0;
 
         Vector3d velocityBeforeInsertion;
         Vector3d velocityAfterEjection = Solve(gravParameter, originPositionAtDeparture, destinationPositionAtArrival, dt, longWay, out velocityBeforeInsertion);
-
-        Vector3d originVelocity = origin.orbit.getOrbitalVelocityAtUT(ut);
 
         Vector3d ejectionDeltaVector = velocityAfterEjection - originVelocity;
         double ejectionDeltaV = ejectionDeltaVector.magnitude;
@@ -67,14 +75,14 @@ public static class LambertSolver
             double mu = origin.gravParameter;
             double r0 = initialOrbitAltitude + origin.Radius;
             double rsoi = origin.sphereOfInfluence;
-            double v0 = Math.Sqrt(origin.gravParameter / r0);
+            double v0 = Math.Sqrt(origin.gravParameter / r0); // Initial circular orbit velocity
             double v1 = Math.Sqrt(ejectionDeltaV * ejectionDeltaV + 2 * v0 * v0 - 2 * mu / rsoi); // Velocity at periapsis
 
             double e = r0 * v1 * v1 / mu - 1; // Ejection orbit eccentricity
             double ap = r0 * (1 + e) / (1 - e); // Ejection orbit apoapsis
 
             if (ap > 0 && ap <= rsoi) {
-                return Double.NaN; // There is no orbit that leaves the SoI with a velocity of vsoi
+                return Double.NaN; // There is no orbit that leaves the SoI with a velocity of ejectionDeltaV
             }
 
             if (ejectionDeltaVector.z != 0) {
@@ -87,7 +95,7 @@ public static class LambertSolver
 
         double insertionDeltaV = 0;
         if (finalOrbitAltitude.HasValue) {
-            Vector3d destinationVelocity = destination.orbit.getOrbitalVelocityAtUT(ut + dt);
+            Vector3d destinationVelocity = OrbitVelocityFromTrueAnomaly(destination.orbit, tA);
             insertionDeltaV = (velocityBeforeInsertion - destinationVelocity).magnitude;
 
             if (finalOrbitAltitude.Value != 0) {
@@ -295,64 +303,66 @@ public static class LambertSolver
 		double m = r1 + r2 + c;
 		double n = r1 + r2 - c;
 
-		double cosHalfAngleOfFlight = Math.Cos(0.5 * angleOfFlight);
-		double angleParameter = Math.Sqrt(4.0 * r1 * r2 / (m * m) * cosHalfAngleOfFlight * cosHalfAngleOfFlight);
+        double angleParameter = Math.Sqrt(n / m);
 		if (longWay) {
 			angleParameter = -angleParameter;
 		}
 
 		double normalizedTime = 4.0 * timeOfFlight * Math.Sqrt(gravParameter / (m * m * m));
 		double parabolicNormalizedTime = 2.0 / 3.0 * (1.0 - angleParameter * angleParameter * angleParameter);
-		double minimumEnergyNormalizedTime = Math.Acos(angleParameter) + angleParameter * Math.Sqrt(1 - angleParameter * angleParameter);
 
 		double x, y; // Path parameters
 		Func<double,double> fy = (xn) => (angleParameter < 0) ? -Math.Sqrt(1.0 - angleParameter * angleParameter * (1.0 - xn * xn)) : Math.Sqrt(1.0 - angleParameter * angleParameter * (1.0 - xn * xn));
-		if (normalizedTime == parabolicNormalizedTime) { // Parabolic solution
+        if (RelativeError(normalizedTime, parabolicNormalizedTime) < 1e-6) { // Parabolic solution
 			x = 1.0;
 			y = (angleParameter < 0) ? -1 : 1;
-		} else if (normalizedTime == minimumEnergyNormalizedTime) { // Minimum energy elliptical solution
-			x = 0.0;
-			y = fy(x);
+        } else if (normalizedTime < parabolicNormalizedTime) { // Hyperbolic solution
+            // Returns the difference between the normalized time for a path parameter of xn and normalizedTime for a hyperbolic orbit (xn > 1.0)
+            Func<double,double> fdt = (xn) => {
+                double yn = fy(xn);
+                double g = Math.Sqrt(xn * xn - 1.0);
+                double h = Math.Sqrt(yn * yn - 1.0);
+                return (Acoth(yn / h) - Acoth(xn / g) + xn * g - yn * h) / (g * g * g) - normalizedTime;
+            };
+
+            Range bounds = new Range(1.0 + MachineEpsilon, 2.0);
+            while (fdt(bounds.upper) > 0.0) {
+                bounds.lower = bounds.upper;
+                bounds.upper *= 2.0;
+            }
+
+            x = FindRoot(bounds, 1e-6, fdt); // Solve for x
+            y = fy(x);
 		} else {
-			// Returns the difference between the normalized time for a path parameter of xn and normalizedTime
-			Func<double,double> fdt = (xn) => {
-				if (xn == 1.0) { // Parabolic
-					return parabolicNormalizedTime - normalizedTime;
-				} else {
-					double yn = fy(xn);
+            double minimumEnergyNormalizedTime = Math.Acos(angleParameter) + angleParameter * Math.Sqrt(1 - angleParameter * angleParameter);
 
-					double g, h;
-					if (xn > 1.0) { // Hyperbolic
-						g = Math.Sqrt(xn * xn - 1.0);
-						h = Math.Sqrt(yn * yn - 1.0);
-						return (Acoth(yn / h) - Acoth(xn / g) + xn * g - yn * h) / (g * g * g) - normalizedTime;
-					} else { // Elliptical (-1 < x < 1)
-						g = Math.Sqrt(1.0 - xn * xn);
-						h = Math.Sqrt(1.0 - yn * yn);
-						return (Acot(xn / g) - Math.Atan(h / yn) - xn * g + yn * h) / (g * g * g) - normalizedTime;
-					}
-				}
-			};
+            if (RelativeError(normalizedTime, minimumEnergyNormalizedTime) < 1e-6) { // Minimum energy elliptical solution
+                x = 0.0;
+                y = fy(x);
+            } else {
+                // Returns the difference between the normalized time for a path parameter of xn and normalizedTime for an elliptical orbit (-1.0 < xn < 1.0)
+                Func<double,double> fdt = (xn) =>
+                {
+                    double yn = fy(xn);
+                    double g = Math.Sqrt(1.0 - xn * xn);
+                    double h = Math.Sqrt(1.0 - yn * yn);
+                    double result = (Acot(xn / g) - Math.Atan(h / yn) - xn * g + yn * h) / (g * g * g) - normalizedTime;
+                    return result;
+                };
 
-			// Select our bounds based on the relationship between the known normalized times and normalizedTime
-			Range bounds;
-			if (normalizedTime > minimumEnergyNormalizedTime) { // Elliptical high path solution
-				bounds.lower = -1.0 + MachineEpsilon;
-				bounds.upper = 0.0;
-			} else if (normalizedTime > parabolicNormalizedTime) { // Elliptical low path solution
-				bounds.lower = 0.0;
-				bounds.upper = 1.0;
-			} else { // Hyperbolic solution
-				bounds.lower = 1.0;
-				bounds.upper = 2.0;
-				while (fdt(bounds.upper) > 0.0) {
-					bounds.lower = bounds.upper;
-					bounds.upper *= 2.0;
-				}
-			}
+                // Select our bounds based on the relationship between the known normalized times and normalizedTime
+                Range bounds;
+                if (normalizedTime > minimumEnergyNormalizedTime) { // Elliptical high path solution
+                    bounds.lower = -1.0 + MachineEpsilon;
+                    bounds.upper = 0.0;
+                } else { // Elliptical low path solution
+                    bounds.lower = 0.0;
+                    bounds.upper = 1.0 - MachineEpsilon;
+                }
 
-			x = FindRoot(bounds, MachineEpsilon, fdt); // Solve for x
-			y = fy(x);
+                x = FindRoot(bounds, 1e-6, fdt); // Solve for x
+                y = fy(x);
+            }
 		}
 
 		double sqrtMu = Math.Sqrt(gravParameter);
@@ -550,18 +560,19 @@ public static class LambertSolver
 		}
 	}
 
-	private static double FindRoot(Range bounds, double relativeAccuracy, Func<double,double> f)
+	private static double FindRoot(Range bounds, double tolerance, Func<double,double> f)
 	{
 		// Uses Brent's root finding method: http://math.fullerton.edu/mathews/n2003/BrentMethodMod.html
 		double a = bounds.lower;
 		double b = bounds.upper;
-		double c = b;
+		double c = a;
 		double fa = f(a);
 		double fb = f(b);
-		double fc = fb;
+		double fc = fa;
 		double d = b - a;
 		double e = d;
-        relativeAccuracy = Math.Max(relativeAccuracy, 2.0d * MachineEpsilon);
+
+        tolerance *= 0.5d;
 
 		for (int i = 0;; i++) {
 			if (Math.Abs(fc) < Math.Abs(fb)) { // If c is closer to the root than b, swap b and c
@@ -573,10 +584,10 @@ public static class LambertSolver
 				fc = fa;
 			}
 
-			double tol = relativeAccuracy * Math.Abs(b);
+            double tol = 2.0 * MachineEpsilon * Math.Abs(b) + tolerance;
 			double m = 0.5d * (c - b);
 
-			if (fb == 0 || Math.Abs(m) <= tol) {
+			if (fb == 0.0d || Math.Abs(m) <= tol) {
 				return b;
 			} else if (i > 100) {
 				throw new Exception("LambertSolver root failed to converge!");
@@ -589,22 +600,22 @@ public static class LambertSolver
 				double s = fb / fa;
 
 				if (a == c) { // Use a linear interpolation step
-					p = 2 * m * s;
-					q = 1 - s;
+					p = 2.0d * m * s;
+					q = 1.0d - s;
 				} else {  // Use inverse quadratic interpolation
 					q = fa / fc;
 					r = fb / fc;
-					p = s * (2 * m * q * (q - r) - (b - a) * (r - 1));
-					q = (q - 1) * (r - 1) * (s - 1);
+					p = s * (2.0d * m * q * (q - r) - (b - a) * (r - 1.0d));
+					q = (q - 1.0d) * (r - 1.0d) * (s - 1.0d);
 				}
 
-				if (p > 0) {
+				if (p > 0.0d) {
 					q = -q;
 				} else {
 					p = -p;
 				}
 
-				if (2 * p < Math.Min(3 * m * q - Math.Abs(tol * q), Math.Abs(e * q))) { // Verify interpolation
+				if (2.0d * p < Math.Min(3.0d * m * q - Math.Abs(tol * q), Math.Abs(e * q))) { // Verify interpolation
 					e = d;
 					d = p / q;
 				} else { // Fall back to bisection
@@ -682,13 +693,46 @@ public static class LambertSolver
 	private static double TrueAnomaly(Orbit orbit, Vector3d direction)
 	{
 		Vector3d periapsis = orbit.GetEccVector();
-		double trueAnomaly = Vector3d.Angle(periapsis, direction) * Math.PI / 180.0d;
+        double trueAnomaly = Vector3d.Angle(periapsis, direction) * Deg2Rad;
 		if (Vector3d.Dot(Vector3d.Cross(periapsis, direction), orbit.GetOrbitNormal()) < 0) {
 			trueAnomaly = TwoPi - trueAnomaly;
 		}
 
 		return trueAnomaly;
 	}
+
+    private static QuaternionD OrbitRotation(Orbit orbit)
+    {
+        Vector3d axisOfInclination = new Vector3d(Math.Cos(-orbit.argumentOfPeriapsis * Deg2Rad), Math.Sin(-orbit.argumentOfPeriapsis * Deg2Rad), 0);
+        return QuaternionD.AngleAxis(orbit.LAN + orbit.argumentOfPeriapsis, ZAxis) * QuaternionD.AngleAxis(orbit.inclination, axisOfInclination);
+    }
+
+    private static Vector3d OrbitPositionFromTrueAnomaly(Orbit orbit, double tA)
+    {
+        double cos = Math.Cos(tA);
+        double sin = Math.Sin(tA);
+
+        double e = orbit.eccentricity;
+        double r = orbit.semiMajorAxis * (1 - e * e) / (1 + e * cos);
+
+        return OrbitRotation(orbit) * new Vector3d(r * cos, r * sin, 0);
+    }
+
+    private static Vector3d OrbitVelocityFromTrueAnomaly(Orbit orbit, double tA)
+    {
+        double sin = Math.Sin(tA);
+        double cos = Math.Cos(tA);
+
+        double mu = orbit.referenceBody.gravParameter;
+        double e = orbit.eccentricity;
+        double h = orbit.h.magnitude;
+        double r = orbit.semiMajorAxis * (1 - e * e) / (1 + e * cos);
+
+        double vr = mu * e * sin / h;
+        double vtA = h / r;
+
+        return OrbitRotation(orbit) * new Vector3d(vr * cos - vtA * sin, vr * sin + vtA * cos, 0);
+    }
 
 	private static bool CoplanarOrbits(Orbit o1, Orbit o2)
 	{
@@ -710,13 +754,18 @@ public static class LambertSolver
 		return Math.Log(x + Math.Sqrt(x * x - 1));
 	}
 
+    private static double RelativeError(double a, double b)
+    {
+        return Math.Abs(1.0d - a / b);
+    }
+
 	private static double CalculateMachineEpsilon()
 	{
 		double result = 1.0d;
 
 		do {
-			result /= 2.0d;
-		} while (1.0d + result != 1.0d);
+			result *= 0.5d;
+        } while (1.0d + (0.5d * result) != 1.0d);
 
 		return result;
 	}
