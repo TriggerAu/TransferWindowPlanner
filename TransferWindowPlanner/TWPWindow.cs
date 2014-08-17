@@ -272,22 +272,22 @@ namespace TransferWindowPlanner
 
         void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            for (int y = 0; y < 300; y++)
-            {
-                for (int x = 0; x < 300; x++)
-                {
-                    LogFormatted("{0:0.000}", workingpercent);
-
-
-                }
-            }
-
-            //do
+            //for (int y = 0; y < 300; y++)
             //{
-            //    System.Threading.Thread.Sleep(30);
-            //    LogFormatted("{0:0.000}", workingpercent);
-            //    workingpercent += (Single)0.01;
-            //} while (workingpercent<1);
+            //    for (int x = 0; x < 300; x++)
+            //    {
+            //        LogFormatted("{0:0.000}", workingpercent);
+
+
+            //    }
+            //}
+
+            do
+            {
+                System.Threading.Thread.Sleep(30);
+                LogFormatted("{0:0.000}", workingpercent);
+                workingpercent += (Single)0.01;
+            } while (workingpercent < 1);
         }
 
 
