@@ -82,7 +82,40 @@ namespace TransferWindowPlanner
             ddlManager.DropDownSeparators = new GUIContentWithStyle("", Styles.styleSeparatorV);
         }
 
-        Int32 intTest1 = 100, intTest2 = 100;
+
+        internal Boolean DrawYearDay(ref Double UT)
+        {
+            Double oldUT = UT;
+            KSPTime kTime = new KSPTime(UT);
+
+            String strYear = kTime.Year.ToString("{0:0}");
+            String strDay = kTime.Day.ToString("{0:0}");
+            
+            GUILayout.BeginHorizontal();
+            DrawTimeField(ref strYear, "Year:", 100, 100);
+            DrawTimeField(ref strDay, "Day:", 100, 100);
+            GUILayout.EndHorizontal();
+            kTime = kTime.UpdateFromStrings(strYear, strDay);
+
+            UT = kTime.UT;
+            return UT != oldUT;
+        }
+
+        internal Boolean DrawTimeField(ref String Value, String LabelText, Int32 FieldWidth, Int32 LabelWidth)
+        {
+            Boolean blnReturn = false;
+            Int32 intParse;
+            GUIStyle styleTextBox = Styles.styleAddField;
+            GUIContent contText = new GUIContent(Value);
+            Boolean BlnIsNum = Int32.TryParse(Value, out intParse);
+            if (!BlnIsNum) styleTextBox = Styles.styleAddFieldError;
+
+            //styleTextBox.alignment = TextAnchor.MiddleRight;
+            GUILayout.Label(LabelText, Styles.styleTextTitle, GUILayout.Width(LabelWidth));
+            blnReturn = DrawTextBox(ref Value, styleTextBox, GUILayout.MaxWidth(FieldWidth));
+
+            return blnReturn;
+        }
 
         internal override void DrawWindow(int id)
         {
@@ -93,18 +126,44 @@ namespace TransferWindowPlanner
             GUILayout.BeginHorizontal();
             
             GUILayout.BeginVertical(GUILayout.Width(100));
-            GUILayout.Label("Origin:");
-            GUILayout.Label("Initial Orbit (km):");
-            GUILayout.Label("Destination:");
-            GUILayout.Label("Final Orbit (km):");
-            GUILayout.Label("Transfer Type:");
+            GUILayout.Label("Origin:",Styles.styleTextTitle);
+            GUILayout.Label("Initial Orbit:", Styles.styleTextTitle);
+            GUILayout.Label("Destination:", Styles.styleTextTitle);
+            GUILayout.Label("Final Orbit:", Styles.styleTextTitle);
+
+            //Checkbox re insertion burn
+            GUILayout.Label("Earliest Departure:", Styles.styleTextTitle);
+            GUILayout.Label("Latest Departure:", Styles.styleTextTitle);
+            GUILayout.Label("Time of Flight:", Styles.styleTextTitle);
+                        
+            //GUILayout.Label("Transfer Type:", Styles.styleTextTitle);
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
             ddlOrigin.DrawButton();
-            DrawTextBox(ref intTest1);
+            
+            GUILayout.BeginHorizontal();
+            DrawTextBox(ref dblOrbitOriginAltitude);
+            DrawLabel("km");
+            GUILayout.EndHorizontal();
+            
             ddlDestination.DrawButton();
-            DrawTextBox(ref intTest2);
+
+            GUILayout.BeginHorizontal(); 
+            DrawTextBox(ref dblOrbitDestinationAltitude);
+            DrawLabel("km");
+            GUILayout.EndHorizontal();
+
+            DrawYearDay(ref DepartureMin);
+            
+            DrawYearDay(ref DepartureMax);
+
+            GUILayout.BeginHorizontal();
+            DrawTextBox(ref TravelMin);
+            DrawLabel("to");
+            DrawTextBox(ref TravelMax);
+            DrawLabel("days");
+            GUILayout.EndHorizontal();
             //ddlXferType.DrawButton();
 
 

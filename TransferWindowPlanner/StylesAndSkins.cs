@@ -52,12 +52,17 @@ namespace TransferWindowPlanner
         //internal static GUIStyle styleBarHighlightRed;
 
         internal static GUIStyle styleText;
+
+        internal static GUIStyle styleTextTitle;
+
         internal static GUIStyle styleTextCenter;
         internal static GUIStyle styleTextCenterGreen;
 
         internal static GUIStyle styleTextGreen;
         internal static GUIStyle styleTextYellow;
         internal static GUIStyle styleTextYellowBold;
+
+
 
         //internal static GUIStyle styleStageText;
         //internal static GUIStyle styleStageTextHead;
@@ -189,6 +194,10 @@ namespace TransferWindowPlanner
             styleText.alignment = TextAnchor.MiddleLeft;
             styleText.normal.textColor = new Color(207, 207, 207);
             styleText.wordWrap = false;
+
+            styleTextTitle = new GUIStyle(styleText);
+            styleTextTitle.alignment = TextAnchor.MiddleRight;
+            styleTextTitle.fontStyle = FontStyle.Bold;
 
             styleTextGreen = new GUIStyle(styleText);
             styleTextGreen.normal.textColor = new Color32(183, 254, 0, 255); ;
