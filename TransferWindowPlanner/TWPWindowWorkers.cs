@@ -30,6 +30,7 @@ namespace TransferWindowPlanner
             BuildListOfDestinations();
 
             LogFormatted_DebugOnly("Updating DropDown List");
+            ddlDestination.SelectedIndex = 0;
             ddlDestination.Items = lstDestinations.Select(x => x.Name).ToList();
 
             SetupTransferParams();
@@ -53,6 +54,8 @@ namespace TransferWindowPlanner
             //Set some reasonable defaults for the travel time range - ie y-axis
             TravelMin = Math.Max(hohmannTransferTime - cbDestination.orbit.period, hohmannTransferTime / 2);
             TravelMax = TravelMin + Math.Min(2 * cbDestination.orbit.period, hohmannTransferTime);
+
+            SetWindowStrings();
         }
 
         #region CelestialBody List Stuff

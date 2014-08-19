@@ -82,46 +82,75 @@ namespace TransferWindowPlanner
             ddlManager.DropDownSeparators = new GUIContentWithStyle("", Styles.styleSeparatorV);
         }
 
-        KSPTime kTime;
-        internal Boolean DrawYearDay(ref Double UT)
-        {
-            Double oldUT = UT;
-            kTime = new KSPTime(UT);
+        //internal Boolean DrawYearDay(ref Double UT)
+        //{
+        //    Double oldUT = UT;
+        //    KSPTime kTime = new KSPTime(UT);
 
-            String strYear = (kTime.Year+1).ToString();
-            String strDay = (kTime.Day).ToString();
+        //    String strYear = kTime.Year.ToString("{0:0}");
+        //    String strDay = kTime.Day.ToString("{0:0}");
             
-            GUILayout.BeginHorizontal();
-            DrawTimeField(ref strYear, "Year:", 70,40);
-            DrawTimeField(ref strDay, "Day:", 70, 40);
-            GUILayout.EndHorizontal();
-            KSPTimeStringArray kTemp = new KSPTimeStringArray(KSPTimeStringArray.TimeEntryFieldsEnum.Years);
-            kTemp.Years = strYear;
-            kTemp.Days = strDay;
-            UT = kTemp.UT;
+        //    GUILayout.BeginHorizontal();
+        //    DrawTimeField(ref strYear, "Year:", 100, 100);
+        //    DrawTimeField(ref strDay, "Day:", 100, 100);
+        //    GUILayout.EndHorizontal();
+        //    kTime = kTime.UpdateFromStrings(strYear, strDay);
 
-            return UT != oldUT;
-        }
+        //    UT = kTime.UT;
+        //    return UT != oldUT;
+        //}
 
-        internal Boolean DrawTimeField(ref String Value, String LabelText, Int32 FieldWidth, Int32 LabelWidth)
+        //internal Boolean DrawTimeField(ref String Value, String LabelText, Int32 FieldWidth, Int32 LabelWidth)
+        //{
+        //    Boolean blnReturn = false;
+        //    Int32 intParse;
+        //    GUIStyle styleTextBox = Styles.styleAddField;
+        //    GUIContent contText = new GUIContent(Value);
+        //    Boolean BlnIsNum = Int32.TryParse(Value, out intParse);
+        //    if (!BlnIsNum) styleTextBox = Styles.styleAddFieldError;
+
+        //    //styleTextBox.alignment = TextAnchor.MiddleRight;
+        //    GUILayout.Label(LabelText, Styles.styleTextTitle, GUILayout.Width(LabelWidth));
+        //    blnReturn = DrawTextBox(ref Value, styleTextBox, GUILayout.MaxWidth(FieldWidth));
+
+        //    return blnReturn;
+        //}
+
+        internal Boolean DrawTextField(ref String Value, String RegexValidator, String LabelText="", Int32 FieldWidth=0, Int32 LabelWidth=0)
         {
+            GUIStyle styleTextBox = Styles.styleText;
+            if (!System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                styleTextBox = Styles.styleTextYellow;
+
+            if(LabelText!="") {
+                if (LabelWidth==0)
+                    GUILayout.Label(LabelText, Styles.styleTextTitle);
+                else
+                    GUILayout.Label(LabelText, Styles.styleTextTitle, GUILayout.Width(LabelWidth));
+            }
+
             Boolean blnReturn = false;
-            Int32 intParse;
-            GUIStyle styleTextBox = Styles.styleTextField;
-            GUIContent contText = new GUIContent(Value);
-            Boolean BlnIsNum = Int32.TryParse(Value, out intParse);
-            if (!BlnIsNum) styleTextBox = Styles.styleTextFieldError;
-
-            //styleTextBox.alignment = TextAnchor.MiddleRight;
-            GUILayout.Label(LabelText, Styles.styleTextTitle, GUILayout.Width(LabelWidth));
-            blnReturn = DrawTextBox(ref Value, styleTextBox, GUILayout.MaxWidth(FieldWidth));
-
+            if (LabelWidth == 0)
+                blnReturn = DrawTextBox(ref Value, styleTextBox);
+            else
+                blnReturn = DrawTextBox(ref Value, styleTextBox, GUILayout.Width(FieldWidth));
             return blnReturn;
         }
 
-        String strTravelMin = "",strTravelMax="";
-        String 
+        internal Boolean DrawYearDay(ref String strYear,ref String strDay)
+        {
+            Boolean blnReturn = false;
+            GUILayout.BeginHorizontal();
+            blnReturn = blnReturn || DrawTextField(ref strYear, "[\\d\\.]+", "Year:", 70, 70);
+            blnReturn = blnReturn || DrawTextField(ref strDay, "[\\d\\.]+", "Day:", 70, 70);
+            GUILayout.EndHorizontal();
+            return blnReturn;
+        }
 
+
+        String strDepartureAltitude,strArrivalAltitude;
+        String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
+        String strTravelMinDays, strTravelMaxDays;
 
         internal override void DrawWindow(int id)
         {
@@ -149,25 +178,25 @@ namespace TransferWindowPlanner
             ddlOrigin.DrawButton();
             
             GUILayout.BeginHorizontal();
-            DrawTextBox(ref dblOrbitOriginAltitude, Styles.styleTextField);
+            DrawTextField(ref strDepartureAltitude, "[\\d\\.]+", Styles.styleTextField);
             DrawLabel("km");
             GUILayout.EndHorizontal();
             
             ddlDestination.DrawButton();
 
             GUILayout.BeginHorizontal();
-            DrawTextBox(ref dblOrbitDestinationAltitude, Styles.styleTextField);
+            DrawTextField(ref strArrivalAltitude, "[\\d\\.]+", Styles.styleTextField);
             DrawLabel("km");
             GUILayout.EndHorizontal();
 
-            DrawYearDay(ref DepartureMin);
+            DrawYearDay(ref strDepartureMinYear,ref strDepartureMinDay);
             
-            DrawYearDay(ref DepartureMax);
+            DrawYearDay(ref strDepartureMaxYear,ref strDepartureMaxDay);
 
             GUILayout.BeginHorizontal();
-            DrawTextBox(ref TravelMin,Styles.styleTextField);
+            DrawTextField(ref strTravelMinDays, "[\\d\\.]+",Styles.styleTextField);
             DrawLabel("to");
-            DrawTextBox(ref TravelMax, Styles.styleTextField);
+            DrawTextField(ref strTravelMaxDays, "[\\d\\.]+",Styles.styleTextField);
             DrawLabel("days");
             GUILayout.EndHorizontal();
             //ddlXferType.DrawButton();
@@ -318,8 +347,41 @@ namespace TransferWindowPlanner
 
         BackgroundWorker bw;
 
+        private void SetWorkerVariables()
+        {
+            DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            DepartureMax = KSPTime.BuildUTFromRaw(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            TravelMin = KSPTime.BuildUTFromRaw("0", strTravelMinDays, "0", "0", "0");
+            TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
+            dblOrbitDestinationAltitude = Convert.ToDouble(strArrivalAltitude);
+            dblOrbitOriginAltitude = Convert.ToDouble(strDepartureAltitude);
+        }
+        private void SetWindowStrings(){
+            KSPTime kTime = new KSPTime(DepartureMin);
+            strDepartureMinYear = (kTime.Year+1).ToString();
+            strDepartureMinDay = (kTime.Day+1).ToString();
+
+            kTime.UT = DepartureMax;
+            strDepartureMaxYear = (kTime.Year+1).ToString();
+            strDepartureMaxDay = (kTime.Day+1).ToString();
+
+            kTime.UT = TravelMin;
+            strTravelMinDays = kTime.Day.ToString();
+
+            kTime.UT = TravelMax;
+            strTravelMaxDays = kTime.Day.ToString();
+
+            strArrivalAltitude = dblOrbitOriginAltitude.ToString();
+            strDepartureAltitude = dblOrbitDestinationAltitude.ToString();
+        }
+
         private void StartWorker()
         {
+            SetWorkerVariables();
+
+
+
+
             workingpercent = 0;
             Running = true;
             Done = false;
