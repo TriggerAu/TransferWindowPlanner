@@ -204,6 +204,7 @@ namespace TransferWindowPlanner
             styleTextTitle = new GUIStyle(styleText);
             styleTextTitle.alignment = TextAnchor.MiddleRight;
             styleTextTitle.fontStyle = FontStyle.Bold;
+            styleTextTitle.padding.top = 4;
 
             styleTextGreen = new GUIStyle(styleText);
             styleTextGreen.normal.textColor = new Color32(183, 254, 0, 255); ;

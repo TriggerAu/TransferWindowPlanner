@@ -14,7 +14,7 @@ namespace TransferWindowPlanner
     {
         internal static Settings settings;
 
-        internal TWPWindow TWPWindow;
+        internal TWPWindow windowMain;
 
         internal override void Awake()
         {
@@ -47,9 +47,9 @@ namespace TransferWindowPlanner
         }
         private void InitWindows()
         {
-            TWPWindow = AddComponent<TWPWindow>();
-            TWPWindow.WindowRect = new Rect(100, 200, 750, 400);
-
+            windowMain = AddComponent<TWPWindow>();
+            windowMain.WindowRect = new Rect(100, 200, 750, 400);
+            windowMain.mbTWP = this;
             InitDebugWindow();
         }
 

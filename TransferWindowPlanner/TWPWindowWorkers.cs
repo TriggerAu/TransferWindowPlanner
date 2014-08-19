@@ -14,10 +14,10 @@ namespace TransferWindowPlanner
         CelestialBody cbReference;
 
         Double hohmannTransferTime,synodicPeriod;
-        Double DepartureRange,DepartureMin,DepartureMax;
-        Double TravelMin, TravelMax;
+        Double DepartureMin,DepartureMax,DepartureRange;
+        Double TravelMin, TravelMax, TravelRange;
 
-        Double dblOrbitOriginAltitude = 100, dblOrbitDestinationAltitude = 100;
+        Double dblOrbitOriginAltitude = 100000, dblOrbitDestinationAltitude = 100000;
 
         void SetupDestinationControls()
         {

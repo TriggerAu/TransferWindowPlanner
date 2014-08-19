@@ -18,6 +18,8 @@ namespace TransferWindowPlanner
         WindowMoveEventsEnabled=true)]
     internal partial class TWPWindow:MonoBehaviourWindowPlus
     {
+        internal TransferWindowPlanner mbTWP;
+
         DropDownList ddlOrigin;
         DropDownList ddlDestination;
         //DropDownList ddlXferType;
@@ -116,11 +118,12 @@ namespace TransferWindowPlanner
         //    return blnReturn;
         //}
 
-        internal Boolean DrawTextField(ref String Value, String RegexValidator, String LabelText="", Int32 FieldWidth=0, Int32 LabelWidth=0)
+        internal Boolean DrawTextField(ref String Value, String RegexValidator, Boolean RegexFailOnMatch, String LabelText="", Int32 FieldWidth=0, Int32 LabelWidth=0)
         {
-            GUIStyle styleTextBox = Styles.styleText;
-            if (!System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
-                styleTextBox = Styles.styleTextYellow;
+            GUIStyle styleTextBox = Styles.styleTextField;
+            if ((RegexFailOnMatch && System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ||
+                (!RegexFailOnMatch && !System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)))
+                styleTextBox = Styles.styleTextFieldError;
 
             if(LabelText!="") {
                 if (LabelWidth==0)
@@ -130,7 +133,7 @@ namespace TransferWindowPlanner
             }
 
             Boolean blnReturn = false;
-            if (LabelWidth == 0)
+            if (FieldWidth == 0)
                 blnReturn = DrawTextBox(ref Value, styleTextBox);
             else
                 blnReturn = DrawTextBox(ref Value, styleTextBox, GUILayout.Width(FieldWidth));
@@ -141,8 +144,8 @@ namespace TransferWindowPlanner
         {
             Boolean blnReturn = false;
             GUILayout.BeginHorizontal();
-            blnReturn = blnReturn || DrawTextField(ref strYear, "[\\d\\.]+", "Year:", 70, 70);
-            blnReturn = blnReturn || DrawTextField(ref strDay, "[\\d\\.]+", "Day:", 70, 70);
+            blnReturn = blnReturn || DrawTextField(ref strYear, "[^\\d\\.]+", true, "Year:", 50,40);
+            blnReturn = blnReturn || DrawTextField(ref strDay, "[^\\d\\.]+", true, "Day:",  50,40);
             GUILayout.EndHorizontal();
             return blnReturn;
         }
@@ -154,6 +157,7 @@ namespace TransferWindowPlanner
 
         internal override void DrawWindow(int id)
         {
+
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.Width(300));
             GUILayout.Label("Enter Parameters");
@@ -161,6 +165,7 @@ namespace TransferWindowPlanner
             GUILayout.BeginHorizontal();
             
             GUILayout.BeginVertical(GUILayout.Width(100));
+            GUILayout.Space(2);
             GUILayout.Label("Origin:",Styles.styleTextTitle);
             GUILayout.Label("Initial Orbit:", Styles.styleTextTitle);
             GUILayout.Label("Destination:", Styles.styleTextTitle);
@@ -178,15 +183,15 @@ namespace TransferWindowPlanner
             ddlOrigin.DrawButton();
             
             GUILayout.BeginHorizontal();
-            DrawTextField(ref strDepartureAltitude, "[\\d\\.]+", Styles.styleTextField);
-            DrawLabel("km");
+            DrawTextField(ref strDepartureAltitude, "[^\\d\\.]+", true,FieldWidth: 172);
+            GUILayout.Label("km",GUILayout.Width(20));
             GUILayout.EndHorizontal();
             
             ddlDestination.DrawButton();
 
             GUILayout.BeginHorizontal();
-            DrawTextField(ref strArrivalAltitude, "[\\d\\.]+", Styles.styleTextField);
-            DrawLabel("km");
+            DrawTextField(ref strArrivalAltitude, "[^\\d\\.]+", true, FieldWidth: 172);
+            GUILayout.Label("km", GUILayout.Width(20));
             GUILayout.EndHorizontal();
 
             DrawYearDay(ref strDepartureMinYear,ref strDepartureMinDay);
@@ -194,10 +199,10 @@ namespace TransferWindowPlanner
             DrawYearDay(ref strDepartureMaxYear,ref strDepartureMaxDay);
 
             GUILayout.BeginHorizontal();
-            DrawTextField(ref strTravelMinDays, "[\\d\\.]+",Styles.styleTextField);
-            DrawLabel("to");
-            DrawTextField(ref strTravelMaxDays, "[\\d\\.]+",Styles.styleTextField);
-            DrawLabel("days");
+            DrawTextField(ref strTravelMinDays, "[^\\d\\.]+", true, FieldWidth: 60);
+            GUILayout.Label("to",GUILayout.Width(15));
+            DrawTextField(ref strTravelMaxDays, "[^\\d\\.]+", true, FieldWidth: 60);
+            GUILayout.Label("days", GUILayout.Width(30));
             GUILayout.EndHorizontal();
             //ddlXferType.DrawButton();
 
@@ -211,7 +216,7 @@ namespace TransferWindowPlanner
             DrawLabel("Hohmann:{0}", hohmannTransferTime);
             DrawLabel("synodic:{0}", synodicPeriod);
 
-            DrawLabel("Ktime:{0}", kTime.DateString());
+            //DrawLabel("Ktime:{0}", kTime.DateString());
             
 
 
@@ -323,11 +328,11 @@ namespace TransferWindowPlanner
             GUILayout.EndVertical();
 
             if (Running)
-                DrawResourceBar(new Rect(350, 180, 280, 20), workingpercent);
+                DrawResourceBar(new Rect(350, 180, 280, 20), (Single)workingpercent);
             if (Done)
             {
                 GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
-                GUI.Box(new Rect(346, 50, 300, 300), Resources.texPorkChopExample);
+                GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
             }
 
             GUILayout.EndHorizontal();
@@ -342,7 +347,7 @@ namespace TransferWindowPlanner
         }
         internal Boolean Running = false;
         internal Boolean Done = false;
-        internal Single workingpercent = 0;
+        internal Double workingpercent = 0;
 
 
         BackgroundWorker bw;
@@ -351,11 +356,23 @@ namespace TransferWindowPlanner
         {
             DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
             DepartureMax = KSPTime.BuildUTFromRaw(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            DepartureRange = DepartureMax - DepartureMin;
             TravelMin = KSPTime.BuildUTFromRaw("0", strTravelMinDays, "0", "0", "0");
             TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
-            dblOrbitDestinationAltitude = Convert.ToDouble(strArrivalAltitude);
-            dblOrbitOriginAltitude = Convert.ToDouble(strDepartureAltitude);
+            TravelRange = TravelMax - TravelMin;
+            dblOrbitDestinationAltitude = Convert.ToDouble(strArrivalAltitude)*1000;
+            dblOrbitOriginAltitude = Convert.ToDouble(strDepartureAltitude)*1000;
+
+            xResolution = DepartureRange / PlotWidth;
+            yResolution = TravelRange / PlotHeight;
+
+            DeltaVs = new Double[PlotWidth * PlotHeight];
+
         }
+        Double xResolution, yResolution;
+        Int32 PlotWidth = 300, PlotHeight = 300;
+        Double[] DeltaVs;
+
         private void SetWindowStrings(){
             KSPTime kTime = new KSPTime(DepartureMin);
             strDepartureMinYear = (kTime.Year+1).ToString();
@@ -366,21 +383,18 @@ namespace TransferWindowPlanner
             strDepartureMaxDay = (kTime.Day+1).ToString();
 
             kTime.UT = TravelMin;
-            strTravelMinDays = kTime.Day.ToString();
+            strTravelMinDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
 
             kTime.UT = TravelMax;
-            strTravelMaxDays = kTime.Day.ToString();
+            strTravelMaxDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
 
-            strArrivalAltitude = dblOrbitOriginAltitude.ToString();
-            strDepartureAltitude = dblOrbitDestinationAltitude.ToString();
+            strArrivalAltitude = (dblOrbitOriginAltitude/1000).ToString();
+            strDepartureAltitude = (dblOrbitDestinationAltitude/1000).ToString();
         }
 
         private void StartWorker()
         {
             SetWorkerVariables();
-
-
-
 
             workingpercent = 0;
             Running = true;
@@ -400,24 +414,90 @@ namespace TransferWindowPlanner
 
         void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            //for (int y = 0; y < 300; y++)
-            //{
-            //    for (int x = 0; x < 300; x++)
-            //    {
-            //        LogFormatted("{0:0.000}", workingpercent);
+            Double logDeltaV,sumlogDeltaV=0,sumSqLogDeltaV=0;
+            Double maxDeltaV=0,minDeltaV=Double.MaxValue;
 
-
-            //    }
-            //}
-
-            do
+            //Loop through getting the DeltaV's
+            Int32 iCurrent=0;
+            LogFormatted("Generating DeltaV Values");
+            for (int y = 0; y < PlotHeight; y++)
             {
-                System.Threading.Thread.Sleep(30);
-                LogFormatted("{0:0.000}", workingpercent);
-                workingpercent += (Single)0.01;
-            } while (workingpercent < 1);
-        }
+                LogFormatted("{0:0.000}-{1}", workingpercent,iCurrent);
+                for (int x = 0; x < PlotWidth; x++)
+                {
+                    iCurrent =(int)(y*PlotHeight+x) ;
 
+                    DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureMin + ((Double)x * xResolution), TravelMin + ((Double)y * yResolution), dblOrbitOriginAltitude, dblOrbitDestinationAltitude);
+
+                    if (DeltaVs[iCurrent]>maxDeltaV)
+                        maxDeltaV = DeltaVs[iCurrent];
+                    if (DeltaVs[iCurrent]<minDeltaV)
+                        minDeltaV = DeltaVs[iCurrent];
+
+                    logDeltaV=Math.Log(DeltaVs[iCurrent]);
+                    sumlogDeltaV += logDeltaV;
+                    sumSqLogDeltaV += logDeltaV * logDeltaV;
+
+                    workingpercent = (Double)iCurrent / (Double)(PlotHeight * PlotWidth);
+                }
+            }
+
+            String File = "";
+            for (int y = 0; y < PlotHeight; y++)
+            {
+                String strline = "";
+                for (int x = 0; x < PlotWidth; x++)
+                {
+                    iCurrent = (int)(y * PlotHeight + x);
+                    strline += String.Format("{0:0},", DeltaVs[iCurrent]);
+                }
+                File += strline + "\r\n";
+            }
+            System.IO.File.WriteAllText("D:/~Games/KSP_win_PluginTest_Minimal/GameData/TriggerTech/TransferWindowPlanner/DeltaV.csv", File);
+            //Now Draw the texture
+
+            List<Color> DeltaVColorPalette = new List<Color>();
+            for (int i = 64; i <= 68 ; i++)
+			    DeltaVColorPalette.Add(new Color32(64,(byte)i,255,255));
+            for (int i = 133; i <= 255 ; i++)
+                DeltaVColorPalette.Add(new Color32(128, (byte)i, 255, 255));
+            for (int i = 255; i >= 128 ; i--)
+                DeltaVColorPalette.Add(new Color32(128, 255, (byte)i, 255));
+            for (int i = 128; i <= 255 ; i++)
+                DeltaVColorPalette.Add(new Color32((byte)i, 255, 128, 255));
+            for (int i = 255; i >= 128 ; i--)
+                DeltaVColorPalette.Add(new Color32(255, (byte)i, 128, 255));
+
+            Double logMinDeltaV = Math.Log(DeltaVs.Min());
+            Double mean = sumlogDeltaV / DeltaVs.Length;
+            Double stddev = Math.Sqrt(sumSqLogDeltaV/DeltaVs.Length - mean * mean);
+            Double logMaxDeltaV = Math.Min(Math.Log(maxDeltaV),mean + 2 * stddev);
+
+            Texture2D texPalette = new Texture2D(1, 512);
+            for (int i = 0; i < DeltaVColorPalette.Count; i++)
+            {
+                texPalette.SetPixel(1, i,DeltaVColorPalette[i]);
+            }
+            texPalette.Apply();
+            Byte[] PNG = texPalette.EncodeToPNG();
+            System.IO.File.WriteAllBytes("D:/~Games/KSP_win_PluginTest_Minimal/GameData/TriggerTech/TransferWindowPlanner/DeltaVPalette.png", PNG);
+
+            LogFormatted("Placing Colors on texture");
+            texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
+            for (int y = 0; y < PlotHeight; y++)
+            {
+                for (int x = 0; x < PlotWidth; x++)
+                {
+                    iCurrent =(int)(y*PlotHeight+x) ;
+                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                    double relativeDeltaV = (logDeltaV-logMinDeltaV) / ( logMaxDeltaV - logMinDeltaV);
+                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)),DeltaVColorPalette.Count-1);
+                    texPlotArea.SetPixel(x, y, DeltaVColorPalette[ColorIndex]);
+                }
+            }
+            texPlotArea.Apply();
+        }
+        Texture2D texPlotArea;
 
         internal static Boolean DrawResourceBar(Rect rectBar, Single percentage)
         {

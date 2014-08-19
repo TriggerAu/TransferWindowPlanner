@@ -68,7 +68,7 @@ namespace TransferWindowPlanner
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
-        public Int32 intTest1 = 5030208;
+        public Int32 intTest1 = 0;
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
