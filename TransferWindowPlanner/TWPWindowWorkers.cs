@@ -14,8 +14,10 @@ namespace TransferWindowPlanner
         CelestialBody cbReference;
 
         Double hohmannTransferTime,synodicPeriod;
-        Double DepartureRange,DepartureMin,DepartureMax;
-        Double TravelMin, TravelMax;
+        Double DepartureMin,DepartureMax,DepartureRange;
+        Double TravelMin, TravelMax, TravelRange;
+
+        Double dblOrbitOriginAltitude = 100000, dblOrbitDestinationAltitude = 100000;
 
         void SetupDestinationControls()
         {
@@ -28,6 +30,7 @@ namespace TransferWindowPlanner
             BuildListOfDestinations();
 
             LogFormatted_DebugOnly("Updating DropDown List");
+            ddlDestination.SelectedIndex = 0;
             ddlDestination.Items = lstDestinations.Select(x => x.Name).ToList();
 
             SetupTransferParams();
@@ -38,15 +41,21 @@ namespace TransferWindowPlanner
             LogFormatted_DebugOnly("Running Maths for Default values for this transfer");
             cbDestination = lstBodies.First(x => x.Name == ddlDestination.SelectedValue.Trim(' ')).CB;
             LogFormatted_DebugOnly("Destination:{0}", cbOrigin.bodyName);
-            hohmannTransferTime = LambertSolver.HohmannTimeOfFlight(cbOrigin.orbit, cbDestination.orbit);
+
+            //work out the synodic period and a reasonable range from the min to max - ie x axis
             synodicPeriod = Math.Abs(1 / (1 / cbDestination.orbit.period - 1 / cbOrigin.orbit.period));
-            DepartureRange = Math.Min(2 * synodicPeriod, 2 * cbOrigin.orbit.period) / (6*60*60);
+            DepartureRange = Math.Min(2 * synodicPeriod, 2 * cbOrigin.orbit.period);
 
             DepartureMin = 0;
             DepartureMax = DepartureMin + DepartureRange;
 
-            TravelMin = Math.Max(hohmannTransferTime - cbDestination.orbit.period, hohmannTransferTime / 2) / (6*60*60);
-            TravelMax = TravelMin + Math.Min(2 * cbDestination.orbit.period, hohmannTransferTime) / (6*60*60);
+            //Work out the time necessary for a hohmann transfer between the two orbits
+            hohmannTransferTime = LambertSolver.HohmannTimeOfFlight(cbOrigin.orbit, cbDestination.orbit);
+            //Set some reasonable defaults for the travel time range - ie y-axis
+            TravelMin = Math.Max(hohmannTransferTime - cbDestination.orbit.period, hohmannTransferTime / 2);
+            TravelMax = TravelMin + Math.Min(2 * cbDestination.orbit.period, hohmannTransferTime);
+
+            SetWindowStrings();
         }
 
         #region CelestialBody List Stuff

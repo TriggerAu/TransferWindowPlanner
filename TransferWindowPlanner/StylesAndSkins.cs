@@ -52,12 +52,20 @@ namespace TransferWindowPlanner
         //internal static GUIStyle styleBarHighlightRed;
 
         internal static GUIStyle styleText;
+
+        internal static GUIStyle styleTextTitle;
+
         internal static GUIStyle styleTextCenter;
         internal static GUIStyle styleTextCenterGreen;
 
         internal static GUIStyle styleTextGreen;
         internal static GUIStyle styleTextYellow;
         internal static GUIStyle styleTextYellowBold;
+
+        internal static GUIStyle styleTextFieldDefault;
+
+        internal static GUIStyle styleTextField;
+        internal static GUIStyle styleTextFieldError;
 
         //internal static GUIStyle styleStageText;
         //internal static GUIStyle styleStageTextHead;
@@ -190,6 +198,14 @@ namespace TransferWindowPlanner
             styleText.normal.textColor = new Color(207, 207, 207);
             styleText.wordWrap = false;
 
+            styleTextFieldDefault = new GUIStyle(SkinsLibrary.DefUnitySkin.textField);
+            styleTextFieldDefault.fontStyle = FontStyle.Normal;
+
+            styleTextTitle = new GUIStyle(styleText);
+            styleTextTitle.alignment = TextAnchor.MiddleRight;
+            styleTextTitle.fontStyle = FontStyle.Bold;
+            styleTextTitle.padding.top = 4;
+
             styleTextGreen = new GUIStyle(styleText);
             styleTextGreen.normal.textColor = new Color32(183, 254, 0, 255); ;
             styleTextYellow = new GUIStyle(styleText);
@@ -202,6 +218,13 @@ namespace TransferWindowPlanner
             styleTextCenterGreen = new GUIStyle(styleTextCenter);
             styleTextCenterGreen.normal.textColor = new Color32(183, 254, 0, 255);
 
+            styleTextField = new GUIStyle(styleTextFieldDefault);
+            styleTextField.stretchWidth = true;
+            styleTextField.alignment = TextAnchor.UpperLeft;
+            styleTextField.normal.textColor = Color.yellow;
+
+            styleTextFieldError = new GUIStyle(styleTextField);
+            styleTextFieldError.normal.textColor = Color.red;
 
             styleToggle = new GUIStyle(HighLogic.Skin.toggle);
             styleToggle.normal.textColor = new Color(207, 207, 207);

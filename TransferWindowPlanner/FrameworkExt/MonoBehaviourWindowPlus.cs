@@ -27,12 +27,18 @@ namespace KSPPluginFramework
         {
             return DrawTextBox(ref strVar,SkinsLibrary.CurrentSkin.textField,options);
         }
+        internal Boolean DrawTextBox(ref String strVar, GUIStyle style, params GUILayoutOption[] options)
+        {
+            String strOld = strVar;
+            strVar = GUILayout.TextField(strVar, style, options);
+
+            return DrawResultChanged(strOld, strVar, "Text String");
+        }
+
         internal Boolean DrawTextBox(ref Int32 intVar, params GUILayoutOption[] options)
         {
             return DrawTextBox(ref intVar, SkinsLibrary.CurrentSkin.textField, options);
         }
-
-
         internal Boolean DrawTextBox(ref Int32 intVar, GUIStyle style, params GUILayoutOption[] options)
         {
             String strRef = intVar.ToString();
@@ -42,12 +48,17 @@ namespace KSPPluginFramework
             return DrawResultChanged(intOld, intVar, "Integer Changed");
         }
 
-        internal Boolean DrawTextBox(ref String strVar, GUIStyle style, params GUILayoutOption[] options)
+        internal Boolean DrawTextBox(ref Double dblVar, params GUILayoutOption[] options)
         {
-            String strOld = strVar;
-            strVar = GUILayout.TextField(strVar, style, options);
-
-            return DrawResultChanged(strOld, strVar, "Text String");
+            return DrawTextBox(ref dblVar, SkinsLibrary.CurrentSkin.textField, options);
+        }
+        internal Boolean DrawTextBox(ref Double dblVar, GUIStyle style, params GUILayoutOption[] options)
+        {
+            String strRef = dblVar.ToString();
+            DrawTextBox(ref strRef, style, options);
+            Double dblOld = dblVar;
+            dblVar = Convert.ToDouble(strRef);
+            return DrawResultChanged(dblOld, dblVar, "Double Changed");
         }
 
 
