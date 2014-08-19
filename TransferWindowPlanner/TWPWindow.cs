@@ -82,22 +82,24 @@ namespace TransferWindowPlanner
             ddlManager.DropDownSeparators = new GUIContentWithStyle("", Styles.styleSeparatorV);
         }
 
-
+        KSPTime kTime;
         internal Boolean DrawYearDay(ref Double UT)
         {
             Double oldUT = UT;
-            KSPTime kTime = new KSPTime(UT);
+            kTime = new KSPTime(UT);
 
-            String strYear = kTime.Year.ToString("{0:0}");
-            String strDay = kTime.Day.ToString("{0:0}");
+            String strYear = (kTime.Year+1).ToString();
+            String strDay = (kTime.Day).ToString();
             
             GUILayout.BeginHorizontal();
-            DrawTimeField(ref strYear, "Year:", 100, 100);
-            DrawTimeField(ref strDay, "Day:", 100, 100);
+            DrawTimeField(ref strYear, "Year:", 70,40);
+            DrawTimeField(ref strDay, "Day:", 70, 40);
             GUILayout.EndHorizontal();
-            kTime = kTime.UpdateFromStrings(strYear, strDay);
+            KSPTimeStringArray kTemp = new KSPTimeStringArray(KSPTimeStringArray.TimeEntryFieldsEnum.Years);
+            kTemp.Years = strYear;
+            kTemp.Days = strDay;
+            UT = kTemp.UT;
 
-            UT = kTime.UT;
             return UT != oldUT;
         }
 
@@ -105,10 +107,10 @@ namespace TransferWindowPlanner
         {
             Boolean blnReturn = false;
             Int32 intParse;
-            GUIStyle styleTextBox = Styles.styleAddField;
+            GUIStyle styleTextBox = Styles.styleTextField;
             GUIContent contText = new GUIContent(Value);
             Boolean BlnIsNum = Int32.TryParse(Value, out intParse);
-            if (!BlnIsNum) styleTextBox = Styles.styleAddFieldError;
+            if (!BlnIsNum) styleTextBox = Styles.styleTextFieldError;
 
             //styleTextBox.alignment = TextAnchor.MiddleRight;
             GUILayout.Label(LabelText, Styles.styleTextTitle, GUILayout.Width(LabelWidth));
@@ -116,6 +118,10 @@ namespace TransferWindowPlanner
 
             return blnReturn;
         }
+
+        String strTravelMin = "",strTravelMax="";
+        String 
+
 
         internal override void DrawWindow(int id)
         {
@@ -143,14 +149,14 @@ namespace TransferWindowPlanner
             ddlOrigin.DrawButton();
             
             GUILayout.BeginHorizontal();
-            DrawTextBox(ref dblOrbitOriginAltitude);
+            DrawTextBox(ref dblOrbitOriginAltitude, Styles.styleTextField);
             DrawLabel("km");
             GUILayout.EndHorizontal();
             
             ddlDestination.DrawButton();
 
-            GUILayout.BeginHorizontal(); 
-            DrawTextBox(ref dblOrbitDestinationAltitude);
+            GUILayout.BeginHorizontal();
+            DrawTextBox(ref dblOrbitDestinationAltitude, Styles.styleTextField);
             DrawLabel("km");
             GUILayout.EndHorizontal();
 
@@ -159,9 +165,9 @@ namespace TransferWindowPlanner
             DrawYearDay(ref DepartureMax);
 
             GUILayout.BeginHorizontal();
-            DrawTextBox(ref TravelMin);
+            DrawTextBox(ref TravelMin,Styles.styleTextField);
             DrawLabel("to");
-            DrawTextBox(ref TravelMax);
+            DrawTextBox(ref TravelMax, Styles.styleTextField);
             DrawLabel("days");
             GUILayout.EndHorizontal();
             //ddlXferType.DrawButton();
@@ -176,6 +182,7 @@ namespace TransferWindowPlanner
             DrawLabel("Hohmann:{0}", hohmannTransferTime);
             DrawLabel("synodic:{0}", synodicPeriod);
 
+            DrawLabel("Ktime:{0}", kTime.DateString());
             
 
 

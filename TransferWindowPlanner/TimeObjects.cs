@@ -328,4 +328,105 @@ namespace TransferWindowPlanner
         }
         #endregion
     }
+
+    public class KSPTimeStringArray
+    {
+        public enum TimeEntryFieldsEnum
+        {
+            Seconds = 0,
+            Minutes = 1,
+            Hours = 2,
+            Days = 3,
+            Years = 4
+        }
+
+        public TimeEntryFieldsEnum TimeEntryPrecision { get; private set; }
+
+        private String _Years = "", _Days = "", _Hours = "", _Minutes = "", _Seconds = "";
+
+        public String Years { get { return _Years; } set { _Years = value; SetValid(); } }
+        public String Days { get { return _Days; } set { _Days = value; SetValid(); } }
+        public String Hours { get { return _Hours; } set { _Hours = value; SetValid(); } }
+        public String Minutes { get { return _Minutes; } set { _Minutes = value; SetValid(); } }
+        public String Seconds { get { return _Seconds; } set { _Seconds = value; SetValid(); } }
+
+        public Boolean Valid { get { return _Valid; } }
+        Boolean _Valid = true;
+
+        public KSPTimeStringArray(TimeEntryFieldsEnum LevelOfPrecision)
+        {
+            TimeEntryPrecision = LevelOfPrecision;
+        }
+        public KSPTimeStringArray(Double NewUT, TimeEntryFieldsEnum LevelOfPrecision)
+            : this(LevelOfPrecision)
+        {
+            BuildFromUT(NewUT);
+        }
+
+        private void SetValid()
+        {
+            Double dblTest;
+            if (Double.TryParse(_Years, out dblTest) &&
+                Double.TryParse(_Days, out dblTest) &&
+                Double.TryParse(_Hours, out dblTest) &&
+                Double.TryParse(_Minutes, out dblTest) &&
+                Double.TryParse(_Seconds, out dblTest)
+                )
+            {
+                _Valid = true;
+            }
+            else
+            {
+                _Valid = false;
+            }
+        }
+
+        public void BuildFromUT(Double UT)
+        {
+            KSPTime timeTemp = new KSPTime(UT);
+            if (TimeEntryPrecision >= TimeEntryFieldsEnum.Years)
+                Years = timeTemp.Year.ToString();
+            else
+                Years = "0";
+
+            if (TimeEntryPrecision > TimeEntryFieldsEnum.Days)
+                Days = timeTemp.Day.ToString();
+            else if (TimeEntryPrecision == TimeEntryFieldsEnum.Days)
+                Days = ((timeTemp.Year * timeTemp.DaysPerYear) + timeTemp.Day).ToString();
+            else
+                Days = "0";
+
+            if (TimeEntryPrecision > TimeEntryFieldsEnum.Hours)
+                Hours = timeTemp.Hour.ToString();
+            else if (TimeEntryPrecision == TimeEntryFieldsEnum.Hours)
+                Hours = ((timeTemp.Year * timeTemp.HoursPerYear) + (timeTemp.Day * timeTemp.HoursPerDay) + timeTemp.Hour).ToString();
+            else
+                Hours = "0";
+
+            Minutes = timeTemp.Minute.ToString();
+            Seconds = timeTemp.Second.ToString();
+        }
+
+        public double UT
+        {
+            get
+            {
+                return KSPTime.BuildUTFromRaw(
+                    ZeroString(Years),
+                    ZeroString(Days),
+                    ZeroString(Hours),
+                    ZeroString(Minutes),
+                    ZeroString(Seconds)
+                    );
+            }
+        }
+        private String ZeroString(String strInput)
+        {
+            Double dblTemp;
+            if (!Double.TryParse(strInput, out dblTemp))
+                return "0";
+            else
+                return strInput;
+        }
+    }
 }
