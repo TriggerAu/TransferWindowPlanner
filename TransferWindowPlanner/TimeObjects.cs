@@ -256,9 +256,11 @@ namespace TransferWindowPlanner
         }
 
         #region Static Properties
-        public Double HoursPerDay { get { return GameSettings.KERBIN_TIME ? HoursPerDayKerbin : HoursPerDayEarth; } }
-        public Double HoursPerYear { get { return GameSettings.KERBIN_TIME ? HoursPerYearKerbin : HoursPerYearEarth; } }
-        public Double DaysPerYear { get { return HoursPerYear / HoursPerDay; } }
+        public static Double HoursPerDay { get { return GameSettings.KERBIN_TIME ? HoursPerDayKerbin : HoursPerDayEarth; } }
+        public static Double SecondsPerDay { get { return HoursPerDay * 60 * 60; } }
+        public static Double HoursPerYear { get { return GameSettings.KERBIN_TIME ? HoursPerYearKerbin : HoursPerYearEarth; } }
+        public static Double DaysPerYear { get { return HoursPerYear / HoursPerDay; } }
+        public static Double SecondsPerYear { get { return HoursPerYear * 60 * 60; } }
         #endregion
 
         #region "Static Functions"
