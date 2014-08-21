@@ -42,6 +42,8 @@ namespace TransferWindowPlanner
         {
             LogFormatted("Destroying the TransferWindowPlanner (TWP)");
 
+            windowMain.bw.CancelAsync();
+
             RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
         }

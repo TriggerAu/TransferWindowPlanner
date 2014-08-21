@@ -331,8 +331,13 @@ namespace TransferWindowPlanner
                 DrawResourceBar(new Rect(350, 180, 280, 20), (Single)workingpercent);
             if (Done)
             {
-                GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
-                GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
+                //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
+                //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
+                GUI.Box(new Rect(340, 50, PlotWidth+6, PlotHeight+6), Resources.texPorkChopAxis,new GUIStyle());
+                GUI.Box(new Rect(346, 50, PlotWidth, PlotHeight), texPlotArea, new GUIStyle());
+
+
+                GUI.Box(new Rect(340 + (PlotWidth+6) +20 , 50, 20, PlotHeight), "", Styles.stylePlotLegendImage);
             }
 
             GUILayout.EndHorizontal();
@@ -350,7 +355,7 @@ namespace TransferWindowPlanner
         internal Double workingpercent = 0;
 
 
-        BackgroundWorker bw;
+        internal BackgroundWorker bw;
 
         private void SetWorkerVariables()
         {
@@ -360,8 +365,8 @@ namespace TransferWindowPlanner
             TravelMin = KSPTime.BuildUTFromRaw("0", strTravelMinDays, "0", "0", "0");
             TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
             TravelRange = TravelMax - TravelMin;
-            dblOrbitDestinationAltitude = Convert.ToDouble(strArrivalAltitude)*1000;
-            dblOrbitOriginAltitude = Convert.ToDouble(strDepartureAltitude)*1000;
+            FinalOrbitAltitide = Convert.ToDouble(strArrivalAltitude)*1000;
+            InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude)*1000;
 
             xResolution = DepartureRange / PlotWidth;
             yResolution = TravelRange / PlotHeight;
@@ -370,7 +375,7 @@ namespace TransferWindowPlanner
 
         }
         Double xResolution, yResolution;
-        Int32 PlotWidth = 300, PlotHeight = 300;
+        Int32 PlotWidth = 308, PlotHeight = 308;
         Double[] DeltaVs;
 
         private void SetWindowStrings(){
@@ -388,8 +393,8 @@ namespace TransferWindowPlanner
             kTime.UT = TravelMax;
             strTravelMaxDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
 
-            strArrivalAltitude = (dblOrbitOriginAltitude/1000).ToString();
-            strDepartureAltitude = (dblOrbitDestinationAltitude/1000).ToString();
+            strArrivalAltitude = (InitialOrbitAltitude/1000).ToString();
+            strDepartureAltitude = (FinalOrbitAltitide/1000).ToString();
         }
 
         private void StartWorker()
@@ -400,104 +405,12 @@ namespace TransferWindowPlanner
             Running = true;
             Done = false;
             bw = new BackgroundWorker();
-            bw.DoWork += bw_DoWork;
-            bw.RunWorkerCompleted += bw_RunWorkerCompleted;
+            bw.DoWork += bw_GeneratePorkchop;
+            bw.RunWorkerCompleted += bw_GeneratePorkchopCompleted;
 
             bw.RunWorkerAsync();
         }
 
-        void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            Running = false;
-            Done = true;
-        }
-
-        void bw_DoWork(object sender, DoWorkEventArgs e)
-        {
-            Double logDeltaV,sumlogDeltaV=0,sumSqLogDeltaV=0;
-            Double maxDeltaV=0,minDeltaV=Double.MaxValue;
-
-            //Loop through getting the DeltaV's
-            Int32 iCurrent=0;
-            LogFormatted("Generating DeltaV Values");
-            for (int y = 0; y < PlotHeight; y++)
-            {
-                LogFormatted("{0:0.000}-{1}", workingpercent,iCurrent);
-                for (int x = 0; x < PlotWidth; x++)
-                {
-                    iCurrent =(int)(y*PlotHeight+x) ;
-
-                    DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureMin + ((Double)x * xResolution), TravelMin + ((Double)y * yResolution), dblOrbitOriginAltitude, dblOrbitDestinationAltitude);
-
-                    if (DeltaVs[iCurrent]>maxDeltaV)
-                        maxDeltaV = DeltaVs[iCurrent];
-                    if (DeltaVs[iCurrent]<minDeltaV)
-                        minDeltaV = DeltaVs[iCurrent];
-
-                    logDeltaV=Math.Log(DeltaVs[iCurrent]);
-                    sumlogDeltaV += logDeltaV;
-                    sumSqLogDeltaV += logDeltaV * logDeltaV;
-
-                    workingpercent = (Double)iCurrent / (Double)(PlotHeight * PlotWidth);
-                }
-            }
-
-            String File = "";
-            for (int y = 0; y < PlotHeight; y++)
-            {
-                String strline = "";
-                for (int x = 0; x < PlotWidth; x++)
-                {
-                    iCurrent = (int)(y * PlotHeight + x);
-                    strline += String.Format("{0:0},", DeltaVs[iCurrent]);
-                }
-                File += strline + "\r\n";
-            }
-            System.IO.File.WriteAllText("D:/~Games/KSP_win_PluginTest_Minimal/GameData/TriggerTech/TransferWindowPlanner/DeltaV.csv", File);
-            //Now Draw the texture
-
-            List<Color> DeltaVColorPalette = new List<Color>();
-            for (int i = 64; i <= 68 ; i++)
-			    DeltaVColorPalette.Add(new Color32(64,(byte)i,255,255));
-            for (int i = 133; i <= 255 ; i++)
-                DeltaVColorPalette.Add(new Color32(128, (byte)i, 255, 255));
-            for (int i = 255; i >= 128 ; i--)
-                DeltaVColorPalette.Add(new Color32(128, 255, (byte)i, 255));
-            for (int i = 128; i <= 255 ; i++)
-                DeltaVColorPalette.Add(new Color32((byte)i, 255, 128, 255));
-            for (int i = 255; i >= 128 ; i--)
-                DeltaVColorPalette.Add(new Color32(255, (byte)i, 128, 255));
-
-            Double logMinDeltaV = Math.Log(DeltaVs.Min());
-            Double mean = sumlogDeltaV / DeltaVs.Length;
-            Double stddev = Math.Sqrt(sumSqLogDeltaV/DeltaVs.Length - mean * mean);
-            Double logMaxDeltaV = Math.Min(Math.Log(maxDeltaV),mean + 2 * stddev);
-
-            Texture2D texPalette = new Texture2D(1, 512);
-            for (int i = 0; i < DeltaVColorPalette.Count; i++)
-            {
-                texPalette.SetPixel(1, i,DeltaVColorPalette[i]);
-            }
-            texPalette.Apply();
-            Byte[] PNG = texPalette.EncodeToPNG();
-            System.IO.File.WriteAllBytes("D:/~Games/KSP_win_PluginTest_Minimal/GameData/TriggerTech/TransferWindowPlanner/DeltaVPalette.png", PNG);
-
-            LogFormatted("Placing Colors on texture");
-            texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
-            for (int y = 0; y < PlotHeight; y++)
-            {
-                for (int x = 0; x < PlotWidth; x++)
-                {
-                    iCurrent =(int)(y*PlotHeight+x) ;
-                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                    double relativeDeltaV = (logDeltaV-logMinDeltaV) / ( logMaxDeltaV - logMinDeltaV);
-                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)),DeltaVColorPalette.Count-1);
-                    texPlotArea.SetPixel(x, y, DeltaVColorPalette[ColorIndex]);
-                }
-            }
-            texPlotArea.Apply();
-        }
-        Texture2D texPlotArea;
 
         internal static Boolean DrawResourceBar(Rect rectBar, Single percentage)
         {

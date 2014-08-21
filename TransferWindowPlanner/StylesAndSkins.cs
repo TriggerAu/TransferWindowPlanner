@@ -40,16 +40,10 @@ namespace TransferWindowPlanner
         internal static GUIStyle styleBarBlue;
         internal static GUIStyle styleBarBlue_Back;
         internal static GUIStyle styleBarBlue_Thin;
-        //internal static GUIStyle styleBarGreen;
-        //internal static GUIStyle styleBarGreen_Back;
-        //internal static GUIStyle styleBarGreen_Thin;
 
-        //internal static GUIStyle styleBarText;
-        //internal static GUIStyle styleBarRateText;
+        internal static GUIStyle stylePlotLegendImage;
+        internal static GUIStyle stylePlotLegendText;
 
-        //internal static GUIStyle styleBarHighlight;
-        //internal static GUIStyle styleBarHighlightGreen;
-        //internal static GUIStyle styleBarHighlightRed;
 
         internal static GUIStyle styleText;
 
@@ -191,6 +185,10 @@ namespace TransferWindowPlanner
             styleBarBlue_Back.normal.background = Resources.texBarBlue_Back;
             styleBarBlue_Thin = new GUIStyle(styleBarBlue);
             styleBarBlue_Thin.border = new RectOffset(0, 0, 0, 0);
+
+            stylePlotLegendImage = new GUIStyle();
+            
+
 
             styleText = new GUIStyle(SkinsLibrary.DefUnitySkin.label);
             styleText.fontSize = 12;
