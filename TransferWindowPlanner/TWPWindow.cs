@@ -27,6 +27,8 @@ namespace TransferWindowPlanner
         CelestialBody cbStar = null;
         List<cbItem> lstBodies = new List<cbItem>();
 
+        Vector2 PlotPosition = new Vector2(340, 50);
+
         internal override void Awake()
         {
             foreach (CelestialBody item in FlightGlobals.Bodies)
@@ -333,11 +335,47 @@ namespace TransferWindowPlanner
             {
                 //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
                 //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
-                GUI.Box(new Rect(340, 50, PlotWidth+6, PlotHeight+6), Resources.texPorkChopAxis,new GUIStyle());
-                GUI.Box(new Rect(346, 50, PlotWidth, PlotHeight), texPlotArea, new GUIStyle());
+                GUI.Box(new Rect(PlotPosition.x - 6, PlotPosition.y, PlotWidth+6, PlotHeight+6), Resources.texPorkChopAxis,new GUIStyle());
+                GUI.Box(new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight), texPlotArea, new GUIStyle());
 
 
-                GUI.Box(new Rect(340 + (PlotWidth+6) +20 , 50, 20, PlotHeight), "", Styles.stylePlotLegendImage);
+                //Draw the axis labels
+
+                //have to rotate the GUI for the y labels
+                Matrix4x4 matrixBackup = GUI.matrix;
+                //rotate the GUI Frame of reference
+                GUIUtility.RotateAroundPivot(90, new Vector2(Screen.height/2,Screen.width/2)); 
+                //draw the axis label
+                GUI.Label(new Rect((Single)(PlotPosition.x - 80), (Single)(PlotPosition.y), 10, PlotHeight), "Travel Days", Styles.stylePlotYLabel);
+                //reset rotation
+                GUI.matrix = matrixBackup;
+                //Y Axis
+                for (Double i = 0; i <= 1; i += 0.25) {
+                    GUI.Label(new Rect((Single)(PlotPosition.x - 65), (Single)(PlotPosition.y + (i * PlotHeight)-5), 40, 10), String.Format("{0:0}", TravelMin + i * TravelRange), Styles.stylePlotYText);
+                }
+
+                //XAxis
+                GUI.Label(new Rect((Single)(PlotPosition.x),(Single)(PlotPosition.y + PlotHeight +20),PlotWidth,10),"Departure Date",Styles.stylePlotXLabel);
+                for (Double i = 0; i <= 1; i += 0.25) {
+                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 20), (Single)(PlotPosition.y + PlotHeight + 5), 40, 10), String.Format("{0:0}", DepartureMin + i * DepartureRange), Styles.stylePlotXText);
+                }
+
+                //Draw the DeltaV Legend
+                GUI.Box(new Rect(PlotPosition.x + PlotWidth + 40, PlotPosition.y, 20, PlotHeight), "", Styles.stylePlotLegendImage);
+                //m/s values based on min max
+                for (Double i = 0; i <=1; i+=0.25) {
+                    Double tmpDeltaV = Math.Exp(i * (logMaxDeltaV - logMinDeltaV) + logMinDeltaV);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + PlotWidth + 65), (Single)(PlotPosition.y + (1.0 - i) * PlotHeight), 40, 10), String.Format("{0}m/s", tmpDeltaV), Styles.stylePlotLegendText);
+                }
+
+                //Draw the hover over cross
+                if (new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight).Contains(Event.current.mousePosition)) {
+
+                }
+
+                //Draw the selected position indicator
+
+                //Draw the selected DeltaV Bar
             }
 
             GUILayout.EndHorizontal();
@@ -350,6 +388,9 @@ namespace TransferWindowPlanner
             pos += orbit.referenceBody.position;
             return pos;
         }
+
+
+
         internal Boolean Running = false;
         internal Boolean Done = false;
         internal Double workingpercent = 0;

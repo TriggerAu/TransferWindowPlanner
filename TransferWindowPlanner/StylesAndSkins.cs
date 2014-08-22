@@ -42,8 +42,8 @@ namespace TransferWindowPlanner
         internal static GUIStyle styleBarBlue_Thin;
 
         internal static GUIStyle stylePlotLegendImage;
-        internal static GUIStyle stylePlotLegendText;
-
+        internal static GUIStyle stylePlotText,stylePlotLegendText;
+        internal static GUIStyle stylePlotXText, stylePlotYText, stylePlotXLabel, stylePlotYLabel;
 
         internal static GUIStyle styleText;
 
@@ -186,10 +186,6 @@ namespace TransferWindowPlanner
             styleBarBlue_Thin = new GUIStyle(styleBarBlue);
             styleBarBlue_Thin.border = new RectOffset(0, 0, 0, 0);
 
-            stylePlotLegendImage = new GUIStyle();
-            
-
-
             styleText = new GUIStyle(SkinsLibrary.DefUnitySkin.label);
             styleText.fontSize = 12;
             styleText.alignment = TextAnchor.MiddleLeft;
@@ -223,6 +219,18 @@ namespace TransferWindowPlanner
 
             styleTextFieldError = new GUIStyle(styleTextField);
             styleTextFieldError.normal.textColor = Color.red;
+
+            stylePlotLegendImage = new GUIStyle();
+            stylePlotText = new GUIStyle(styleText);
+            stylePlotText.fontSize = 10;
+            stylePlotText.alignment = TextAnchor.MiddleCenter;
+            stylePlotLegendText = new GUIStyle(stylePlotText);
+            stylePlotXText = new GUIStyle(stylePlotText);
+            stylePlotYText = new GUIStyle(stylePlotText);
+            stylePlotYText.alignment = TextAnchor.MiddleRight;
+            stylePlotXLabel = new GUIStyle(stylePlotText);
+            stylePlotYLabel = new GUIStyle(stylePlotText);
+            
 
             styleToggle = new GUIStyle(HighLogic.Skin.toggle);
             styleToggle.normal.textColor = new Color(207, 207, 207);

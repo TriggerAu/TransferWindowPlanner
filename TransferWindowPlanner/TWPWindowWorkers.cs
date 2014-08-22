@@ -73,6 +73,7 @@ namespace TransferWindowPlanner
         Texture2D texPlotArea=null, texDeltaVPalette=null;
         List<Color> DeltaVColorPalette = null;
 
+        Double logMinDeltaV, logMaxDeltaV;
         void bw_GeneratePorkchop(object sender, DoWorkEventArgs e)
         {
             Double logDeltaV, sumlogDeltaV = 0, sumSqLogDeltaV = 0;
@@ -128,10 +129,10 @@ namespace TransferWindowPlanner
             
             //Now Draw the texture
             LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
-            Double logMinDeltaV = Math.Log(DeltaVs.Min());
+            logMinDeltaV = Math.Log(DeltaVs.Min());
             Double mean = sumlogDeltaV / DeltaVs.Length;
             Double stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
-            Double logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
+            logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
 
             LogFormatted("Placing Colors on texture");
             texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
