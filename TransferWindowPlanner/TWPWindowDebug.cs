@@ -68,8 +68,8 @@ namespace TransferWindowPlanner
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
-        public Int32 intTest1 = 0;
-        public Int32 intTest2 = 0;
+        public Int32 intTest1 = 455;
+        public Int32 intTest2 = 185;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
         public Int32 intTest5 = 0;
@@ -92,6 +92,10 @@ namespace TransferWindowPlanner
                 if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
                 if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
 
+                DrawLabel("Mouse:{0}", mbTWP.windowMain.vectMouse);
+                DrawLabel("Plot:{0}", new Rect(mbTWP.windowMain.PlotPosition.x, mbTWP.windowMain.PlotPosition.y, mbTWP.windowMain.PlotWidth, mbTWP.windowMain.PlotHeight));
+                DrawLabel("Selected:{0}", mbTWP.windowMain.vectSelected);
+
                 //DrawLabel("Padding:{0}", SkinsLibrary.CurrentSkin.window.padding);
                 //DrawLabel("Margin:{0}", SkinsLibrary.CurrentSkin.window.margin);
                 //DrawLabel("Border:{0}", SkinsLibrary.CurrentSkin.window.border);
@@ -100,41 +104,41 @@ namespace TransferWindowPlanner
                 //DrawLabel("Margin:{0}", SkinsLibrary.DefKSPSkin.window.margin);
                 //DrawLabel("Border:{0}", SkinsLibrary.DefKSPSkin.window.border);
 
-                CelestialBody cbK = FlightGlobals.Bodies[0];
-                CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
-                CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
+                //CelestialBody cbK = FlightGlobals.Bodies[0];
+                //CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
+                //CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
 
-                //This is the frame of Reference rotation that is occuring
-                QuaternionD Rot = Planetarium.ZupRotation;
-                DrawLabel("Rotation:{0}", Rot);
+                ////This is the frame of Reference rotation that is occuring
+                //QuaternionD Rot = Planetarium.ZupRotation;
+                //DrawLabel("Rotation:{0}", Rot);
 
-                DrawLabel("Kerbin");
-                DrawLabel("True Anomaly:{0}", cbO.orbit.trueAnomaly);
-                DrawLabel("True Anomaly at 0:{0}", cbO.orbit.TrueAnomalyAtUT(0));
-                DrawLabel("True Anomaly at first:{0}", cbO.orbit.TrueAnomalyAtUT(intTest1));
-                DrawLabel("Velocity at first:{0}", cbO.orbit.getOrbitalVelocityAtUT(intTest1).magnitude);
-                DrawLabel("Velocity at first:{0}", cbO.orbit.getOrbitalVelocityAtUT(intTest1));
-                DrawLabel("Pos at firstT:{0}", cbO.orbit.getRelativePositionAtUT(intTest1).magnitude);
+                //DrawLabel("Kerbin");
+                //DrawLabel("True Anomaly:{0}", cbO.orbit.trueAnomaly);
+                //DrawLabel("True Anomaly at 0:{0}", cbO.orbit.TrueAnomalyAtUT(0));
+                //DrawLabel("True Anomaly at first:{0}", cbO.orbit.TrueAnomalyAtUT(intTest1));
+                //DrawLabel("Velocity at first:{0}", cbO.orbit.getOrbitalVelocityAtUT(intTest1).magnitude);
+                //DrawLabel("Velocity at first:{0}", cbO.orbit.getOrbitalVelocityAtUT(intTest1));
+                //DrawLabel("Pos at firstT:{0}", cbO.orbit.getRelativePositionAtUT(intTest1).magnitude);
 
-                //We have to remove the frame of ref rotation to get static values to plot
-                DrawLabel("Pos at firstT:{0}", Quaternion.Inverse(Rot) * cbO.orbit.getRelativePositionAtUT(intTest1));
-                //DrawLabel("Pos at firstUT:{0}", cbO.orbit.getRelativePositionAtT(intTest1));
+                ////We have to remove the frame of ref rotation to get static values to plot
+                //DrawLabel("Pos at firstT:{0}", Quaternion.Inverse(Rot) * cbO.orbit.getRelativePositionAtUT(intTest1));
+                ////DrawLabel("Pos at firstUT:{0}", cbO.orbit.getRelativePositionAtT(intTest1));
 
-                DrawLabel("AbsPos at firstUT:{0}", cbO.orbit.getPositionAtUT(intTest1));
+                //DrawLabel("AbsPos at firstUT:{0}", cbO.orbit.getPositionAtUT(intTest1));
 
-                DrawLabel("Duna");
-                DrawLabel("True Anomaly:{0}", cbD.orbit.trueAnomaly);
-                DrawLabel("True Anomaly at 0:{0}", cbD.orbit.TrueAnomalyAtUT(0));
-                DrawLabel("True Anomaly at first:{0}", cbD.orbit.TrueAnomalyAtUT(intTest1));
-                DrawLabel("Velocity at first:{0}", cbD.orbit.getOrbitalVelocityAtUT(intTest1).magnitude);
-                DrawLabel("Velocity at first:{0}", cbD.orbit.getOrbitalVelocityAtUT(intTest1));
-                DrawLabel("Pos at firstT:{0}", cbD.orbit.getRelativePositionAtUT(intTest1).magnitude);
+                //DrawLabel("Duna");
+                //DrawLabel("True Anomaly:{0}", cbD.orbit.trueAnomaly);
+                //DrawLabel("True Anomaly at 0:{0}", cbD.orbit.TrueAnomalyAtUT(0));
+                //DrawLabel("True Anomaly at first:{0}", cbD.orbit.TrueAnomalyAtUT(intTest1));
+                //DrawLabel("Velocity at first:{0}", cbD.orbit.getOrbitalVelocityAtUT(intTest1).magnitude);
+                //DrawLabel("Velocity at first:{0}", cbD.orbit.getOrbitalVelocityAtUT(intTest1));
+                //DrawLabel("Pos at firstT:{0}", cbD.orbit.getRelativePositionAtUT(intTest1).magnitude);
 
-                //We have to remove the frame of ref rotation to get static values to plot
-                DrawLabel("Pos at firstT:{0}", Quaternion.Inverse(Rot) * cbD.orbit.getRelativePositionAtUT(intTest1));
-                //DrawLabel("Pos at firstUT:{0}", cbD.orbit.getRelativePositionAtT(intTest1));
+                ////We have to remove the frame of ref rotation to get static values to plot
+                //DrawLabel("Pos at firstT:{0}", Quaternion.Inverse(Rot) * cbD.orbit.getRelativePositionAtUT(intTest1));
+                ////DrawLabel("Pos at firstUT:{0}", cbD.orbit.getRelativePositionAtT(intTest1));
 
-                DrawLabel("AbsPos at firstUT:{0}", cbD.orbit.getPositionAtUT(intTest1));
+                //DrawLabel("AbsPos at firstUT:{0}", cbD.orbit.getPositionAtUT(intTest1));
 
 
                 

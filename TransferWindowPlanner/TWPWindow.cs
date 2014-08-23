@@ -27,7 +27,7 @@ namespace TransferWindowPlanner
         CelestialBody cbStar = null;
         List<cbItem> lstBodies = new List<cbItem>();
 
-        Vector2 PlotPosition = new Vector2(340, 50);
+        internal Vector2 PlotPosition = new Vector2(360, 50);
 
         internal override void Awake()
         {
@@ -209,14 +209,14 @@ namespace TransferWindowPlanner
             //ddlXferType.DrawButton();
 
 
-            DrawLabel("DepartureMin:{0}", DepartureMin);
-            DrawLabel("DepartureRange:{0}", DepartureRange);
-            DrawLabel("DepartureMax:{0}", DepartureMax);
-            DrawLabel("TravelMin:{0}", TravelMin);
-            DrawLabel("TravelMax:{0}", TravelMax);
+            //DrawLabel("DepartureMin:{0}", DepartureMin);
+            //DrawLabel("DepartureRange:{0}", DepartureRange);
+            //DrawLabel("DepartureMax:{0}", DepartureMax);
+            //DrawLabel("TravelMin:{0}", TravelMin);
+            //DrawLabel("TravelMax:{0}", TravelMax);
 
-            DrawLabel("Hohmann:{0}", hohmannTransferTime);
-            DrawLabel("synodic:{0}", synodicPeriod);
+            //DrawLabel("Hohmann:{0}", hohmannTransferTime);
+            //DrawLabel("synodic:{0}", synodicPeriod);
 
             //DrawLabel("Ktime:{0}", kTime.DateString());
             
@@ -344,34 +344,45 @@ namespace TransferWindowPlanner
                 //have to rotate the GUI for the y labels
                 Matrix4x4 matrixBackup = GUI.matrix;
                 //rotate the GUI Frame of reference
-                GUIUtility.RotateAroundPivot(90, new Vector2(Screen.height/2,Screen.width/2)); 
+                GUIUtility.RotateAroundPivot(-90, new Vector2(mbTWP.windowDebug.intTest1, mbTWP.windowDebug.intTest2)); 
                 //draw the axis label
-                GUI.Label(new Rect((Single)(PlotPosition.x - 80), (Single)(PlotPosition.y), 10, PlotHeight), "Travel Days", Styles.stylePlotYLabel);
+                GUI.Label(new Rect((Single)(PlotPosition.x - 80), (Single)(PlotPosition.y), PlotHeight,15), "Travel Days", Styles.stylePlotYLabel);
                 //reset rotation
                 GUI.matrix = matrixBackup;
                 //Y Axis
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x - 65), (Single)(PlotPosition.y + (i * PlotHeight)-5), 40, 10), String.Format("{0:0}", TravelMin + i * TravelRange), Styles.stylePlotYText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight-3))-5), 40, 15), String.Format("{0:0}", (TravelMin + (1-i) * TravelRange)/(KSPTime.SecondsPerDay)), Styles.stylePlotYText);
                 }
 
                 //XAxis
-                GUI.Label(new Rect((Single)(PlotPosition.x),(Single)(PlotPosition.y + PlotHeight +20),PlotWidth,10),"Departure Date",Styles.stylePlotXLabel);
+                GUI.Label(new Rect((Single)(PlotPosition.x),(Single)(PlotPosition.y + PlotHeight +20),PlotWidth,15),"Departure Date",Styles.stylePlotXLabel);
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 20), (Single)(PlotPosition.y + PlotHeight + 5), 40, 10), String.Format("{0:0}", DepartureMin + i * DepartureRange), Styles.stylePlotXText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (DepartureMin + i * DepartureRange)/(KSPTime.SecondsPerDay)), Styles.stylePlotXText);
                 }
 
                 //Draw the DeltaV Legend
+                //Δv
                 GUI.Box(new Rect(PlotPosition.x + PlotWidth + 40, PlotPosition.y, 20, PlotHeight), "", Styles.stylePlotLegendImage);
+                GUI.Label(new Rect(PlotPosition.x + PlotWidth + 40, PlotPosition.y-15, 40, 15), "Δv (m/s)", Styles.stylePlotXLabel);
                 //m/s values based on min max
                 for (Double i = 0; i <=1; i+=0.25) {
                     Double tmpDeltaV = Math.Exp(i * (logMaxDeltaV - logMinDeltaV) + logMinDeltaV);
-                    GUI.Label(new Rect((Single)(PlotPosition.x + PlotWidth + 65), (Single)(PlotPosition.y + (1.0 - i) * PlotHeight), 40, 10), String.Format("{0}m/s", tmpDeltaV), Styles.stylePlotLegendText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + PlotWidth + 65), (Single)(PlotPosition.y + (1.0 - i) * (PlotHeight-5) - 5), 40, 15), String.Format("{0:0}", tmpDeltaV), Styles.stylePlotLegendText);
                 }
 
+                vectMouse=Event.current.mousePosition;
                 //Draw the hover over cross
-                if (new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight).Contains(Event.current.mousePosition)) {
+                if (new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight).Contains(vectMouse)) {
+                    GUI.Box(new Rect(vectMouse.x, PlotPosition.y, 1, PlotHeight), "", Styles.stylePlotCrossHair);
+                    GUI.Box(new Rect(PlotPosition.x, vectMouse.y, PlotWidth, 1), "", Styles.stylePlotCrossHair);
 
+                    if (Event.current.button == 0)
+                    {
+                        vectSelected = new Vector2(vectMouse.x,vectMouse.y);
+
+                    }
                 }
+
 
                 //Draw the selected position indicator
 
@@ -381,6 +392,9 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
 
         }
+        internal Vector2 vectMouse;
+        internal Vector2 vectSelected;
+        internal Double DepartureSelected,TravelSelected;
 
         internal static Vector3d getAbsolutePositionAtUT(Orbit orbit, double UT)
         {
@@ -416,7 +430,7 @@ namespace TransferWindowPlanner
 
         }
         Double xResolution, yResolution;
-        Int32 PlotWidth = 308, PlotHeight = 308;
+        internal Int32 PlotWidth = 308, PlotHeight = 308;
         Double[] DeltaVs;
 
         private void SetWindowStrings(){

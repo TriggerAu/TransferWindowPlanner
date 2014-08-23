@@ -45,6 +45,10 @@ namespace TransferWindowPlanner
         internal static GUIStyle stylePlotText,stylePlotLegendText;
         internal static GUIStyle stylePlotXText, stylePlotYText, stylePlotXLabel, stylePlotYLabel;
 
+        internal static GUIStyle stylePlotCrossHair;
+
+        internal static GUIStyle stylePlotTransferMarker, stylePlotTransferMarkerXAxis, stylePlotTransferMarkerYAxis, stylePlotTransferMarkerDV;
+
         internal static GUIStyle styleText;
 
         internal static GUIStyle styleTextTitle;
@@ -225,12 +229,17 @@ namespace TransferWindowPlanner
             stylePlotText.fontSize = 10;
             stylePlotText.alignment = TextAnchor.MiddleCenter;
             stylePlotLegendText = new GUIStyle(stylePlotText);
+            stylePlotLegendText.alignment = TextAnchor.MiddleLeft;
             stylePlotXText = new GUIStyle(stylePlotText);
             stylePlotYText = new GUIStyle(stylePlotText);
             stylePlotYText.alignment = TextAnchor.MiddleRight;
             stylePlotXLabel = new GUIStyle(stylePlotText);
+            stylePlotXLabel.fontStyle = FontStyle.BoldAndItalic;
             stylePlotYLabel = new GUIStyle(stylePlotText);
-            
+            stylePlotYLabel.fontStyle = FontStyle.BoldAndItalic;
+
+            stylePlotCrossHair = new GUIStyle();
+            stylePlotCrossHair.normal.background = CreateColorPixel(new Color32(255, 25, 255, 192));
 
             styleToggle = new GUIStyle(HighLogic.Skin.toggle);
             styleToggle.normal.textColor = new Color(207, 207, 207);
