@@ -39,6 +39,11 @@ namespace TransferWindowPlanner
         internal static Texture2D texPorkChopLegend = new Texture2D(20, 300, TextureFormat.ARGB32, false);
         internal static Texture2D texPorkChopExample = new Texture2D(300, 300, TextureFormat.ARGB32, false);
 
+        internal static Texture2D texSelectedXAxis = new Texture2D(9, 9, TextureFormat.ARGB32, false);
+        internal static Texture2D texSelectedYAxis = new Texture2D(9, 9, TextureFormat.ARGB32, false);
+        internal static Texture2D texSelectedDV = new Texture2D(18, 9, TextureFormat.ARGB32, false);
+        internal static Texture2D texSelectedPoint = new Texture2D(16,16, TextureFormat.ARGB32, false);
+
 
         internal static void LoadTextures()
         {
@@ -63,6 +68,10 @@ namespace TransferWindowPlanner
             LoadImageFromFile(ref texPorkChopLegend, "img_PorkChopLegend.png");
             LoadImageFromFile(ref texPorkChopExample, "img_PorkChopExample.png");
 
+            LoadImageFromFile(ref texSelectedXAxis, "img_SelectedXAxis.png");
+            LoadImageFromFile(ref texSelectedYAxis, "img_SelectedYAxis.png");
+            LoadImageFromFile(ref texSelectedDV, "img_SelectedDV.png");
+            LoadImageFromFile(ref texSelectedPoint, "img_SelectedPoint.png");
         }
 
 

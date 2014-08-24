@@ -376,15 +376,28 @@ namespace TransferWindowPlanner
                     GUI.Box(new Rect(vectMouse.x, PlotPosition.y, 1, PlotHeight), "", Styles.stylePlotCrossHair);
                     GUI.Box(new Rect(PlotPosition.x, vectMouse.y, PlotWidth, 1), "", Styles.stylePlotCrossHair);
 
-                    if (Event.current.button == 0)
+                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[(int)((vectMouse.y - PlotPosition.y)*PlotWidth+(vectMouse.x - PlotPosition.x))]), SkinsLibrary.CurrentTooltip);
+
+                    if (Event.current.type== EventType.MouseDown && Event.current.button == 0)
                     {
                         vectSelected = new Vector2(vectMouse.x,vectMouse.y);
+                        DepartureSelected = DepartureMin + (vectMouse.x - PlotPosition.x) * xResolution;
+                        TravelSelected = TravelMax - (vectMouse.y - PlotPosition.y) * yResolution;
+
 
                     }
+
                 }
 
 
                 //Draw the selected position indicator
+                if (DepartureSelected>=0)
+                {
+                    GUI.Box(new Rect(vectSelected.x - 8, vectSelected.y - 8, 16, 16), Resources.texSelectedPoint, new GUIStyle());
+                    GUI.Box(new Rect(PlotPosition.x - 9, vectSelected.y - 5, 9,9), Resources.texSelectedYAxis, new GUIStyle());
+                    GUI.Box(new Rect(vectSelected.x - 5, PlotPosition.y+PlotHeight, 9,9), Resources.texSelectedXAxis, new GUIStyle());
+
+                }
 
                 //Draw the selected DeltaV Bar
             }
@@ -417,9 +430,11 @@ namespace TransferWindowPlanner
             DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
             DepartureMax = KSPTime.BuildUTFromRaw(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
             DepartureRange = DepartureMax - DepartureMin;
+            DepartureSelected = -1;
             TravelMin = KSPTime.BuildUTFromRaw("0", strTravelMinDays, "0", "0", "0");
             TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
             TravelRange = TravelMax - TravelMin;
+            TravelSelected = -1;
             FinalOrbitAltitide = Convert.ToDouble(strArrivalAltitude)*1000;
             InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude)*1000;
 

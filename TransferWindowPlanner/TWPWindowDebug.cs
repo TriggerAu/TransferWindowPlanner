@@ -95,6 +95,7 @@ namespace TransferWindowPlanner
                 DrawLabel("Mouse:{0}", mbTWP.windowMain.vectMouse);
                 DrawLabel("Plot:{0}", new Rect(mbTWP.windowMain.PlotPosition.x, mbTWP.windowMain.PlotPosition.y, mbTWP.windowMain.PlotWidth, mbTWP.windowMain.PlotHeight));
                 DrawLabel("Selected:{0}", mbTWP.windowMain.vectSelected);
+                DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected/KSPTime.SecondsPerDay,mbTWP.windowMain.TravelSelected/KSPTime.SecondsPerDay);
 
                 //DrawLabel("Padding:{0}", SkinsLibrary.CurrentSkin.window.padding);
                 //DrawLabel("Margin:{0}", SkinsLibrary.CurrentSkin.window.margin);
