@@ -376,7 +376,9 @@ namespace TransferWindowPlanner
                     GUI.Box(new Rect(vectMouse.x, PlotPosition.y, 1, PlotHeight), "", Styles.stylePlotCrossHair);
                     GUI.Box(new Rect(PlotPosition.x, vectMouse.y, PlotWidth, 1), "", Styles.stylePlotCrossHair);
 
-                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[(int)((vectMouse.y - PlotPosition.y)*PlotWidth+(vectMouse.x - PlotPosition.x))]), SkinsLibrary.CurrentTooltip);
+                    Int32 iCurrent = (Int32)((vectMouse.y-PlotPosition.y)*yResolution + (vectMouse.x - PlotPosition.x));
+
+                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[iCurrent]), SkinsLibrary.CurrentTooltip);
 
                     if (Event.current.type== EventType.MouseDown && Event.current.button == 0)
                     {
@@ -438,8 +440,9 @@ namespace TransferWindowPlanner
             FinalOrbitAltitide = Convert.ToDouble(strArrivalAltitude)*1000;
             InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude)*1000;
 
-            xResolution = DepartureRange / PlotWidth;
-            yResolution = TravelRange / PlotHeight;
+            // minus 1 so when we loop from for PlotX pixels the last pixel is the actual last value
+            xResolution = DepartureRange / (PlotWidth-1);
+            yResolution = TravelRange / (PlotHeight-1);
 
             DeltaVs = new Double[PlotWidth * PlotHeight];
 

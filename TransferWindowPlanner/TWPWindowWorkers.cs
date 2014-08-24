@@ -91,7 +91,7 @@ namespace TransferWindowPlanner
 
                     //Set the Value for this position to be the DeltaV of this Transfer
                     DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, 
-                        DepartureMin + ((Double)x * xResolution), TravelMin + ((Double)y * yResolution), 
+                        DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution), 
                         InitialOrbitAltitude, FinalOrbitAltitide);
 
                     if (DeltaVs[iCurrent] > maxDeltaV)
@@ -144,7 +144,8 @@ namespace TransferWindowPlanner
                     logDeltaV = Math.Log(DeltaVs[iCurrent]);
                     double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
                     Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
-                    texPlotArea.SetPixel(x, y, DeltaVColorPalette[ColorIndex]);
+                    //Data flows from left->right and top->bottom so need to reverse y (and cater to 0 based) when drawing the texture
+                    texPlotArea.SetPixel(x, (PlotHeight-y-1), DeltaVColorPalette[ColorIndex]);
                 }
             }
             texPlotArea.Apply();
