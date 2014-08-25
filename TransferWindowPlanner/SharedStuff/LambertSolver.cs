@@ -41,6 +41,13 @@ public static class LambertSolver
     public const double Rad2Deg = 180.0d / Math.PI;
     public const double Deg2Rad = Math.PI / 180.0d;
 
+
+    public static double TransferDeltaV(CelestialBody origin, CelestialBody destination, double ut, double dt, double initialOrbitAltitude, double? finalOrbitAltitude)
+    {
+        TransferDetails tmp;
+        return TransferDeltaV(origin, destination, ut, dt, initialOrbitAltitude, finalOrbitAltitude, out tmp);
+    }
+
     /// <summary>
     /// Find the delta-v required for a ballistic transfer from <paramref name="origin"/> to <paramref name="destination"/>,
     /// departing at <paramref name="ut"/> UT, with a time of flight of <paramref name="dt"/> seconds, starting from a circular
@@ -54,7 +61,7 @@ public static class LambertSolver
     /// <param name="dt">The time of flight, in seconds. Must be greater than 0.</param>
     /// <param name="initialOrbitAltitude">The altitude of the initial circular parking orbit. If 0, parking orbit ejection is ignored. Must be greater than or equal to 0.</param>
     /// <param name="finalOrbitAltitude">(Optional) The altitude of the final circular orbit. Must be greater than or equal to 0 if provided.</param>
-    public static double TransferDeltaV(CelestialBody origin, CelestialBody destination, double ut, double dt, double initialOrbitAltitude, double? finalOrbitAltitude)
+    public static double TransferDeltaV(CelestialBody origin, CelestialBody destination, double ut, double dt, double initialOrbitAltitude, double? finalOrbitAltitude, out TransferDetails oTransfer)
     {
         double gravParameter = origin.referenceBody.gravParameter;
         double tA = origin.orbit.TrueAnomalyAtUT(ut);
@@ -82,6 +89,7 @@ public static class LambertSolver
             double ap = r0 * (1 + e) / (1 - e); // Ejection orbit apoapsis
 
             if (ap > 0 && ap <= rsoi) {
+                oTransfer = null;
                 return Double.NaN; // There is no orbit that leaves the SoI with a velocity of ejectionDeltaV
             }
 
@@ -93,6 +101,11 @@ public static class LambertSolver
             }
         }
 
+        oTransfer = new TransferDetails(origin, destination, ut, dt);
+        oTransfer.OriginVelocity = originVelocity;
+        oTransfer.TransferInitalVelocity = velocityAfterEjection;
+        oTransfer.TransferFinalVelocity = velocityBeforeInsertion;
+
         double insertionDeltaV = 0;
         if (finalOrbitAltitude.HasValue) {
             Vector3d destinationVelocity = OrbitVelocityFromTrueAnomaly(destination.orbit, tA);
@@ -102,7 +115,12 @@ public static class LambertSolver
                 double finalOrbitVelocity = Math.Sqrt(destination.gravParameter / (finalOrbitAltitude.Value + destination.Radius));
                 insertionDeltaV = Math.Sqrt(insertionDeltaV * insertionDeltaV + 2 * finalOrbitVelocity * finalOrbitVelocity - 2 * destination.gravParameter / destination.sphereOfInfluence) - finalOrbitVelocity;
             }
+
+            oTransfer.DestinationVelocity = destinationVelocity;
+            oTransfer.InjectionDeltaVector = (velocityBeforeInsertion - destinationVelocity);
+
         }
+
 
         return ejectionDeltaV + insertionDeltaV;
     }
@@ -769,5 +787,39 @@ public static class LambertSolver
 
 		return result;
 	}
+
+
+
+    public class TransferDetails
+    {
+        public TransferDetails(CelestialBody origin, CelestialBody destination, Double ut, Double dt)
+            : this()
+        {
+            this.Origin = origin;
+            this.Destination = destination;
+            this.DepartureTime = ut;
+            this.TravelTime = dt;
+        }
+        public TransferDetails() { }
+
+        public CelestialBody Origin {set;get;}
+        public CelestialBody Destination { get; set; }
+        public Double DepartureTime { get; set; }
+        public Double TravelTime { get; set; }
+
+        public Vector3d OriginVelocity { get; set; }
+        public Vector3d TransferInitalVelocity { get; set; }
+        public Vector3d TransferFinalVelocity { get; set; }
+        public Vector3d DestinationVelocity { get; set; }
+
+        public Vector3d EjectionDeltaVector { get; set; }
+        public Vector3d InjectionDeltaVector { get; set; }
+
+        public double DVEjection { get { return EjectionDeltaVector.magnitude; } }
+        public double DVInjection { get { return InjectionDeltaVector.magnitude; } }
+        public double DVTotal { get { return DVEjection + DVInjection; } }
+        public Double EjectionAngle { get; set; }
+
+    }
 }
 

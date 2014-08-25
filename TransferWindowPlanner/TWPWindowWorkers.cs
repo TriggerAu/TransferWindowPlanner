@@ -74,6 +74,9 @@ namespace TransferWindowPlanner
         List<Color> DeltaVColorPalette = null;
 
         Double logMinDeltaV, logMaxDeltaV;
+
+        Vector2 minDeltaVPoint;
+
         void bw_GeneratePorkchop(object sender, DoWorkEventArgs e)
         {
             Double logDeltaV, sumlogDeltaV = 0, sumSqLogDeltaV = 0;
@@ -96,8 +99,10 @@ namespace TransferWindowPlanner
 
                     if (DeltaVs[iCurrent] > maxDeltaV)
                         maxDeltaV = DeltaVs[iCurrent];
-                    if (DeltaVs[iCurrent] < minDeltaV)
+                    if (DeltaVs[iCurrent] < minDeltaV) {
                         minDeltaV = DeltaVs[iCurrent];
+                        minDeltaVPoint = new Vector2(x, y);
+                    }
 
                     logDeltaV = Math.Log(DeltaVs[iCurrent]);
                     sumlogDeltaV += logDeltaV;
@@ -145,10 +150,17 @@ namespace TransferWindowPlanner
                     double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
                     Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
                     //Data flows from left->right and top->bottom so need to reverse y (and cater to 0 based) when drawing the texture
-                    texPlotArea.SetPixel(x, (PlotHeight-y-1), DeltaVColorPalette[ColorIndex]);
+                    texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
                 }
             }
             texPlotArea.Apply();
+
+            //Set the Best Transfer
+            DepartureSelected = DepartureMin + (minDeltaVPoint.x * xResolution);
+            TravelSelected = TravelMax - (minDeltaVPoint.y * yResolution);
+
+            //Set the details
+            //SetTransferDetails(DepartureSelected, TravelSelected);
         }
 
         private void GenerateDeltaVPalette()
