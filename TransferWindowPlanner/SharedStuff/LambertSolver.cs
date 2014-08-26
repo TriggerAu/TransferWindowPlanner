@@ -104,6 +104,10 @@ public static class LambertSolver
         oTransfer = new TransferDetails(origin, destination, ut, dt);
         oTransfer.OriginVelocity = originVelocity;
         oTransfer.TransferInitalVelocity = velocityAfterEjection;
+        oTransfer.EjectionDeltaVector = ejectionDeltaVector;
+        oTransfer.EjectionDeltaVector.Normalize();
+        oTransfer.EjectionDeltaVector = oTransfer.EjectionDeltaVector * ejectionDeltaV;
+
         oTransfer.TransferFinalVelocity = velocityBeforeInsertion;
 
         double insertionDeltaV = 0;
@@ -118,9 +122,8 @@ public static class LambertSolver
 
             oTransfer.DestinationVelocity = destinationVelocity;
             oTransfer.InjectionDeltaVector = (velocityBeforeInsertion - destinationVelocity);
-
+            oTransfer.InjectionDeltaVector = oTransfer.EjectionDeltaVector.normalized * insertionDeltaV;
         }
-
 
         return ejectionDeltaV + insertionDeltaV;
     }
@@ -807,10 +810,26 @@ public static class LambertSolver
         public Double DepartureTime { get; set; }
         public Double TravelTime { get; set; }
 
+        /// <summary>
+        /// Velocity of the Celestial Origin at Entry Point from Lambert Orbit
+        /// </summary>
         public Vector3d OriginVelocity { get; set; }
+        /// <summary>
+        /// Velocity at Entry point of the Orbit from the Lambert Solver
+        /// </summary>
         public Vector3d TransferInitalVelocity { get; set; }
+        /// <summary>
+        /// Velocity at Exit point of the Orbit from the Lambert Solver
+        /// </summary>
         public Vector3d TransferFinalVelocity { get; set; }
+        /// <summary>
+        /// Velocity of the Celestial Destination at Exit Point from Lambert Orbit
+        /// </summary>
         public Vector3d DestinationVelocity { get; set; }
+
+
+        public Double OriginVesselOrbitalSpeed { get; set; }
+        public Double DestinationVesselOrbitalSpeed { get; set; }
 
         public Vector3d EjectionDeltaVector { get; set; }
         public Vector3d InjectionDeltaVector { get; set; }
