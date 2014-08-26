@@ -376,7 +376,10 @@ namespace TransferWindowPlanner
                     GUI.Box(new Rect(vectMouse.x, PlotPosition.y, 1, PlotHeight), "", Styles.stylePlotCrossHair);
                     GUI.Box(new Rect(PlotPosition.x, vectMouse.y, PlotWidth, 1), "", Styles.stylePlotCrossHair);
 
-                    Int32 iCurrent = (Int32)((vectMouse.y-PlotPosition.y)*yResolution + (vectMouse.x - PlotPosition.x));
+                    //GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", 
+                    //    DeltaVs[(int)((vectMouse.y - PlotPosition.y) * PlotWidth + (vectMouse.x - PlotPosition.x))]), SkinsLibrary.CurrentTooltip);
+
+                    Int32 iCurrent = (Int32)((vectMouse.y-PlotPosition.y)*PlotWidth + (vectMouse.x - PlotPosition.x));
 
                     GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[iCurrent]), SkinsLibrary.CurrentTooltip);
 
@@ -386,6 +389,7 @@ namespace TransferWindowPlanner
                         DepartureSelected = DepartureMin + (vectMouse.x - PlotPosition.x) * xResolution;
                         TravelSelected = TravelMax - (vectMouse.y - PlotPosition.y) * yResolution;
 
+                        LambertSolver.TransferDeltaV(cbOrigin,cbDestination,DepartureSelected,TravelSelected,InitialOrbitAltitude,FinalOrbitAltitide,out TransferSelected);
 
                     }
 
@@ -410,6 +414,7 @@ namespace TransferWindowPlanner
         internal Vector2 vectMouse;
         internal Vector2 vectSelected;
         internal Double DepartureSelected,TravelSelected;
+        internal LambertSolver.TransferDetails TransferSelected;
 
         internal static Vector3d getAbsolutePositionAtUT(Orbit orbit, double UT)
         {

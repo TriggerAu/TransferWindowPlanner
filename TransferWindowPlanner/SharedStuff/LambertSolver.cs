@@ -77,6 +77,7 @@ public static class LambertSolver
         Vector3d velocityAfterEjection = Solve(gravParameter, originPositionAtDeparture, destinationPositionAtArrival, dt, longWay, out velocityBeforeInsertion);
 
         Vector3d ejectionDeltaVector = velocityAfterEjection - originVelocity;
+        double ejectionInclination = 0;
         double ejectionDeltaV = ejectionDeltaVector.magnitude;
         if (initialOrbitAltitude > 0) {
             double mu = origin.gravParameter;
@@ -95,6 +96,7 @@ public static class LambertSolver
 
             if (ejectionDeltaVector.z != 0) {
                 double sinEjectionInclination = ejectionDeltaVector.z / ejectionDeltaV;
+                ejectionInclination = Math.Asin(sinEjectionInclination);
                 ejectionDeltaV = Math.Sqrt(v0 * v0 + v1 * v1 - 2 * v0 * v1 * Math.Sqrt(1 - sinEjectionInclination * sinEjectionInclination));
             } else {
                 ejectionDeltaV = v1 - v0;
@@ -105,15 +107,23 @@ public static class LambertSolver
         oTransfer.OriginVelocity = originVelocity;
         oTransfer.TransferInitalVelocity = velocityAfterEjection;
         oTransfer.EjectionDeltaVector = ejectionDeltaVector;
-        oTransfer.EjectionDeltaVector.Normalize();
-        oTransfer.EjectionDeltaVector = oTransfer.EjectionDeltaVector * ejectionDeltaV;
+        //reset the magnitude of the ejectionDeltaV to include the orbital velocity of the craft
+        oTransfer.EjectionDeltaVector = oTransfer.EjectionDeltaVector.normalized * ejectionDeltaV;
+        oTransfer.EjectionInclination = ejectionInclination;
 
         oTransfer.TransferFinalVelocity = velocityBeforeInsertion;
 
         double insertionDeltaV = 0;
+        double insertionInclination = 0;
         if (finalOrbitAltitude.HasValue) {
             Vector3d destinationVelocity = OrbitVelocityFromTrueAnomaly(destination.orbit, tA);
-            insertionDeltaV = (velocityBeforeInsertion - destinationVelocity).magnitude;
+            Vector3d insertionDeltaVector = velocityBeforeInsertion - destinationVelocity;
+            insertionDeltaV = insertionDeltaVector.magnitude;
+
+            if (insertionDeltaVector.z != 0) {
+                insertionInclination = Math.Asin(insertionDeltaVector.z/insertionDeltaV);
+            }
+
 
             if (finalOrbitAltitude.Value != 0) {
                 double finalOrbitVelocity = Math.Sqrt(destination.gravParameter / (finalOrbitAltitude.Value + destination.Radius));
@@ -123,8 +133,11 @@ public static class LambertSolver
             oTransfer.DestinationVelocity = destinationVelocity;
             oTransfer.InjectionDeltaVector = (velocityBeforeInsertion - destinationVelocity);
             oTransfer.InjectionDeltaVector = oTransfer.EjectionDeltaVector.normalized * insertionDeltaV;
+            oTransfer.InsertionInclination = insertionInclination;
         }
 
+
+        oTransfer.TransferAngle = Math.Acos(Vector3d.Dot(originPositionAtDeparture,destinationPositionAtArrival)/(originPositionAtDeparture.magnitude*destinationPositionAtArrival.magnitude));
         return ejectionDeltaV + insertionDeltaV;
     }
 
@@ -837,8 +850,67 @@ public static class LambertSolver
         public double DVEjection { get { return EjectionDeltaVector.magnitude; } }
         public double DVInjection { get { return InjectionDeltaVector.magnitude; } }
         public double DVTotal { get { return DVEjection + DVInjection; } }
+        
+        public Double TransferAngle { get; set; }
+        public Double EjectionInclination { get; set; }
+        public Double InsertionInclination { get; set; }
+
+
+        public Double EjectionDVNormal { get; set; }
+        public Double EjectionDVPrograde { get; set; }
+        public Double EjectionHeading { get; set; }
+        public Vector3d EjectionVector { get; set; }
         public Double EjectionAngle { get; set; }
 
+        //Need to log each value in here as something is wrong in the DV Values
+        public void CalcEjectionValues(){
+            Double mu = Origin.gravParameter;
+            Double rsoi = Origin.sphereOfInfluence;
+            Double vsoi = EjectionDeltaVector.magnitude;
+            Double v1 = Math.Sqrt(vsoi * vsoi + 2 * TransferInitalVelocity.magnitude * TransferInitalVelocity.magnitude - 2 * mu / rsoi);
+            EjectionDVNormal = v1 * Math.Sin(EjectionInclination);
+            EjectionDVPrograde = v1 * Math.Cos(EjectionInclination) - TransferInitalVelocity.magnitude;
+            EjectionHeading = Math.Atan2(EjectionDVPrograde, EjectionDVNormal);
+            
+            Double initialOrbitRadius = mu / (TransferInitalVelocity.magnitude * TransferInitalVelocity.magnitude);
+            Double e = initialOrbitRadius * v1 * v1 / mu - 1;
+            Double a = initialOrbitRadius / (1 - e);
+            Double theta = Math.Acos((a * (1 - e * e) - rsoi) / (e * rsoi));
+            theta += Math.Asin(v1 * initialOrbitRadius / (vsoi * rsoi));
+            EjectionAngle = EjectionAngleCalc(EjectionDeltaVector, theta, OriginVelocity.normalized);
+            //EjectionAngle = Math.Acos(Vector3d.Dot(EjectionVector.normalized, OriginVelocity.normalized) / (EjectionVector.normalized.magnitude * OriginVelocity.normalized.magnitude));
+        }
+
+        //log em all in here too
+        private Double EjectionAngleCalc(Vector3d vsoi, Double theta, Vector3d prograde)
+        {
+            Double  a, ax, ay, az, b, c, cosTheta, g, q, vx, vy;
+
+            Vector3d _ref = vsoi.normalized;
+            ax = _ref.x; ay = _ref.y; az = _ref.z;
+            cosTheta = Math.Cos(theta);
+            g = -ax / ay;
+            a = 1 + g * g;
+            b = 2 * g * cosTheta / ay;
+            c = cosTheta * cosTheta / (ay * ay) - 1;
+            if (b < 0) {
+              q = -0.5 * (b - Math.Sqrt(b * b - 4 * a * c));
+            } else {
+              q = -0.5 * (b + Math.Sqrt(b * b - 4 * a * c));
+            }
+            vx = q / a;
+            vy = g * vx + cosTheta / ay;
+            if (Math.Sign(Vector3d.Cross(new Vector3d(vx, vy, 0), new Vector3d(ax, ay, az))[2]) != Math.Sign(Math.PI - theta)) {
+              vx = c / q;
+              vy = g * vx + cosTheta / ay;
+            }
+            prograde = new Vector3d(prograde.x, prograde.y, 0);
+            if (Vector3d.Cross(new Vector3d(vx, vy, 0), prograde).z < 0) {
+              return (TwoPi) - Math.Acos(Vector3d.Dot(new Vector3d(vx, vy, 0), prograde));
+            } else {
+            return Math.Acos(Vector3d.Dot(new Vector3d(vx, vy, 0), prograde));
+            }        
+        }
     }
 }
 

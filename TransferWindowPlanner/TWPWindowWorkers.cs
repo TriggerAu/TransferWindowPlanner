@@ -128,6 +128,8 @@ namespace TransferWindowPlanner
             System.IO.File.WriteAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin), File);
 #endif
 
+            //Need to move this texure stuff back on to the main thread - set a flag so we know whats done
+
             //Ensure we have a palette of colors to draw the porkchop
             if (texDeltaVPalette == null || DeltaVColorPalette==null)
                 GenerateDeltaVPalette();
@@ -158,7 +160,9 @@ namespace TransferWindowPlanner
             //Set the Best Transfer
             DepartureSelected = DepartureMin + (minDeltaVPoint.x * xResolution);
             TravelSelected = TravelMax - (minDeltaVPoint.y * yResolution);
-
+            vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
+            LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitide, out TransferSelected);
+            TransferSelected.CalcEjectionValues();
             //Set the details
             //SetTransferDetails(DepartureSelected, TravelSelected);
         }

@@ -97,6 +97,29 @@ namespace TransferWindowPlanner
                 DrawLabel("Selected:{0}", mbTWP.windowMain.vectSelected);
                 DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected/KSPTime.SecondsPerDay,mbTWP.windowMain.TravelSelected/KSPTime.SecondsPerDay);
 
+                if (mbTWP.windowMain.TransferSelected != null)
+                {
+                    DrawLabel("D:{0:0} T:{0:0}", mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.TravelTime);
+                    DrawLabel("Origin:{0}", mbTWP.windowMain.TransferSelected.OriginVelocity);
+                    DrawLabel("Destination:{0}", mbTWP.windowMain.TransferSelected.DestinationVelocity);
+                    DrawLabel("Initial:{0}", mbTWP.windowMain.TransferSelected.TransferInitalVelocity);
+                    DrawLabel("Final:{0}", mbTWP.windowMain.TransferSelected.TransferFinalVelocity);
+                    DrawLabel("Eject:{0}", mbTWP.windowMain.TransferSelected.EjectionDeltaVector);
+                    DrawLabel("Eject-Mag:{0}", mbTWP.windowMain.TransferSelected.EjectionDeltaVector.magnitude);
+                    DrawLabel("Insert:{0}", mbTWP.windowMain.TransferSelected.InjectionDeltaVector);
+                    DrawLabel("Insert-Mag:{0}", mbTWP.windowMain.TransferSelected.InjectionDeltaVector.magnitude);
+                    DrawLabel("TransferAngle:{0}", mbTWP.windowMain.TransferSelected.TransferAngle);
+                    DrawLabel("EjectionInclination:{0}", mbTWP.windowMain.TransferSelected.EjectionInclination);
+                    DrawLabel("InsertionInclination:{0}", mbTWP.windowMain.TransferSelected.InsertionInclination);
+
+                    DrawLabel("EjectionDVNormal:{0}", mbTWP.windowMain.TransferSelected.EjectionDVNormal);
+                    DrawLabel("EjectionDVPrograde:{0}", mbTWP.windowMain.TransferSelected.EjectionDVPrograde);
+                    DrawLabel("EjectionHeading:{0}", mbTWP.windowMain.TransferSelected.EjectionHeading);
+                    DrawLabel("EjectionVector:{0}", mbTWP.windowMain.TransferSelected.EjectionVector);
+                    DrawLabel("EjectionAngle:{0}", mbTWP.windowMain.TransferSelected.EjectionAngle);
+
+                }
+
                 //DrawLabel("Padding:{0}", SkinsLibrary.CurrentSkin.window.padding);
                 //DrawLabel("Margin:{0}", SkinsLibrary.CurrentSkin.window.margin);
                 //DrawLabel("Border:{0}", SkinsLibrary.CurrentSkin.window.border);
