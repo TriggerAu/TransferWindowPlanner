@@ -865,9 +865,15 @@ public static class LambertSolver
         //Need to log each value in here as something is wrong in the DV Values
         public void CalcEjectionValues(){
             Double mu = Origin.gravParameter;
+            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("mu:{0}", mu);
             Double rsoi = Origin.sphereOfInfluence;
+            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("rsoi:{0}", rsoi);
             Double vsoi = EjectionDeltaVector.magnitude;
+            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("EjectionDeltaVector:{0}", EjectionDeltaVector);
+            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("vsoi:{0}", vsoi);
             Double v1 = Math.Sqrt(vsoi * vsoi + 2 * TransferInitalVelocity.magnitude * TransferInitalVelocity.magnitude - 2 * mu / rsoi);
+            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("v1:{0}", v1);
+            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("TIv:{0}", TransferInitalVelocity.magnitude);
             EjectionDVNormal = v1 * Math.Sin(EjectionInclination);
             EjectionDVPrograde = v1 * Math.Cos(EjectionInclination) - TransferInitalVelocity.magnitude;
             EjectionHeading = Math.Atan2(EjectionDVPrograde, EjectionDVNormal);

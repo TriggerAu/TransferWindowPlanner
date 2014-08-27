@@ -333,6 +333,12 @@ namespace TransferWindowPlanner
                 DrawResourceBar(new Rect(350, 180, 280, 20), (Single)workingpercent);
             if (Done)
             {
+                if (TextureReadyToDraw) {
+                    TextureReadyToDraw = false;
+                    //Need to move this texure stuff back on to the main thread - set a flag so we know whats done
+                    DrawPlotTexture(sumlogDeltaV, sumSqLogDeltaV, maxDeltaV);
+                }
+
                 //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
                 //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
                 GUI.Box(new Rect(PlotPosition.x - 6, PlotPosition.y, PlotWidth+6, PlotHeight+6), Resources.texPorkChopAxis,new GUIStyle());
@@ -386,10 +392,7 @@ namespace TransferWindowPlanner
                     if (Event.current.type== EventType.MouseDown && Event.current.button == 0)
                     {
                         vectSelected = new Vector2(vectMouse.x,vectMouse.y);
-                        DepartureSelected = DepartureMin + (vectMouse.x - PlotPosition.x) * xResolution;
-                        TravelSelected = TravelMax - (vectMouse.y - PlotPosition.y) * yResolution;
-
-                        LambertSolver.TransferDeltaV(cbOrigin,cbDestination,DepartureSelected,TravelSelected,InitialOrbitAltitude,FinalOrbitAltitide,out TransferSelected);
+                        SetTransferDetails();
 
                     }
 
@@ -411,6 +414,7 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
 
         }
+
         internal Vector2 vectMouse;
         internal Vector2 vectSelected;
         internal Double DepartureSelected,TravelSelected;
@@ -427,6 +431,7 @@ namespace TransferWindowPlanner
 
         internal Boolean Running = false;
         internal Boolean Done = false;
+        internal Boolean TextureReadyToDraw = false;
         internal Double workingpercent = 0;
 
 

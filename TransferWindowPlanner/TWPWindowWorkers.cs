@@ -68,10 +68,14 @@ namespace TransferWindowPlanner
         {
             Running = false;
             Done = true;
+            TextureReadyToDraw = true;
         }
 
         Texture2D texPlotArea=null, texDeltaVPalette=null;
         List<Color> DeltaVColorPalette = null;
+
+        internal Double logDeltaV, sumlogDeltaV, sumSqLogDeltaV;
+        internal Double maxDeltaV, minDeltaV;
 
         Double logMinDeltaV, logMaxDeltaV;
 
@@ -79,8 +83,8 @@ namespace TransferWindowPlanner
 
         void bw_GeneratePorkchop(object sender, DoWorkEventArgs e)
         {
-            Double logDeltaV, sumlogDeltaV = 0, sumSqLogDeltaV = 0;
-            Double maxDeltaV = 0, minDeltaV = Double.MaxValue;
+            sumlogDeltaV = 0; sumSqLogDeltaV = 0;
+            maxDeltaV = 0; minDeltaV = Double.MaxValue;
 
             //Loop through getting the DeltaV's and assigning em all to an array
             Int32 iCurrent = 0;
@@ -128,26 +132,45 @@ namespace TransferWindowPlanner
             System.IO.File.WriteAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin), File);
 #endif
 
-            //Need to move this texure stuff back on to the main thread - set a flag so we know whats done
+            //Set the Best Transfer
+            vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
+            SetTransferDetails();
+            //DepartureSelected = DepartureMin + (minDeltaVPoint.x * xResolution);
+            //TravelSelected = TravelMax - (minDeltaVPoint.y * yResolution);
+            //LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitide, out TransferSelected);
+            //TransferSelected.CalcEjectionValues();
+            //Set the details
+            //SetTransferDetails(DepartureSelected, TravelSelected);
+        }
 
+        private void SetTransferDetails()
+        {
+            DepartureSelected = DepartureMin + (vectSelected.x - PlotPosition.x) * xResolution;
+            TravelSelected = TravelMax - (vectSelected.y - PlotPosition.y) * yResolution;
+
+            LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitide, out TransferSelected);
+            TransferSelected.CalcEjectionValues();
+        }
+
+        private void DrawPlotTexture(Double sumlogDeltaV, Double sumSqLogDeltaV, Double maxDeltaV)
+        {
+            Double logDeltaV,mean,stddev;
             //Ensure we have a palette of colors to draw the porkchop
-            if (texDeltaVPalette == null || DeltaVColorPalette==null)
+            if (texDeltaVPalette == null || DeltaVColorPalette == null)
                 GenerateDeltaVPalette();
-            
+
             //Now Draw the texture
             LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
             logMinDeltaV = Math.Log(DeltaVs.Min());
-            Double mean = sumlogDeltaV / DeltaVs.Length;
-            Double stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
+            mean = sumlogDeltaV / DeltaVs.Length;
+            stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
             logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
 
             LogFormatted("Placing Colors on texture");
             texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
-            for (int y = 0; y < PlotHeight; y++)
-            {
-                for (int x = 0; x < PlotWidth; x++)
-                {
-                    iCurrent = (int)(y * PlotHeight + x);
+            for (int y = 0; y < PlotHeight; y++) {
+                for (int x = 0; x < PlotWidth; x++) {
+                    Int32 iCurrent = (Int32)(y * PlotHeight + x);
                     logDeltaV = Math.Log(DeltaVs[iCurrent]);
                     double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
                     Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
@@ -156,15 +179,6 @@ namespace TransferWindowPlanner
                 }
             }
             texPlotArea.Apply();
-
-            //Set the Best Transfer
-            DepartureSelected = DepartureMin + (minDeltaVPoint.x * xResolution);
-            TravelSelected = TravelMax - (minDeltaVPoint.y * yResolution);
-            vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
-            LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitide, out TransferSelected);
-            TransferSelected.CalcEjectionValues();
-            //Set the details
-            //SetTransferDetails(DepartureSelected, TravelSelected);
         }
 
         private void GenerateDeltaVPalette()
