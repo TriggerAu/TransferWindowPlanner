@@ -78,6 +78,7 @@ public static class LambertSolver
 
         Vector3d ejectionDeltaVector = velocityAfterEjection - originVelocity;
         double ejectionInclination = 0;
+        double vesselOrbitalSpeed = 0;
         double ejectionDeltaV = ejectionDeltaVector.magnitude;
         if (initialOrbitAltitude > 0) {
             double mu = origin.gravParameter;
@@ -85,6 +86,8 @@ public static class LambertSolver
             double rsoi = origin.sphereOfInfluence;
             double v0 = Math.Sqrt(origin.gravParameter / r0); // Initial circular orbit velocity
             double v1 = Math.Sqrt(ejectionDeltaV * ejectionDeltaV + 2 * v0 * v0 - 2 * mu / rsoi); // Velocity at periapsis
+
+            vesselOrbitalSpeed = v0;
 
             double e = r0 * v1 * v1 / mu - 1; // Ejection orbit eccentricity
             double ap = r0 * (1 + e) / (1 - e); // Ejection orbit apoapsis
@@ -104,6 +107,7 @@ public static class LambertSolver
         }
 
         oTransfer = new TransferDetails(origin, destination, ut, dt);
+        oTransfer.OriginVesselOrbitalSpeed = vesselOrbitalSpeed;
         oTransfer.OriginVelocity = originVelocity;
         oTransfer.TransferInitalVelocity = velocityAfterEjection;
         oTransfer.EjectionDeltaVector = ejectionDeltaVector;
@@ -127,6 +131,7 @@ public static class LambertSolver
 
             if (finalOrbitAltitude.Value != 0) {
                 double finalOrbitVelocity = Math.Sqrt(destination.gravParameter / (finalOrbitAltitude.Value + destination.Radius));
+                oTransfer.DestinationVesselOrbitalSpeed = finalOrbitVelocity;
                 insertionDeltaV = Math.Sqrt(insertionDeltaV * insertionDeltaV + 2 * finalOrbitVelocity * finalOrbitVelocity - 2 * destination.gravParameter / destination.sphereOfInfluence) - finalOrbitVelocity;
             }
 
@@ -818,9 +823,21 @@ public static class LambertSolver
         }
         public TransferDetails() { }
 
+        /// <summary>
+        /// Travelling from
+        /// </summary>
         public CelestialBody Origin {set;get;}
+        /// <summary>
+        /// Travelling To
+        /// </summary>
         public CelestialBody Destination { get; set; }
+        /// <summary>
+        /// UT that we are departing at - seconds since Epoch
+        /// </summary>
         public Double DepartureTime { get; set; }
+        /// <summary>
+        /// Seconds of travel time
+        /// </summary>
         public Double TravelTime { get; set; }
 
         /// <summary>
@@ -840,54 +857,101 @@ public static class LambertSolver
         /// </summary>
         public Vector3d DestinationVelocity { get; set; }
 
-
+        /// <summary>
+        /// velocity in m/s of the vessel in its original orbit before Ejection
+        /// </summary>
         public Double OriginVesselOrbitalSpeed { get; set; }
+        /// <summary>
+        /// velocity in m/s of the vessel in its destination orbit After Injection
+        /// </summary>
         public Double DestinationVesselOrbitalSpeed { get; set; }
 
+        /// <summary>
+        /// Velocity of the Ejection Burn
+        /// </summary>
         public Vector3d EjectionDeltaVector { get; set; }
+        /// <summary>
+        /// Velocity of the Injection Burn
+        /// </summary>
         public Vector3d InjectionDeltaVector { get; set; }
 
+        /// <summary>
+        /// Magnitude of the Ejection Burn
+        /// </summary>
         public double DVEjection { get { return EjectionDeltaVector.magnitude; } }
+        /// <summary>
+        /// Magnitude of the Injection Burn
+        /// </summary>
         public double DVInjection { get { return InjectionDeltaVector.magnitude; } }
+        /// <summary>
+        /// Magnitude of all burns
+        /// </summary>
         public double DVTotal { get { return DVEjection + DVInjection; } }
         
+        /// <summary>
+        /// How far around the Transfer Orbit will we travel in radians
+        /// </summary>
         public Double TransferAngle { get; set; }
+
+        /// <summary>
+        /// Angle above Origin orbit plane we are doing the Ejection burn at
+        /// </summary>
         public Double EjectionInclination { get; set; }
+        /// <summary>
+        /// Angle above Transfer orbit plane we are doing the injection burn at
+        /// </summary>
         public Double InsertionInclination { get; set; }
 
 
+        /// <summary>
+        /// Velocity Vector for Ejection - Basically Diff between Transfer Orbit and Planet Orbit velocities
+        /// </summary>
+        public Vector3d EjectionVector { get { return TransferInitalVelocity - OriginVelocity; } }
+
+        /// <summary>
+        /// m/s of velocity required in the Normal direction
+        /// </summary>
         public Double EjectionDVNormal { get; set; }
+        /// <summary>
+        /// m/s of velocity required in the Prograde direction
+        /// </summary>
         public Double EjectionDVPrograde { get; set; }
+        /// <summary>
+        /// Heading of the craft in radians
+        /// </summary>
         public Double EjectionHeading { get; set; }
-        public Vector3d EjectionVector { get; set; }
+        /// <summary>
+        /// Ejection angle of the burn in radians - angle from orbit velocity vector
+        /// </summary>
         public Double EjectionAngle { get; set; }
 
-        //Need to log each value in here as something is wrong in the DV Values
+        /// <summary>
+        /// This calculates the details of the Ejection Angles for the Eject burn
+        /// </summary>
         public void CalcEjectionValues(){
             Double mu = Origin.gravParameter;
-            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("mu:{0}", mu);
             Double rsoi = Origin.sphereOfInfluence;
-            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("rsoi:{0}", rsoi);
-            Double vsoi = EjectionDeltaVector.magnitude;
-            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("EjectionDeltaVector:{0}", EjectionDeltaVector);
-            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("vsoi:{0}", vsoi);
-            Double v1 = Math.Sqrt(vsoi * vsoi + 2 * TransferInitalVelocity.magnitude * TransferInitalVelocity.magnitude - 2 * mu / rsoi);
-            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("v1:{0}", v1);
-            KSPPluginFramework.MonoBehaviourExtended.LogFormatted_DebugOnly("TIv:{0}", TransferInitalVelocity.magnitude);
+            Double vsoi = EjectionVector.magnitude;
+            Double v1 = Math.Sqrt(vsoi * vsoi + 2 * OriginVesselOrbitalSpeed * OriginVesselOrbitalSpeed - 2 * mu / rsoi);
             EjectionDVNormal = v1 * Math.Sin(EjectionInclination);
-            EjectionDVPrograde = v1 * Math.Cos(EjectionInclination) - TransferInitalVelocity.magnitude;
+            EjectionDVPrograde = v1 * Math.Cos(EjectionInclination) - OriginVesselOrbitalSpeed;
             EjectionHeading = Math.Atan2(EjectionDVPrograde, EjectionDVNormal);
-            
-            Double initialOrbitRadius = mu / (TransferInitalVelocity.magnitude * TransferInitalVelocity.magnitude);
+
+            Double initialOrbitRadius = mu / (OriginVesselOrbitalSpeed * OriginVesselOrbitalSpeed);
             Double e = initialOrbitRadius * v1 * v1 / mu - 1;
             Double a = initialOrbitRadius / (1 - e);
             Double theta = Math.Acos((a * (1 - e * e) - rsoi) / (e * rsoi));
             theta += Math.Asin(v1 * initialOrbitRadius / (vsoi * rsoi));
             EjectionAngle = EjectionAngleCalc(EjectionDeltaVector, theta, OriginVelocity.normalized);
-            //EjectionAngle = Math.Acos(Vector3d.Dot(EjectionVector.normalized, OriginVelocity.normalized) / (EjectionVector.normalized.magnitude * OriginVelocity.normalized.magnitude));
         }
 
-        //log em all in here too
+        /// <summary>
+        /// Conversion of ejectionAngle from https://github.com/alexmoon/ksp/blob/gh-pages/javascripts/orbit.js
+        /// </summary>
+        /// <param name="vsoi">Velocity of the Ejection Vector in the Planets SOI</param>
+        /// <param name="theta">???</param>
+        /// <param name="prograde">What direction is prograde</param>
+        /// <returns>Ejection Angle in Radians</returns>
         private Double EjectionAngleCalc(Vector3d vsoi, Double theta, Vector3d prograde)
         {
             Double  a, ax, ay, az, b, c, cosTheta, g, q, vx, vy;

@@ -101,9 +101,9 @@ namespace TransferWindowPlanner
                 {
                     DrawLabel("D:{0:0} T:{0:0}", mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.TravelTime);
                     DrawLabel("Origin:{0}", mbTWP.windowMain.TransferSelected.OriginVelocity);
-                    DrawLabel("Destination:{0}", mbTWP.windowMain.TransferSelected.DestinationVelocity);
                     DrawLabel("Initial:{0}", mbTWP.windowMain.TransferSelected.TransferInitalVelocity);
                     DrawLabel("Final:{0}", mbTWP.windowMain.TransferSelected.TransferFinalVelocity);
+                    DrawLabel("Destination:{0}", mbTWP.windowMain.TransferSelected.DestinationVelocity);
                     DrawLabel("Eject:{0}", mbTWP.windowMain.TransferSelected.EjectionDeltaVector);
                     DrawLabel("Eject-Mag:{0}", mbTWP.windowMain.TransferSelected.EjectionDeltaVector.magnitude);
                     DrawLabel("Insert:{0}", mbTWP.windowMain.TransferSelected.InjectionDeltaVector);
@@ -111,6 +111,8 @@ namespace TransferWindowPlanner
                     DrawLabel("TransferAngle:{0}", mbTWP.windowMain.TransferSelected.TransferAngle);
                     DrawLabel("EjectionInclination:{0}", mbTWP.windowMain.TransferSelected.EjectionInclination);
                     DrawLabel("InsertionInclination:{0}", mbTWP.windowMain.TransferSelected.InsertionInclination);
+
+                    DrawLabel("Origin VesselSpeed:{0}", mbTWP.windowMain.TransferSelected.OriginVesselOrbitalSpeed);
 
                     DrawLabel("EjectionDVNormal:{0}", mbTWP.windowMain.TransferSelected.EjectionDVNormal);
                     DrawLabel("EjectionDVPrograde:{0}", mbTWP.windowMain.TransferSelected.EjectionDVPrograde);
