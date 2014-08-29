@@ -241,6 +241,10 @@ namespace TransferWindowPlanner
             stylePlotCrossHair = new GUIStyle();
             stylePlotCrossHair.normal.background = CreateColorPixel(new Color32(255, 25, 255, 192));
 
+            stylePlotTransferMarkerDV = new GUIStyle();
+            stylePlotTransferMarkerDV.normal.background = Resources.texSelectedDV;
+            stylePlotTransferMarkerDV.border = new RectOffset(8, 8, 3, 3);
+
             styleToggle = new GUIStyle(HighLogic.Skin.toggle);
             styleToggle.normal.textColor = new Color(207, 207, 207);
             styleToggle.fixedHeight = 20;

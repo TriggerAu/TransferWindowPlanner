@@ -399,26 +399,73 @@ namespace TransferWindowPlanner
                 }
 
 
-                //Draw the selected position indicator
-                if (DepartureSelected>=0)
+                //Draw the selected position indicators
+                if (Done && DepartureSelected>=0)
                 {
                     GUI.Box(new Rect(vectSelected.x - 8, vectSelected.y - 8, 16, 16), Resources.texSelectedPoint, new GUIStyle());
                     GUI.Box(new Rect(PlotPosition.x - 9, vectSelected.y - 5, 9,9), Resources.texSelectedYAxis, new GUIStyle());
                     GUI.Box(new Rect(vectSelected.x - 5, PlotPosition.y+PlotHeight, 9,9), Resources.texSelectedXAxis, new GUIStyle());
 
+                    Double logDeltaV = Math.Log(DeltaVs[(Int32)(vectSelected.y * PlotHeight + vectSelected.x)]);
+                    double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
+                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+                    Single SelectedDV = ColorIndex / DeltaVColorPalette.Count;
+
+                    GUI.Box(new Rect(PlotPosition.x + PlotWidth + 35, PlotPosition.y+(PlotHeight-SelectedDV), 30, 9), "", Styles.stylePlotTransferMarkerDV);
                 }
 
-                //Draw the selected DeltaV Bar
             }
 
             GUILayout.EndHorizontal();
 
+            ////Draw the selected position indicators
+            if (DepartureSelected >= 0 && TransferSelected!=null)
+            {
+                GUILayout.Space(150);
+                GUILayout.Label("Selected Transfer Details");
+                GUILayout.BeginHorizontal();
+                GUILayout.BeginVertical();
+                GUILayout.Label("Departure:", Styles.styleTextTitle);
+                GUILayout.Label("Phase Angle:", Styles.styleTextTitle);
+                GUILayout.EndVertical();
+                GUILayout.BeginVertical();
+                GUILayout.Label(String.Format("{0:0}", TransferSelected.DepartureTime), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+                GUILayout.EndVertical();
+
+                GUILayout.BeginVertical();
+                GUILayout.Label("Arrival:", Styles.styleTextTitle);
+                GUILayout.Label("Ejection Angle:", Styles.styleTextTitle);
+                GUILayout.Label("Ejection Inclination:", Styles.styleTextTitle);
+                GUILayout.Label("Insertion Inclination:", Styles.styleTextTitle);
+                GUILayout.EndVertical();
+                GUILayout.BeginVertical();
+                GUILayout.Label(String.Format("{0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+                GUILayout.EndVertical();
+
+                GUILayout.BeginVertical();
+                GUILayout.Label("Travel Time:", Styles.styleTextTitle);
+                GUILayout.Label("Total Δv:", Styles.styleTextTitle);
+                GUILayout.Label("Ejection Δv:", Styles.styleTextTitle);
+                GUILayout.Label("Insertion Δv:", Styles.styleTextTitle);
+                GUILayout.EndVertical();
+                GUILayout.BeginVertical();
+                GUILayout.Label(String.Format("{0:0}", TransferSelected.TravelTime), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+            }
         }
 
         internal Vector2 vectMouse;
         internal Vector2 vectSelected;
         internal Double DepartureSelected,TravelSelected;
-        internal LambertSolver.TransferDetails TransferSelected;
+        internal TransferDetails TransferSelected;
 
         internal static Vector3d getAbsolutePositionAtUT(Orbit orbit, double UT)
         {

@@ -112,7 +112,7 @@ namespace TransferWindowPlanner
                     DrawLabel("EjectionInclination:{0}", mbTWP.windowMain.TransferSelected.EjectionInclination);
                     DrawLabel("InsertionInclination:{0}", mbTWP.windowMain.TransferSelected.InsertionInclination);
 
-                    DrawLabel("Origin VesselSpeed:{0}", mbTWP.windowMain.TransferSelected.OriginVesselOrbitalSpeed);
+                    DrawLabel("Phase:{0}", mbTWP.windowMain.TransferSelected.PhaseAngle);
 
                     DrawLabel("EjectionDVNormal:{0}", mbTWP.windowMain.TransferSelected.EjectionDVNormal);
                     DrawLabel("EjectionDVPrograde:{0}", mbTWP.windowMain.TransferSelected.EjectionDVPrograde);
