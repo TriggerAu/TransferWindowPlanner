@@ -44,6 +44,8 @@ namespace TransferWindowPlanner
         internal static Texture2D texSelectedDV = new Texture2D(18, 9, TextureFormat.ARGB32, false);
         internal static Texture2D texSelectedPoint = new Texture2D(16,16, TextureFormat.ARGB32, false);
 
+        internal static Texture2D texAppLaunchIcon = new Texture2D(38, 38, TextureFormat.ARGB32, false);
+
 
         internal static void LoadTextures()
         {
@@ -72,6 +74,9 @@ namespace TransferWindowPlanner
             LoadImageFromFile(ref texSelectedYAxis, "img_SelectedYAxis.png");
             LoadImageFromFile(ref texSelectedDV, "img_SelectedDV.png");
             LoadImageFromFile(ref texSelectedPoint, "img_SelectedPoint.png");
+
+            LoadImageFromFile(ref texAppLaunchIcon, "TWPIconBig.png", PathPluginToolbarIcons);
+
         }
 
 

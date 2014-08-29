@@ -7,12 +7,15 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
+using TWPToolbarWrapper;
+
 namespace TransferWindowPlanner
 {
     [KSPAddon(KSPAddon.Startup.EveryScene,false)]
-    public class TransferWindowPlanner:MonoBehaviourExtended
+    public partial class TransferWindowPlanner:MonoBehaviourExtended
     {
         internal static Settings settings;
+        internal IButton btnToolbar = null;
 
         internal TWPWindow windowMain;
 
@@ -25,28 +28,47 @@ namespace TransferWindowPlanner
             if (!settings.Load())
                 LogFormatted("Settings Load Failed");
 
-
             InitWindows();
 
             //plug us in to the draw queue and start the worker
             RenderingManager.AddToPostDrawQueue(1, DrawGUI);
 
 
+            //Get whether the toolbar is there
+            settings.BlizzyToolbarIsAvailable = ToolbarManager.ToolbarAvailable;
+
+            //setup the Toolbar button if necessary
+            if (settings.ButtonStyleToDisplay == Settings.ButtonStyleEnum.Toolbar)
+            {
+                //btnToolbar = InitToolbarButton();
+            }
+
+            //Hook the App Launcher
+            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+            GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
+
             //do the daily version check if required
             //if (settings.DailyVersionCheck)
                 //settings.VersionCheck(false);
 
+            //APIAwake();
         }
 
         internal override void OnDestroy()
         {
             LogFormatted("Destroying the TransferWindowPlanner (TWP)");
 
-            if (windowMain.bw.IsBusy)
+            if (windowMain.bw!=null && windowMain.bw.IsBusy)
                 windowMain.bw.CancelAsync();
 
             RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
+            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            DestroyAppLauncherButton();
+
+            //DestroyToolbarButton(btnToolbar);
+
+            //APIDestroy();
         }
         private void InitWindows()
         {
@@ -55,6 +77,72 @@ namespace TransferWindowPlanner
             windowMain.mbTWP = this;
             InitDebugWindow();
         }
+
+        //#region Toolbar Stuff
+        ///// <summary>
+        ///// initialises a Toolbar Button for this mod
+        ///// </summary>
+        ///// <returns>The ToolbarButtonWrapper that was created</returns>
+        //internal IButton InitToolbarButton()
+        //{
+        //    IButton btnReturn;
+        //    try
+        //    {
+        //        LogFormatted("Initialising the Toolbar Icon");
+        //        btnReturn = ToolbarManager.Instance.add(_ClassName, "btnToolbarIcon");
+        //        SetToolbarIcon(btnReturn);
+        //        btnReturn.ToolTip = "Alternate Resource Panel";
+        //        btnReturn.OnClick += (e) =>
+        //        {
+        //            settings.ToggleOn = !settings.ToggleOn;
+        //            SetToolbarIcon(e.Button);
+        //            MouseOverToolbarBtn = true;
+        //            settings.Save();
+        //        };
+        //        btnReturn.OnMouseEnter += btnReturn_OnMouseEnter;
+        //        btnReturn.OnMouseLeave += btnReturn_OnMouseLeave;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        btnReturn = null;
+        //        LogFormatted("Error Initialising Toolbar Button: {0}", ex.Message);
+        //    }
+        //    return btnReturn;
+        //}
+
+        //private static void SetToolbarIcon(IButton btnReturn)
+        //{
+        //    //if (settings.ToggleOn) 
+        //    //btnReturn.TexturePath = "TriggerTech/KSPAlternateResourcePanel/ToolbarIcons/KSPARPa_On";
+        //    //else
+        //    btnReturn.TexturePath = "TriggerTech/KSPAlternateResourcePanel/ToolbarIcons/KSPARPa";
+        //}
+
+        //void btnReturn_OnMouseLeave(MouseLeaveEvent e)
+        //{
+        //    MouseOverToolbarBtn = false;
+        //}
+
+        //internal Boolean MouseOverToolbarBtn = false;
+        //void btnReturn_OnMouseEnter(MouseEnterEvent e)
+        //{
+        //    MouseOverToolbarBtn = true;
+        //}
+
+        ///// <summary>
+        ///// Destroys theToolbarButtonWrapper object
+        ///// </summary>
+        ///// <param name="btnToDestroy">Object to Destroy</param>
+        //internal void DestroyToolbarButton(IButton btnToDestroy)
+        //{
+        //    if (btnToDestroy != null)
+        //    {
+        //        LogFormatted("Destroying Toolbar Button");
+        //        btnToDestroy.Destroy();
+        //    }
+        //    btnToDestroy = null;
+        //}
+        //#endregion
 
 #if DEBUG
         internal TWPWindowDebug windowDebug;
@@ -95,11 +183,11 @@ namespace TransferWindowPlanner
 
         void DrawGUI()
         {
-            //Draw the button - for basic stuff
-            if (settings.ButtonStyleToDisplay == Settings.ButtonStyleEnum.Basic)
-            {
+            ////Draw the button - for basic stuff - Not using a button
+            //if (settings.ButtonStyleToDisplay == Settings.ButtonStyleEnum.Basic)
+            //{
 
-            }
+            //}
         }
 
     }

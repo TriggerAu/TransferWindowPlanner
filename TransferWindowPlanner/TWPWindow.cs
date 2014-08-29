@@ -12,7 +12,7 @@ using KSPPluginFramework;
 namespace TransferWindowPlanner
 {
     [WindowInitials(Caption="Transfer Window Planner",
-        Visible=true,
+        Visible=false,
         DragEnabled=true,
         TooltipsEnabled=true,
         WindowMoveEventsEnabled=true)]

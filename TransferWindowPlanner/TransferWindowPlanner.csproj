@@ -48,6 +48,7 @@
     <Compile Include="Framework\MonoBehaviourExtended.cs" />
     <Compile Include="Framework\MonoBehaviourWindow.cs" />
     <Compile Include="Framework\SkinsLibrary.cs" />
+    <Compile Include="SharedStuff\AppLauncher.cs" />
     <Compile Include="SharedStuff\LambertSolverHelpers.cs" />
     <Compile Include="TimeObjects.cs" />
     <Compile Include="TWPWindow.cs" />
