@@ -18,6 +18,7 @@ namespace TransferWindowPlanner
         internal IButton btnToolbar = null;
 
         internal TWPWindow windowMain;
+        internal TWPWindowSettings windowSettings;
 
         internal override void Awake()
         {
@@ -75,6 +76,10 @@ namespace TransferWindowPlanner
             windowMain = AddComponent<TWPWindow>();
             windowMain.WindowRect = new Rect(100, 200, 800, 400);
             windowMain.mbTWP = this;
+
+            windowSettings = AddComponent<TWPWindowSettings>();
+            windowSettings.mbTWP = this;
+
             InitDebugWindow();
         }
 

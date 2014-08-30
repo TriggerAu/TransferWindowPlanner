@@ -24,6 +24,7 @@ namespace TransferWindowPlanner
         internal static Texture2D texBarBlue = new Texture2D(13, 13, TextureFormat.ARGB32, false);
         internal static Texture2D texBarBlue_Back = new Texture2D(13, 13, TextureFormat.ARGB32, false);
 
+        internal static Texture2D btnSettings = new Texture2D(17, 16, TextureFormat.ARGB32, false);
         internal static Texture2D btnSettingsAttention = new Texture2D(17, 16, TextureFormat.ARGB32, false);
 
         internal static Texture2D btnDropDown = new Texture2D(10, 10, TextureFormat.ARGB32, false);
@@ -56,6 +57,7 @@ namespace TransferWindowPlanner
             LoadImageFromFile(ref texBarBlue, "img_BarBlue.png");
             LoadImageFromFile(ref texBarBlue_Back, "img_BarBlue_Back.png");
 
+            LoadImageFromFile(ref btnSettings, "img_buttonSettings.png");
             LoadImageFromFile(ref btnSettingsAttention, "img_buttonSettingsAttention.png");
 
             LoadImageFromFile(ref btnDropDown, "img_DropDown.png");
@@ -79,6 +81,18 @@ namespace TransferWindowPlanner
 
         }
 
+        internal static Texture2D GetSettingsButtonIcon(Boolean AttentionRequired)
+        {
+            Texture2D textureReturn;
+
+            //Only flash if we need attention
+            if (AttentionRequired && DateTime.Now.Millisecond < 500)
+                textureReturn = btnSettingsAttention;
+            else
+                textureReturn = btnSettings;
+
+            return textureReturn;
+        }
 
         #region Util Stuff
         /// <summary>

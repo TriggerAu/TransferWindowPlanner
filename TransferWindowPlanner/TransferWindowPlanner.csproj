@@ -60,6 +60,7 @@
     <Compile Include="TWP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharedStuff\LambertSolver.cs" />
+    <Compile Include="TWPWindowSettings.cs" />
     <Compile Include="TWPWindowWorkers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -63,9 +63,18 @@ namespace TransferWindowPlanner
             //ddlXferType = new DropDownList(lstXFerTypes, this);
             //ddlManager.AddDDL(ddlXferType);
 
-
+            WindowVisibleChanged += TWPWindow_WindowVisibleChanged;
 
             //Set the defaults
+        }
+
+        void TWPWindow_WindowVisibleChanged(MonoBehaviourWindow sender, bool NewVisibleState)
+        {
+            //if its toggling on make sure the window is in scene
+            if (NewVisibleState)
+            {
+                this.ClampToScreenNow();
+            }
         }
 
         void ddlOrigin_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
@@ -159,6 +168,11 @@ namespace TransferWindowPlanner
 
         internal override void DrawWindow(int id)
         {
+            //Settings toggle
+            GUIContent contSettings = new GUIContent(Resources.GetSettingsButtonIcon(TransferWindowPlanner.settings.VersionAttentionFlag), "Settings...");
+            if (TransferWindowPlanner.settings.VersionAvailable) contSettings.tooltip = "Updated Version Available - Settings...";
+            mbTWP.windowSettings.Visible = GUI.Toggle(new Rect(WindowRect.width - 32, 2, 30, 20),mbTWP.windowSettings.Visible,contSettings,SkinsLibrary.CurrentSkin.button);
+          
 
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.Width(300));
