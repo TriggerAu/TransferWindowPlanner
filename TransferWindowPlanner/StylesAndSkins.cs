@@ -49,20 +49,19 @@ namespace TransferWindowPlanner
 
         internal static GUIStyle stylePlotTransferMarker, stylePlotTransferMarkerXAxis, stylePlotTransferMarkerYAxis, stylePlotTransferMarkerDV;
 
-        internal static GUIStyle styleText;
+        internal static GUIStyle styleSettingsArea;
 
-        internal static GUIStyle styleTextTitle;
+        internal static GUIStyle styleText, styleTextHeading;
 
         internal static GUIStyle styleTextCenter;
         internal static GUIStyle styleTextCenterGreen;
-
         internal static GUIStyle styleTextGreen;
         internal static GUIStyle styleTextYellow;
         internal static GUIStyle styleTextYellowBold;
 
         internal static GUIStyle styleTextFieldDefault;
-
         internal static GUIStyle styleTextField;
+        internal static GUIStyle styleTextFieldLabel;
         internal static GUIStyle styleTextFieldError;
 
         //internal static GUIStyle styleStageText;
@@ -125,11 +124,13 @@ namespace TransferWindowPlanner
             styleButtonSettings = new GUIStyle(styleButton);
             styleButtonSettings.name = "ButtonSettings";
             styleButtonSettings.padding = new RectOffset(1, 1, 1, 1);
+            styleButtonSettings.onNormal.background = styleButtonSettings.active.background;
             //styleButtonSettings.fixedWidth = 40;
 
             styleButtonSettingsUnity = new GUIStyle(styleButtonSettings);
             styleButtonSettingsUnity.normal.background = SkinsLibrary.DefUnitySkin.button.normal.background;
             styleButtonSettingsUnity.hover.background = SkinsLibrary.DefUnitySkin.button.hover.background;
+            styleButtonSettingsUnity.onNormal.background = SkinsLibrary.DefUnitySkin.button.active.background;
 
             styleTooltipStyle = new GUIStyle();
             styleTooltipStyle.name = "Tooltip";
@@ -196,13 +197,12 @@ namespace TransferWindowPlanner
             styleText.normal.textColor = new Color(207, 207, 207);
             styleText.wordWrap = false;
 
+            styleTextHeading = new GUIStyle(styleText);
+            styleTextHeading.fontStyle = FontStyle.Bold;
+            styleTextHeading.wordWrap = false;
+
             styleTextFieldDefault = new GUIStyle(SkinsLibrary.DefUnitySkin.textField);
             styleTextFieldDefault.fontStyle = FontStyle.Normal;
-
-            styleTextTitle = new GUIStyle(styleText);
-            styleTextTitle.alignment = TextAnchor.MiddleRight;
-            styleTextTitle.fontStyle = FontStyle.Bold;
-            styleTextTitle.padding.top = 4;
 
             styleTextGreen = new GUIStyle(styleText);
             styleTextGreen.normal.textColor = new Color32(183, 254, 0, 255); ;
@@ -220,6 +220,11 @@ namespace TransferWindowPlanner
             styleTextField.stretchWidth = true;
             styleTextField.alignment = TextAnchor.UpperLeft;
             styleTextField.normal.textColor = Color.yellow;
+
+            styleTextFieldLabel = new GUIStyle(styleText);
+            styleTextFieldLabel.alignment = TextAnchor.MiddleRight;
+            styleTextFieldLabel.fontStyle = FontStyle.Bold;
+            styleTextFieldLabel.padding.top = 4;
 
             styleTextFieldError = new GUIStyle(styleTextField);
             styleTextFieldError.normal.textColor = Color.red;
@@ -244,6 +249,10 @@ namespace TransferWindowPlanner
             stylePlotTransferMarkerDV = new GUIStyle();
             stylePlotTransferMarkerDV.normal.background = Resources.texSelectedDV;
             stylePlotTransferMarkerDV.border = new RectOffset(8, 8, 3, 3);
+
+
+            styleSettingsArea = new GUIStyle(HighLogic.Skin.textArea);
+            styleSettingsArea.padding = new RectOffset(0, 0, 0, 4);
 
             styleToggle = new GUIStyle(HighLogic.Skin.toggle);
             styleToggle.normal.textColor = new Color(207, 207, 207);

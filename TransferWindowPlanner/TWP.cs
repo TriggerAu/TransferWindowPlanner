@@ -11,7 +11,18 @@ using TWPToolbarWrapper;
 
 namespace TransferWindowPlanner
 {
-    [KSPAddon(KSPAddon.Startup.EveryScene,false)]
+
+    #region Starter Classes
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class TransferWindowPlannerFlight : TransferWindowPlanner { }
+    [KSPAddon(KSPAddon.Startup.EditorAny, false)]
+    public class TransferWindowPlannerEditor : TransferWindowPlanner { }
+    [KSPAddon(KSPAddon.Startup.SpaceCentre, false)]
+    public class TransferWindowPlannerSpaceCenter : TransferWindowPlanner { }
+    [KSPAddon(KSPAddon.Startup.TrackingStation, false)]
+    public class TransferWindowPlannerTrackingStation : TransferWindowPlanner { }
+    #endregion    
+
     public partial class TransferWindowPlanner:MonoBehaviourExtended
     {
         internal static Settings settings;
@@ -41,7 +52,7 @@ namespace TransferWindowPlanner
             //setup the Toolbar button if necessary
             if (settings.ButtonStyleToDisplay == Settings.ButtonStyleEnum.Toolbar)
             {
-                //btnToolbar = InitToolbarButton();
+                btnToolbar = InitToolbarButton();
             }
 
             //Hook the App Launcher
@@ -67,14 +78,14 @@ namespace TransferWindowPlanner
             GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
             DestroyAppLauncherButton();
 
-            //DestroyToolbarButton(btnToolbar);
+            DestroyToolbarButton(btnToolbar);
 
             //APIDestroy();
         }
         private void InitWindows()
         {
             windowMain = AddComponent<TWPWindow>();
-            windowMain.WindowRect = new Rect(100, 200, 800, 400);
+            windowMain.WindowRect = new Rect(100, 200, 750, 400);
             windowMain.mbTWP = this;
 
             windowSettings = AddComponent<TWPWindowSettings>();
@@ -83,71 +94,70 @@ namespace TransferWindowPlanner
             InitDebugWindow();
         }
 
-        //#region Toolbar Stuff
-        ///// <summary>
-        ///// initialises a Toolbar Button for this mod
-        ///// </summary>
-        ///// <returns>The ToolbarButtonWrapper that was created</returns>
-        //internal IButton InitToolbarButton()
-        //{
-        //    IButton btnReturn;
-        //    try
-        //    {
-        //        LogFormatted("Initialising the Toolbar Icon");
-        //        btnReturn = ToolbarManager.Instance.add(_ClassName, "btnToolbarIcon");
-        //        SetToolbarIcon(btnReturn);
-        //        btnReturn.ToolTip = "Alternate Resource Panel";
-        //        btnReturn.OnClick += (e) =>
-        //        {
-        //            settings.ToggleOn = !settings.ToggleOn;
-        //            SetToolbarIcon(e.Button);
-        //            MouseOverToolbarBtn = true;
-        //            settings.Save();
-        //        };
-        //        btnReturn.OnMouseEnter += btnReturn_OnMouseEnter;
-        //        btnReturn.OnMouseLeave += btnReturn_OnMouseLeave;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        btnReturn = null;
-        //        LogFormatted("Error Initialising Toolbar Button: {0}", ex.Message);
-        //    }
-        //    return btnReturn;
-        //}
+        #region Toolbar Stuff
+        /// <summary>
+        /// initialises a Toolbar Button for this mod
+        /// </summary>
+        /// <returns>The ToolbarButtonWrapper that was created</returns>
+        internal IButton InitToolbarButton()
+        {
+            IButton btnReturn;
+            try
+            {
+                LogFormatted("Initialising the Toolbar Icon");
+                btnReturn = ToolbarManager.Instance.add(_ClassName, "btnToolbarIcon");
+                SetToolbarIcon(btnReturn);
+                btnReturn.ToolTip = "Transfer Window Planner";
+                btnReturn.OnClick += (e) =>
+                {
+                    windowMain.Visible = !windowMain.Visible;
+                    SetToolbarIcon(e.Button);
+                    MouseOverToolbarBtn = true;
+                };
+                btnReturn.OnMouseEnter += btnReturn_OnMouseEnter;
+                btnReturn.OnMouseLeave += btnReturn_OnMouseLeave;
+            }
+            catch (Exception ex)
+            {
+                btnReturn = null;
+                LogFormatted("Error Initialising Toolbar Button: {0}", ex.Message);
+            }
+            return btnReturn;
+        }
 
-        //private static void SetToolbarIcon(IButton btnReturn)
-        //{
-        //    //if (settings.ToggleOn) 
-        //    //btnReturn.TexturePath = "TriggerTech/KSPAlternateResourcePanel/ToolbarIcons/KSPARPa_On";
-        //    //else
-        //    btnReturn.TexturePath = "TriggerTech/KSPAlternateResourcePanel/ToolbarIcons/KSPARPa";
-        //}
+        private static void SetToolbarIcon(IButton btnReturn)
+        {
+            //if (settings.ToggleOn) 
+            //btnReturn.TexturePath = "TriggerTech/KSPAlternateResourcePanel/ToolbarIcons/KSPARPa_On";
+            //else
+            btnReturn.TexturePath = "TriggerTech/TransferWindowPlanner/ToolbarIcons/TWPIcon";
+        }
 
-        //void btnReturn_OnMouseLeave(MouseLeaveEvent e)
-        //{
-        //    MouseOverToolbarBtn = false;
-        //}
+        void btnReturn_OnMouseLeave(MouseLeaveEvent e)
+        {
+            MouseOverToolbarBtn = false;
+        }
 
-        //internal Boolean MouseOverToolbarBtn = false;
-        //void btnReturn_OnMouseEnter(MouseEnterEvent e)
-        //{
-        //    MouseOverToolbarBtn = true;
-        //}
+        internal Boolean MouseOverToolbarBtn = false;
+        void btnReturn_OnMouseEnter(MouseEnterEvent e)
+        {
+            MouseOverToolbarBtn = true;
+        }
 
-        ///// <summary>
-        ///// Destroys theToolbarButtonWrapper object
-        ///// </summary>
-        ///// <param name="btnToDestroy">Object to Destroy</param>
-        //internal void DestroyToolbarButton(IButton btnToDestroy)
-        //{
-        //    if (btnToDestroy != null)
-        //    {
-        //        LogFormatted("Destroying Toolbar Button");
-        //        btnToDestroy.Destroy();
-        //    }
-        //    btnToDestroy = null;
-        //}
-        //#endregion
+        /// <summary>
+        /// Destroys theToolbarButtonWrapper object
+        /// </summary>
+        /// <param name="btnToDestroy">Object to Destroy</param>
+        internal void DestroyToolbarButton(IButton btnToDestroy)
+        {
+            if (btnToDestroy != null)
+            {
+                LogFormatted("Destroying Toolbar Button");
+                btnToDestroy.Destroy();
+            }
+            btnToDestroy = null;
+        }
+        #endregion
 
 #if DEBUG
         internal TWPWindowDebug windowDebug;

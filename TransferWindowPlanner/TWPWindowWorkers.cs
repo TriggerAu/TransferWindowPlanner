@@ -64,12 +64,85 @@ namespace TransferWindowPlanner
             SetWindowStrings();
         }
 
+        private void SetWindowStrings()
+        {
+            strOrigin = cbOrigin.bodyName;
+            strDestination = cbDestination.bodyName;
+
+            KSPTime kTime = new KSPTime(DepartureMin);
+            strDepartureMinYear = (kTime.Year + 1).ToString();
+            strDepartureMinDay = (kTime.Day + 1).ToString();
+
+            kTime.UT = DepartureMax;
+            strDepartureMaxYear = (kTime.Year + 1).ToString();
+            strDepartureMaxDay = (kTime.Day + 1).ToString();
+
+            kTime.UT = TravelMin;
+            strTravelMinDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
+
+            kTime.UT = TravelMax;
+            strTravelMaxDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
+
+            strArrivalAltitude = (InitialOrbitAltitude / 1000).ToString();
+            strDepartureAltitude = (FinalOrbitAltitide / 1000).ToString();
+        }
+
+        internal Boolean ShowInstructions = true;
+        internal Boolean Running = false;
+        internal Boolean Done = false;
+        internal Boolean TextureReadyToDraw = false;
+        internal Double workingpercent = 0;
+
+        internal BackgroundWorker bw;
+
+        private void SetWorkerVariables()
+        {
+            DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            DepartureMax = KSPTime.BuildUTFromRaw(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            DepartureRange = DepartureMax - DepartureMin;
+            DepartureSelected = -1;
+            TravelMin = KSPTime.BuildUTFromRaw("0", strTravelMinDays, "0", "0", "0");
+            TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
+            TravelRange = TravelMax - TravelMin;
+            TravelSelected = -1;
+            FinalOrbitAltitide = Convert.ToDouble(strArrivalAltitude) * 1000;
+            InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude) * 1000;
+
+            // minus 1 so when we loop from for PlotX pixels the last pixel is the actual last value
+            xResolution = DepartureRange / (PlotWidth - 1);
+            yResolution = TravelRange / (PlotHeight - 1);
+
+            DeltaVs = new Double[PlotWidth * PlotHeight];
+            DeltaVsColorIndex = new Int32[PlotWidth * PlotHeight];
+        }
+
+        private void StartWorker()
+        {
+            SetWorkerVariables();
+
+            workingpercent = 0;
+            Running = true;
+            Done = false;
+            bw = new BackgroundWorker();
+            bw.DoWork += bw_GeneratePorkchop;
+            bw.RunWorkerCompleted += bw_GeneratePorkchopCompleted;
+
+            bw.RunWorkerAsync();
+        }
+
+
         void bw_GeneratePorkchopCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             Running = false;
             Done = true;
             TextureReadyToDraw = true;
         }
+
+        internal Int32 PlotWidth = 292, PlotHeight = 292;
+        Double xResolution, yResolution;
+
+        Double[] DeltaVs;
+        Int32[] DeltaVsColorIndex;
 
         Texture2D texPlotArea=null, texDeltaVPalette=null;
         List<Color> DeltaVColorPalette = null;
@@ -116,6 +189,7 @@ namespace TransferWindowPlanner
                 }
             }
 
+#if DEBUG
             String File = "";
             for (int y = 0; y < PlotHeight; y++)
             {
@@ -128,19 +202,35 @@ namespace TransferWindowPlanner
                 File += strline + "\r\n";
             }
 
-#if DEBUG
+
             System.IO.File.WriteAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin), File);
 #endif
+
+            Double mean, stddev;
+            //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
+            LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
+            logMinDeltaV = Math.Log(DeltaVs.Min());
+            mean = sumlogDeltaV / DeltaVs.Length;
+            stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
+            logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
+
+            LogFormatted("Placing ColorIndexes in array");
+            for (int y = 0; y < PlotHeight; y++)
+            {
+                for (int x = 0; x < PlotWidth; x++)
+                {
+                    iCurrent = (Int32)(y * PlotHeight + x);
+                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                    double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
+                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+
+                    DeltaVsColorIndex[iCurrent] = ColorIndex;
+                }
+            }
 
             //Set the Best Transfer
             vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
             SetTransferDetails();
-            //DepartureSelected = DepartureMin + (minDeltaVPoint.x * xResolution);
-            //TravelSelected = TravelMax - (minDeltaVPoint.y * yResolution);
-            //LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitide, out TransferSelected);
-            //TransferSelected.CalcEjectionValues();
-            //Set the details
-            //SetTransferDetails(DepartureSelected, TravelSelected);
         }
 
         private void SetTransferDetails()
@@ -154,26 +244,17 @@ namespace TransferWindowPlanner
 
         private void DrawPlotTexture(Double sumlogDeltaV, Double sumSqLogDeltaV, Double maxDeltaV)
         {
-            Double logDeltaV,mean,stddev;
             //Ensure we have a palette of colors to draw the porkchop
             if (texDeltaVPalette == null || DeltaVColorPalette == null)
                 GenerateDeltaVPalette();
 
             //Now Draw the texture
-            LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
-            logMinDeltaV = Math.Log(DeltaVs.Min());
-            mean = sumlogDeltaV / DeltaVs.Length;
-            stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
-            logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
-
             LogFormatted("Placing Colors on texture");
             texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
             for (int y = 0; y < PlotHeight; y++) {
                 for (int x = 0; x < PlotWidth; x++) {
                     Int32 iCurrent = (Int32)(y * PlotHeight + x);
-                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                    double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
-                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+                    Int32 ColorIndex = DeltaVsColorIndex[iCurrent];
                     //Data flows from left->right and top->bottom so need to reverse y (and cater to 0 based) when drawing the texture
                     texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
                 }

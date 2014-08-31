@@ -27,7 +27,7 @@ namespace TransferWindowPlanner
         CelestialBody cbStar = null;
         List<cbItem> lstBodies = new List<cbItem>();
 
-        internal Vector2 PlotPosition = new Vector2(360, 50);
+        internal Vector2 PlotPosition = new Vector2(372, 50);
 
         internal override void Awake()
         {
@@ -138,9 +138,9 @@ namespace TransferWindowPlanner
 
             if(LabelText!="") {
                 if (LabelWidth==0)
-                    GUILayout.Label(LabelText, Styles.styleTextTitle);
+                    GUILayout.Label(LabelText, Styles.styleTextFieldLabel);
                 else
-                    GUILayout.Label(LabelText, Styles.styleTextTitle, GUILayout.Width(LabelWidth));
+                    GUILayout.Label(LabelText, Styles.styleTextFieldLabel, GUILayout.Width(LabelWidth));
             }
 
             Boolean blnReturn = false;
@@ -161,18 +161,28 @@ namespace TransferWindowPlanner
             return blnReturn;
         }
 
-
+        String strOrigin, strDestination;
         String strDepartureAltitude,strArrivalAltitude;
         String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
         String strTravelMinDays, strTravelMaxDays;
+
+        internal Vector2 vectMouse;
+        internal Vector2 vectSelected;
+        internal Double DepartureSelected, TravelSelected;
+        internal TransferDetails TransferSelected;
 
         internal override void DrawWindow(int id)
         {
             //Settings toggle
             GUIContent contSettings = new GUIContent(Resources.GetSettingsButtonIcon(TransferWindowPlanner.settings.VersionAttentionFlag), "Settings...");
             if (TransferWindowPlanner.settings.VersionAvailable) contSettings.tooltip = "Updated Version Available - Settings...";
-            mbTWP.windowSettings.Visible = GUI.Toggle(new Rect(WindowRect.width - 32, 2, 30, 20),mbTWP.windowSettings.Visible,contSettings,SkinsLibrary.CurrentSkin.button);
+            mbTWP.windowSettings.Visible = GUI.Toggle(new Rect(WindowRect.width - 32, 2, 30, 20), mbTWP.windowSettings.Visible, contSettings, "ButtonSettings");
           
+            if (mbTWP.windowSettings.Visible)
+            {
+                mbTWP.windowSettings.WindowRect.x = WindowRect.x + WindowRect.width;
+                mbTWP.windowSettings.WindowRect.y = WindowRect.y;
+            }
 
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.Width(300));
@@ -182,15 +192,15 @@ namespace TransferWindowPlanner
             
             GUILayout.BeginVertical(GUILayout.Width(100));
             GUILayout.Space(2);
-            GUILayout.Label("Origin:",Styles.styleTextTitle);
-            GUILayout.Label("Initial Orbit:", Styles.styleTextTitle);
-            GUILayout.Label("Destination:", Styles.styleTextTitle);
-            GUILayout.Label("Final Orbit:", Styles.styleTextTitle);
+            GUILayout.Label("Origin:",Styles.styleTextFieldLabel);
+            GUILayout.Label("Initial Orbit:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Destination:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Final Orbit:", Styles.styleTextFieldLabel);
 
             //Checkbox re insertion burn
-            GUILayout.Label("Earliest Departure:", Styles.styleTextTitle);
-            GUILayout.Label("Latest Departure:", Styles.styleTextTitle);
-            GUILayout.Label("Time of Flight:", Styles.styleTextTitle);
+            GUILayout.Label("Earliest Departure:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Latest Departure:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Time of Flight:", Styles.styleTextFieldLabel);
                         
             //GUILayout.Label("Transfer Type:", Styles.styleTextTitle);
             GUILayout.EndVertical();
@@ -222,114 +232,13 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
             //ddlXferType.DrawButton();
 
-
-            //DrawLabel("DepartureMin:{0}", DepartureMin);
-            //DrawLabel("DepartureRange:{0}", DepartureRange);
-            //DrawLabel("DepartureMax:{0}", DepartureMax);
-            //DrawLabel("TravelMin:{0}", TravelMin);
-            //DrawLabel("TravelMax:{0}", TravelMax);
-
-            //DrawLabel("Hohmann:{0}", hohmannTransferTime);
-            //DrawLabel("synodic:{0}", synodicPeriod);
-
-            //DrawLabel("Ktime:{0}", kTime.DateString());
-            
-
-
             GUILayout.EndVertical();
             
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Plot It!"))
                 StartWorker();
 
-            //if (GUILayout.Button("A number!"))
-            //{
-            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
-            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
-            //    LogFormatted_DebugOnly("Next UT:{0}->{1}: {2}",cbO.bodyName,cbD.bodyName,LambertSolver.NextLaunchWindowUT(cbO,cbD));
-            //}
 
-            //if (GUILayout.Button("A DV!"))
-            //{
-            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
-            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
-            //    LogFormatted_DebugOnly("DV:{0}->{1}: {2}", cbO.bodyName, cbD.bodyName, LambertSolver.TransferDeltaV(cbO, cbD, 5030208, 5718672, 100000, 100000));
-            //}
-
-            //if (GUILayout.Button("Solve!"))
-            //{
-            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
-            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
-            //    Vector3d originPositionAtDeparture = cbO.orbit.getRelativePositionAtUT(5030208);
-            //    Vector3d destinationPositionAtArrival = cbD.orbit.getRelativePositionAtUT(5030208 + 5718672);
-            //    bool longWay = Vector3d.Cross(originPositionAtDeparture, destinationPositionAtArrival).y < 0;
-
-            //    LogFormatted_DebugOnly("DV:{0}->{1}: {2}", cbO.bodyName, cbD.bodyName, LambertSolver.Solve(cbO.referenceBody.gravParameter, originPositionAtDeparture, destinationPositionAtArrival, 5718672, longWay));
-            //    LogFormatted_DebugOnly("Origin:{0}", originPositionAtDeparture);
-            //    LogFormatted_DebugOnly("Dest:{0}", destinationPositionAtArrival);
-            //}
-
-            //if (GUILayout.Button("Maths"))
-            //{
-            //    CelestialBody cbK = FlightGlobals.Bodies[0];
-            //    CelestialBody cbO = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "kerbin");
-            //    CelestialBody cbD = FlightGlobals.Bodies.FirstOrDefault(x => x.bodyName.ToLower() == "duna");
-
-            //    LogFormatted_DebugOnly("TAat0:{0}: {1}", cbO.bodyName, cbO.orbit.TrueAnomalyAtUT(0));
-            //    LogFormatted_DebugOnly("TAat0:{0}: {1}", cbD.bodyName, cbD.orbit.TrueAnomalyAtUT(0));
-            //    LogFormatted_DebugOnly("TAat5030208:{0}: {1}", cbO.bodyName, cbO.orbit.TrueAnomalyAtUT(5030208));
-            //    LogFormatted_DebugOnly("TAat5030208:{0}: {1}", cbD.bodyName, cbD.orbit.TrueAnomalyAtUT(5030208));
-            //    LogFormatted_DebugOnly("OVat5030208:{0}: {1}", cbO.bodyName, cbO.orbit.getOrbitalVelocityAtUT(5030208).magnitude);
-            //    LogFormatted_DebugOnly("OVat5030208:{0}: {1}", cbD.bodyName, cbD.orbit.getOrbitalVelocityAtUT(5030208).magnitude);
-            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbO.bodyName, cbO.orbit.getRelativePositionAtUT(5030208).x, cbO.orbit.getRelativePositionAtUT(5030208).y, cbO.orbit.getRelativePositionAtUT(5030208).z);
-            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbD.bodyName, cbD.orbit.getRelativePositionAtUT(5030208).x, cbD.orbit.getRelativePositionAtUT(5030208).y, cbD.orbit.getRelativePositionAtUT(5030208).z);
-
-            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbO.bodyName, cbO.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).x, cbO.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).y, cbO.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).z);
-            //    LogFormatted_DebugOnly("RPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbD.bodyName, cbD.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).x, cbD.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).y, cbD.orbit.getRelativePositionAtUT(5030208 - Planetarium.GetUniversalTime()).z);
-
-            //    //LogFormatted_DebugOnly("SwapRPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbO.bodyName, cbO.orbit.SwappedRelativePositionAtUT(5030208).x, cbO.orbit.SwappedRelativePositionAtUT(5030208).y, cbO.orbit.SwappedRelativePositionAtUT(5030208).z);
-            //    //LogFormatted_DebugOnly("SwapRPat5030208:{0}: X:{1},Y:{2},Z:{3}", cbD.bodyName, cbD.orbit.SwappedRelativePositionAtUT(5030208).x, cbD.orbit.SwappedRelativePositionAtUT(5030208).y, cbD.orbit.SwappedRelativePositionAtUT(5030208).z);
-
-            //    ////LogFormatted_DebugOnly("Absat5030208:{0}: {1}", cbK.bodyName, getAbsolutePositionAtUT(cbK.orbit, 5030208));
-            //    //LogFormatted_DebugOnly("Absat5030208:{0}: {1}", cbO.bodyName, getAbsolutePositionAtUT(cbO.orbit,5030208));
-            //    //LogFormatted_DebugOnly("Absat5030208:{0}: {1}", cbD.bodyName, getAbsolutePositionAtUT(cbD.orbit, 5030208));
-
-            //    //LogFormatted_DebugOnly("Posat5030208:{0}: {1}", cbO.bodyName, cbO.getPositionAtUT(5030208));
-            //    //LogFormatted_DebugOnly("TPosat5030208:{0}: {1}", cbO.bodyName, cbO.getTruePositionAtUT(5030208));
-            //    //LogFormatted_DebugOnly("Posat5030208:{0}: {1}", cbD.bodyName, cbD.getPositionAtUT(5030208));
-            //    //LogFormatted_DebugOnly("TPosat5030208:{0}: {1}", cbD.bodyName, cbD.getTruePositionAtUT(5030208));
-            //    //LogFormatted_DebugOnly("Posat5030208:{0}: {1}", cbK.bodyName, cbK.getPositionAtUT(5030208));
-            //    //LogFormatted_DebugOnly("TPosat5030208:{0}: {1}", cbK.bodyName, cbK.getTruePositionAtUT(5030208));
-
-
-
-            //    Vector3d pos1 = new Vector3d(13028470326,3900591743,0);
-            //    Vector3d pos2 = new Vector3d(-19970745720,-1082561296,15466922.92);
-            //    double tof = 5718672;
-
-            //    Vector3d vdest;
-            //    Vector3d vinit = LambertSolver.Solve(cbK.gravParameter, pos1, pos2, tof, false, out vdest);
-            //    LogFormatted_DebugOnly("Init:{0} - {1}", vinit.magnitude, vinit);
-            //    LogFormatted_DebugOnly("vdest:{0} - {1}", vdest.magnitude, vdest);
-
-
-            //    Vector3d vr1 = cbO.orbit.getOrbitalVelocityAtUT(5030208);
-            //    Vector3d vr2 = cbD.orbit.getOrbitalVelocityAtUT(5030208 + 5718672);
-
-            //    Vector3d vdest2;
-            //    Vector3d vinit2;
-            //    LambertSolver2.Solve(pos1, pos2, tof,cbK, true,out vinit2, out vdest2);
-
-            //    LogFormatted_DebugOnly("Origin:{0} - {1}", vr1.magnitude, vr1);
-            //    LogFormatted_DebugOnly("Dest:{0} - {1}", vr2.magnitude, vr2);
-
-            //    LogFormatted_DebugOnly("Depart:{0} - {1}", vinit2.magnitude, vinit2);
-            //    LogFormatted_DebugOnly("Arrive:{0} - {1}", vdest2.magnitude, vdest2);
-
-            //    LogFormatted_DebugOnly("Eject:{0} - {1}", (vinit2 - vr1).magnitude, vinit2 - vr1);
-            //    LogFormatted_DebugOnly("Inject:{0} - {1}", (vdest2 - vr2).magnitude, vdest2 - vr2);
-
-            //}
 
 
 
@@ -340,11 +249,15 @@ namespace TransferWindowPlanner
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
-            GUILayout.Label("Plot");
-            GUILayout.EndVertical();
+
 
             if (Running)
-                DrawResourceBar(new Rect(350, 180, 280, 20), (Single)workingpercent);
+            {
+                GUI.Label(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 30, PlotWidth + 45, 20),
+                    String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", strOrigin, strDestination, InitialOrbitAltitude / 1000, FinalOrbitAltitide / 1000),
+                    Styles.styleTextYellowBold);
+                DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 10, PlotWidth + 45, 20), (Single)workingpercent);
+            }
             if (Done)
             {
                 if (TextureReadyToDraw) {
@@ -352,6 +265,8 @@ namespace TransferWindowPlanner
                     //Need to move this texure stuff back on to the main thread - set a flag so we know whats done
                     DrawPlotTexture(sumlogDeltaV, sumSqLogDeltaV, maxDeltaV);
                 }
+
+                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)",strOrigin,strDestination,InitialOrbitAltitude/1000,FinalOrbitAltitide/1000),Styles.styleTextYellowBold);
 
                 //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
                 //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
@@ -364,7 +279,7 @@ namespace TransferWindowPlanner
                 //have to rotate the GUI for the y labels
                 Matrix4x4 matrixBackup = GUI.matrix;
                 //rotate the GUI Frame of reference
-                GUIUtility.RotateAroundPivot(-90, new Vector2(mbTWP.windowDebug.intTest1, mbTWP.windowDebug.intTest2)); 
+                GUIUtility.RotateAroundPivot(-90, new Vector2(450, 177)); 
                 //draw the axis label
                 GUI.Label(new Rect((Single)(PlotPosition.x - 80), (Single)(PlotPosition.y), PlotHeight,15), "Travel Days", Styles.stylePlotYLabel);
                 //reset rotation
@@ -382,12 +297,12 @@ namespace TransferWindowPlanner
 
                 //Draw the DeltaV Legend
                 //Δv
-                GUI.Box(new Rect(PlotPosition.x + PlotWidth + 40, PlotPosition.y, 20, PlotHeight), "", Styles.stylePlotLegendImage);
-                GUI.Label(new Rect(PlotPosition.x + PlotWidth + 40, PlotPosition.y-15, 40, 15), "Δv (m/s)", Styles.stylePlotXLabel);
+                GUI.Box(new Rect(PlotPosition.x + PlotWidth + 25, PlotPosition.y, 20, PlotHeight), "", Styles.stylePlotLegendImage);
+                GUI.Label(new Rect(PlotPosition.x + PlotWidth + 25, PlotPosition.y-15, 40, 15), "Δv (m/s)", Styles.stylePlotXLabel);
                 //m/s values based on min max
                 for (Double i = 0; i <=1; i+=0.25) {
                     Double tmpDeltaV = Math.Exp(i * (logMaxDeltaV - logMinDeltaV) + logMinDeltaV);
-                    GUI.Label(new Rect((Single)(PlotPosition.x + PlotWidth + 65), (Single)(PlotPosition.y + (1.0 - i) * (PlotHeight-5) - 5), 40, 15), String.Format("{0:0}", tmpDeltaV), Styles.stylePlotLegendText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + PlotWidth + 50), (Single)(PlotPosition.y + (1.0 - i) * (PlotHeight-5) - 5), 40, 15), String.Format("{0:0}", tmpDeltaV), Styles.stylePlotLegendText);
                 }
 
                 vectMouse=Event.current.mousePosition;
@@ -412,7 +327,6 @@ namespace TransferWindowPlanner
 
                 }
 
-
                 //Draw the selected position indicators
                 if (Done && DepartureSelected>=0)
                 {
@@ -420,54 +334,56 @@ namespace TransferWindowPlanner
                     GUI.Box(new Rect(PlotPosition.x - 9, vectSelected.y - 5, 9,9), Resources.texSelectedYAxis, new GUIStyle());
                     GUI.Box(new Rect(vectSelected.x - 5, PlotPosition.y+PlotHeight, 9,9), Resources.texSelectedXAxis, new GUIStyle());
 
-                    Double logDeltaV = Math.Log(DeltaVs[(Int32)(vectSelected.y * PlotHeight + vectSelected.x)]);
-                    double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
-                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
-                    Single SelectedDV = ColorIndex / DeltaVColorPalette.Count;
 
-                    GUI.Box(new Rect(PlotPosition.x + PlotWidth + 35, PlotPosition.y+(PlotHeight-SelectedDV), 30, 9), "", Styles.stylePlotTransferMarkerDV);
+                    Int32 ColorIndex = DeltaVsColorIndex[(Int32)(((vectSelected.y - PlotPosition.y)) * PlotHeight + (vectSelected.x - PlotPosition.x))];
+                    Double Percent = ColorIndex / DeltaVColorPalette.Count;
+                    GUI.Box(new Rect(PlotPosition.x + PlotWidth + 20, PlotPosition.y+(PlotHeight*(1-(Single)Percent))-5, 30, 9), "", Styles.stylePlotTransferMarkerDV);
                 }
 
             }
 
+            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
-
             ////Draw the selected position indicators
             if (DepartureSelected >= 0 && TransferSelected!=null)
             {
-                GUILayout.Space(150);
-                GUILayout.Label("Selected Transfer Details");
+                GUILayout.Space(105);
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Selected Transfer Details",GUILayout.Width(150));
+                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", strOrigin, strDestination, InitialOrbitAltitude / 1000, FinalOrbitAltitide / 1000), Styles.styleTextYellow);
+                GUILayout.EndHorizontal();
+
                 GUILayout.BeginHorizontal();
                 GUILayout.BeginVertical();
-                GUILayout.Label("Departure:", Styles.styleTextTitle);
-                GUILayout.Label("Phase Angle:", Styles.styleTextTitle);
+                GUILayout.Label("Departure:", Styles.styleTextFieldLabel);
+                GUILayout.Label("Phase Angle:", Styles.styleTextFieldLabel);
                 GUILayout.EndVertical();
                 GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", TransferSelected.DepartureTime), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime),KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
                 GUILayout.EndVertical();
 
                 GUILayout.BeginVertical();
-                GUILayout.Label("Arrival:", Styles.styleTextTitle);
-                GUILayout.Label("Ejection Angle:", Styles.styleTextTitle);
-                GUILayout.Label("Ejection Inclination:", Styles.styleTextTitle);
-                GUILayout.Label("Insertion Inclination:", Styles.styleTextTitle);
+                GUILayout.Label("Arrival:", Styles.styleTextFieldLabel);
+                GUILayout.Label("Ejection Angle:", Styles.styleTextFieldLabel);
+                GUILayout.Label("Ejection Inclination:", Styles.styleTextFieldLabel);
+                GUILayout.Label("Insertion Inclination:", Styles.styleTextFieldLabel);
                 GUILayout.EndVertical();
                 GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime),KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
                 GUILayout.EndVertical();
 
                 GUILayout.BeginVertical();
-                GUILayout.Label("Travel Time:", Styles.styleTextTitle);
-                GUILayout.Label("Total Δv:", Styles.styleTextTitle);
-                GUILayout.Label("Ejection Δv:", Styles.styleTextTitle);
-                GUILayout.Label("Insertion Δv:", Styles.styleTextTitle);
+                GUILayout.Label("Travel Time:", Styles.styleTextFieldLabel);
+                GUILayout.Label("Total Δv:", Styles.styleTextFieldLabel);
+                GUILayout.Label("Ejection Δv:", Styles.styleTextFieldLabel);
+                GUILayout.Label("Insertion Δv:", Styles.styleTextFieldLabel);
                 GUILayout.EndVertical();
                 GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", TransferSelected.TravelTime), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0}",new KSPTime(TransferSelected.TravelTime).ToString()), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
@@ -475,86 +391,6 @@ namespace TransferWindowPlanner
                 GUILayout.EndHorizontal();
             }
         }
-
-        internal Vector2 vectMouse;
-        internal Vector2 vectSelected;
-        internal Double DepartureSelected,TravelSelected;
-        internal TransferDetails TransferSelected;
-
-        internal static Vector3d getAbsolutePositionAtUT(Orbit orbit, double UT)
-        {
-            Vector3d pos = orbit.getRelativePositionAtUT(UT);
-            pos += orbit.referenceBody.position;
-            return pos;
-        }
-
-
-
-        internal Boolean Running = false;
-        internal Boolean Done = false;
-        internal Boolean TextureReadyToDraw = false;
-        internal Double workingpercent = 0;
-
-
-        internal BackgroundWorker bw;
-
-        private void SetWorkerVariables()
-        {
-            DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
-            DepartureMax = KSPTime.BuildUTFromRaw(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
-            DepartureRange = DepartureMax - DepartureMin;
-            DepartureSelected = -1;
-            TravelMin = KSPTime.BuildUTFromRaw("0", strTravelMinDays, "0", "0", "0");
-            TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
-            TravelRange = TravelMax - TravelMin;
-            TravelSelected = -1;
-            FinalOrbitAltitide = Convert.ToDouble(strArrivalAltitude)*1000;
-            InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude)*1000;
-
-            // minus 1 so when we loop from for PlotX pixels the last pixel is the actual last value
-            xResolution = DepartureRange / (PlotWidth-1);
-            yResolution = TravelRange / (PlotHeight-1);
-
-            DeltaVs = new Double[PlotWidth * PlotHeight];
-
-        }
-        Double xResolution, yResolution;
-        internal Int32 PlotWidth = 308, PlotHeight = 308;
-        Double[] DeltaVs;
-
-        private void SetWindowStrings(){
-            KSPTime kTime = new KSPTime(DepartureMin);
-            strDepartureMinYear = (kTime.Year+1).ToString();
-            strDepartureMinDay = (kTime.Day+1).ToString();
-
-            kTime.UT = DepartureMax;
-            strDepartureMaxYear = (kTime.Year+1).ToString();
-            strDepartureMaxDay = (kTime.Day+1).ToString();
-
-            kTime.UT = TravelMin;
-            strTravelMinDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
-
-            kTime.UT = TravelMax;
-            strTravelMaxDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
-
-            strArrivalAltitude = (InitialOrbitAltitude/1000).ToString();
-            strDepartureAltitude = (FinalOrbitAltitide/1000).ToString();
-        }
-
-        private void StartWorker()
-        {
-            SetWorkerVariables();
-
-            workingpercent = 0;
-            Running = true;
-            Done = false;
-            bw = new BackgroundWorker();
-            bw.DoWork += bw_GeneratePorkchop;
-            bw.RunWorkerCompleted += bw_GeneratePorkchopCompleted;
-
-            bw.RunWorkerAsync();
-        }
-
 
         internal static Boolean DrawResourceBar(Rect rectBar, Single percentage)
         {
