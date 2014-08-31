@@ -214,6 +214,9 @@ namespace TransferWindowPlanner
             stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
             logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
 
+            if (DeltaVColorPalette == null)
+                GenerateDeltaVPalette();
+
             LogFormatted("Placing ColorIndexes in array");
             for (int y = 0; y < PlotHeight; y++)
             {
@@ -245,8 +248,8 @@ namespace TransferWindowPlanner
         private void DrawPlotTexture(Double sumlogDeltaV, Double sumSqLogDeltaV, Double maxDeltaV)
         {
             //Ensure we have a palette of colors to draw the porkchop
-            if (texDeltaVPalette == null || DeltaVColorPalette == null)
-                GenerateDeltaVPalette();
+            if (texDeltaVPalette == null)
+                GenerateDeltaVTexture();
 
             //Now Draw the texture
             LogFormatted("Placing Colors on texture");
@@ -277,6 +280,10 @@ namespace TransferWindowPlanner
             for (int i = 255; i >= 128; i--)
                 DeltaVColorPalette.Add(new Color32(255, (byte)i, 128, 255));
 
+        }
+
+        private void GenerateDeltaVTexture()
+        {
             texDeltaVPalette = new Texture2D(1, 512);
             for (int i = 0; i < DeltaVColorPalette.Count; i++)
             {

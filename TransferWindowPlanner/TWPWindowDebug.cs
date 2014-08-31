@@ -92,7 +92,7 @@ namespace TransferWindowPlanner
                 if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
                 if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
 
-                DrawLabel("Running:{0} Done:{1}",mbTWP.windowMain.Running, mbTWP.windowMain.Done);
+                DrawLabel("CI:{0} P:{1}",mbTWP.windowMain.ColorIndex, mbTWP.windowMain.Percent);
 
                 DrawLabel("Mouse:{0}", mbTWP.windowMain.vectMouse);
                 DrawLabel("Plot:{0}", new Rect(mbTWP.windowMain.PlotPosition.x, mbTWP.windowMain.PlotPosition.y, mbTWP.windowMain.PlotWidth, mbTWP.windowMain.PlotHeight));

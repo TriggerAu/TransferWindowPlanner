@@ -335,8 +335,8 @@ namespace TransferWindowPlanner
                     GUI.Box(new Rect(vectSelected.x - 5, PlotPosition.y+PlotHeight, 9,9), Resources.texSelectedXAxis, new GUIStyle());
 
 
-                    Int32 ColorIndex = DeltaVsColorIndex[(Int32)(((vectSelected.y - PlotPosition.y)) * PlotHeight + (vectSelected.x - PlotPosition.x))];
-                    Double Percent = ColorIndex / DeltaVColorPalette.Count;
+                    ColorIndex = DeltaVsColorIndex[(Int32)(((vectSelected.y - PlotPosition.y)) * PlotHeight + (vectSelected.x - PlotPosition.x))];
+                    Percent = (Double)ColorIndex / DeltaVColorPalette.Count;
                     GUI.Box(new Rect(PlotPosition.x + PlotWidth + 20, PlotPosition.y+(PlotHeight*(1-(Single)Percent))-5, 30, 9), "", Styles.stylePlotTransferMarkerDV);
                 }
 
@@ -392,6 +392,8 @@ namespace TransferWindowPlanner
             }
         }
 
+        internal Int32 ColorIndex;
+        internal Double Percent;
         internal static Boolean DrawResourceBar(Rect rectBar, Single percentage)
         {
             Boolean blnReturn = false;
