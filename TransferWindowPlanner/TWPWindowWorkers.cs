@@ -87,7 +87,6 @@ namespace TransferWindowPlanner
             strDepartureAltitude = (FinalOrbitAltitude / 1000).ToString();
         }
 
-        internal Boolean ShowInstructions = true;
         internal Boolean Running = false;
         internal Boolean Done = false;
         internal Boolean TextureReadyToDraw = false;

@@ -171,6 +171,9 @@ namespace TransferWindowPlanner
         internal Double DepartureSelected, TravelSelected;
         internal TransferDetails TransferSelected;
 
+        internal Boolean ShowInstructions = true;
+        internal Boolean ShowMinimized = false;
+
         internal override void DrawWindow(int id)
         {
             //Settings toggle
@@ -184,172 +187,63 @@ namespace TransferWindowPlanner
                 mbTWP.windowSettings.WindowRect.y = WindowRect.y;
             }
 
-            GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical(GUILayout.Width(300));
-            GUILayout.Label("Enter Parameters");
-
-            GUILayout.BeginHorizontal();
-            
-            GUILayout.BeginVertical(GUILayout.Width(100));
-            GUILayout.Space(2);
-            GUILayout.Label("Origin:",Styles.styleTextFieldLabel);
-            GUILayout.Label("Initial Orbit:", Styles.styleTextFieldLabel);
-            GUILayout.Label("Destination:", Styles.styleTextFieldLabel);
-            GUILayout.Label("Final Orbit:", Styles.styleTextFieldLabel);
-
-            //Checkbox re insertion burn
-            GUILayout.Label("Earliest Departure:", Styles.styleTextFieldLabel);
-            GUILayout.Label("Latest Departure:", Styles.styleTextFieldLabel);
-            GUILayout.Label("Time of Flight:", Styles.styleTextFieldLabel);
-                        
-            //GUILayout.Label("Transfer Type:", Styles.styleTextTitle);
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical();
-            ddlOrigin.DrawButton();
-            
-            GUILayout.BeginHorizontal();
-            DrawTextField(ref strDepartureAltitude, "[^\\d\\.]+", true,FieldWidth: 172);
-            GUILayout.Label("km",GUILayout.Width(20));
-            GUILayout.EndHorizontal();
-            
-            ddlDestination.DrawButton();
-
-            GUILayout.BeginHorizontal();
-            DrawTextField(ref strArrivalAltitude, "[^\\d\\.]+", true, FieldWidth: 172);
-            GUILayout.Label("km", GUILayout.Width(20));
-            GUILayout.EndHorizontal();
-
-            DrawYearDay(ref strDepartureMinYear,ref strDepartureMinDay);
-            
-            DrawYearDay(ref strDepartureMaxYear,ref strDepartureMaxDay);
-
-            GUILayout.BeginHorizontal();
-            DrawTextField(ref strTravelMinDays, "[^\\d\\.]+", true, FieldWidth: 60);
-            GUILayout.Label("to",GUILayout.Width(15));
-            DrawTextField(ref strTravelMaxDays, "[^\\d\\.]+", true, FieldWidth: 60);
-            GUILayout.Label("days", GUILayout.Width(30));
-            GUILayout.EndHorizontal();
-            //ddlXferType.DrawButton();
-
-            GUILayout.EndVertical();
-            
-            GUILayout.EndHorizontal();
-            if (GUILayout.Button("Plot It!"))
-                StartWorker();
 
 
 
-
-
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical(GUILayout.Width(10));
-            GUILayout.Box(Resources.texSeparatorV,Styles.styleSeparatorV,GUILayout.Height(200));
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical();
-
-
-            if (Running)
+            if (ShowMinimized) 
             {
-                GUI.Label(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 30, PlotWidth + 45, 20),
-                    String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000),
-                    Styles.styleTextYellowBold);
-                DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 10, PlotWidth + 45, 20), (Single)workingpercent);
-            }
-            if (Done)
-            {
-                if (TextureReadyToDraw) {
-                    TextureReadyToDraw = false;
-                    //Need to move this texure stuff back on to the main thread - set a flag so we know whats done
-                    DrawPlotTexture(sumlogDeltaV, sumSqLogDeltaV, maxDeltaV);
+                if (!Done) {
+                    GUILayout.Label("You need to have run a plot and selected a transfer to get this");
                 }
-
-                GUILayout.Label(String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellowBold);
-
-                //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
-                //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
-                GUI.Box(new Rect(PlotPosition.x - 6, PlotPosition.y, PlotWidth+6, PlotHeight+6), Resources.texPorkChopAxis,new GUIStyle());
-                GUI.Box(new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight), texPlotArea, new GUIStyle());
-
-
-                //Draw the axis labels
-
-                //have to rotate the GUI for the y labels
-                Matrix4x4 matrixBackup = GUI.matrix;
-                //rotate the GUI Frame of reference
-                GUIUtility.RotateAroundPivot(-90, new Vector2(450, 177)); 
-                //draw the axis label
-                GUI.Label(new Rect((Single)(PlotPosition.x - 80), (Single)(PlotPosition.y), PlotHeight,15), "Travel Days", Styles.stylePlotYLabel);
-                //reset rotation
-                GUI.matrix = matrixBackup;
-                //Y Axis
-                for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight - 3)) - 5), 40, 15), String.Format("{0:0}", (TransferSpecs.TravelMin + (1 - i) * TransferSpecs.TravelRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotYText);
-                }
-
-                //XAxis
-                GUI.Label(new Rect((Single)(PlotPosition.x),(Single)(PlotPosition.y + PlotHeight +20),PlotWidth,15),"Departure Date",Styles.stylePlotXLabel);
-                for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (TransferSpecs.DepartureMin + i * TransferSpecs.DepartureRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotXText);
-                }
-
-                //Draw the DeltaV Legend
-                //Δv
-                GUI.Box(new Rect(PlotPosition.x + PlotWidth + 25, PlotPosition.y, 20, PlotHeight), "", Styles.stylePlotLegendImage);
-                GUI.Label(new Rect(PlotPosition.x + PlotWidth + 25, PlotPosition.y-15, 40, 15), "Δv (m/s)", Styles.stylePlotXLabel);
-                //m/s values based on min max
-                for (Double i = 0; i <=1; i+=0.25) {
-                    Double tmpDeltaV = Math.Exp(i * (logMaxDeltaV - logMinDeltaV) + logMinDeltaV);
-                    GUI.Label(new Rect((Single)(PlotPosition.x + PlotWidth + 50), (Single)(PlotPosition.y + (1.0 - i) * (PlotHeight-5) - 5), 40, 15), String.Format("{0:0}", tmpDeltaV), Styles.stylePlotLegendText);
-                }
-
-                vectMouse=Event.current.mousePosition;
-                //Draw the hover over cross
-                if (new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight).Contains(vectMouse)) {
-                    GUI.Box(new Rect(vectMouse.x, PlotPosition.y, 1, PlotHeight), "", Styles.stylePlotCrossHair);
-                    GUI.Box(new Rect(PlotPosition.x, vectMouse.y, PlotWidth, 1), "", Styles.stylePlotCrossHair);
-
-                    //GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", 
-                    //    DeltaVs[(int)((vectMouse.y - PlotPosition.y) * PlotWidth + (vectMouse.x - PlotPosition.x))]), SkinsLibrary.CurrentTooltip);
-
-                    Int32 iCurrent = (Int32)((vectMouse.y-PlotPosition.y)*PlotWidth + (vectMouse.x - PlotPosition.x));
-
-                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[iCurrent]), SkinsLibrary.CurrentTooltip);
-
-                    if (Event.current.type== EventType.MouseDown && Event.current.button == 0)
-                    {
-                        vectSelected = new Vector2(vectMouse.x,vectMouse.y);
-                        SetTransferDetails();
-
-                    }
-
-                }
-
-                //Draw the selected position indicators
-                if (Done && DepartureSelected>=0)
+                else
                 {
-                    GUI.Box(new Rect(vectSelected.x - 8, vectSelected.y - 8, 16, 16), Resources.texSelectedPoint, new GUIStyle());
-                    GUI.Box(new Rect(PlotPosition.x - 9, vectSelected.y - 5, 9,9), Resources.texSelectedYAxis, new GUIStyle());
-                    GUI.Box(new Rect(vectSelected.x - 5, PlotPosition.y+PlotHeight, 9,9), Resources.texSelectedXAxis, new GUIStyle());
-
-
-                    ColorIndex = DeltaVsColorIndex[(Int32)(((vectSelected.y - PlotPosition.y)) * PlotHeight + (vectSelected.x - PlotPosition.x))];
-                    Percent = (Double)ColorIndex / DeltaVColorPalette.Count;
-                    GUI.Box(new Rect(PlotPosition.x + PlotWidth + 20, PlotPosition.y+(PlotHeight*(1-(Single)Percent))-5, 30, 9), "", Styles.stylePlotTransferMarkerDV);
+                    DrawTransferDetailsMinimal();
                 }
+            } 
+            else 
+            { 
+                GUILayout.BeginHorizontal();
+                GUILayout.BeginVertical(GUILayout.Width(300));
+                DrawTransferEntry();
+                GUILayout.EndVertical();
 
+                GUILayout.BeginVertical(GUILayout.Width(10));
+                GUILayout.Box(Resources.texSeparatorV,Styles.styleSeparatorV,GUILayout.Height(200));
+                GUILayout.EndVertical();
+
+                GUILayout.BeginVertical();
+                DrawTransferPlot();
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+
+                DrawTransferDetails();
             }
+        }
 
+        private void DrawTransferDetailsMinimal()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
+            GUILayout.Label("Origin:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Destination:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Departure:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Phase Angle:", Styles.styleTextFieldLabel);
             GUILayout.EndVertical();
-            GUILayout.EndHorizontal();
+            GUILayout.BeginVertical();
+            GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.OriginName, TransferSpecs.InitialOrbitAltitude / 1000), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.DestinationName, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            GUILayout.EndVertical();
+        }
+
+        private void DrawTransferDetails()
+        {
             ////Draw the selected position indicators
-            if (DepartureSelected >= 0 && TransferSelected!=null)
-            {
+            if (DepartureSelected >= 0 && TransferSelected != null) {
                 GUILayout.Space(105);
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("Selected Transfer Details",GUILayout.Width(150));
+                GUILayout.Label("Selected Transfer Details", GUILayout.Width(150));
                 GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
                 GUILayout.EndHorizontal();
 
@@ -359,7 +253,7 @@ namespace TransferWindowPlanner
                 GUILayout.Label("Phase Angle:", Styles.styleTextFieldLabel);
                 GUILayout.EndVertical();
                 GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime),KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
                 GUILayout.EndVertical();
 
@@ -370,7 +264,7 @@ namespace TransferWindowPlanner
                 GUILayout.Label("Insertion Inclination:", Styles.styleTextFieldLabel);
                 GUILayout.EndVertical();
                 GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime),KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
@@ -383,13 +277,157 @@ namespace TransferWindowPlanner
                 GUILayout.Label("Insertion Δv:", Styles.styleTextFieldLabel);
                 GUILayout.EndVertical();
                 GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}",new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }
+        }
+
+        private void DrawTransferPlot()
+        {
+            if (Running) {
+                GUI.Label(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 30, PlotWidth + 45, 20),
+                    String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000),
+                    Styles.styleTextYellowBold);
+                DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 10, PlotWidth + 45, 20), (Single)workingpercent);
+            }
+            if (Done) {
+                if (TextureReadyToDraw) {
+                    TextureReadyToDraw = false;
+                    //Need to move this texure stuff back on to the main thread - set a flag so we know whats done
+                    DrawPlotTexture(sumlogDeltaV, sumSqLogDeltaV, maxDeltaV);
+                }
+
+                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellowBold);
+
+                //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
+                //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
+                GUI.Box(new Rect(PlotPosition.x - 6, PlotPosition.y, PlotWidth + 6, PlotHeight + 6), Resources.texPorkChopAxis, new GUIStyle());
+                GUI.Box(new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight), texPlotArea, new GUIStyle());
+
+
+                //Draw the axis labels
+
+                //have to rotate the GUI for the y labels
+                Matrix4x4 matrixBackup = GUI.matrix;
+                //rotate the GUI Frame of reference
+                GUIUtility.RotateAroundPivot(-90, new Vector2(450, 177));
+                //draw the axis label
+                GUI.Label(new Rect((Single)(PlotPosition.x - 80), (Single)(PlotPosition.y), PlotHeight, 15), "Travel Days", Styles.stylePlotYLabel);
+                //reset rotation
+                GUI.matrix = matrixBackup;
+                //Y Axis
+                for (Double i = 0; i <= 1; i += 0.25) {
+                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight - 3)) - 5), 40, 15), String.Format("{0:0}", (TransferSpecs.TravelMin + (1 - i) * TransferSpecs.TravelRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotYText);
+                }
+
+                //XAxis
+                GUI.Label(new Rect((Single)(PlotPosition.x), (Single)(PlotPosition.y + PlotHeight + 20), PlotWidth, 15), "Departure Date", Styles.stylePlotXLabel);
+                for (Double i = 0; i <= 1; i += 0.25) {
+                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (TransferSpecs.DepartureMin + i * TransferSpecs.DepartureRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotXText);
+                }
+
+                //Draw the DeltaV Legend
+                //Δv
+                GUI.Box(new Rect(PlotPosition.x + PlotWidth + 25, PlotPosition.y, 20, PlotHeight), "", Styles.stylePlotLegendImage);
+                GUI.Label(new Rect(PlotPosition.x + PlotWidth + 25, PlotPosition.y - 15, 40, 15), "Δv (m/s)", Styles.stylePlotXLabel);
+                //m/s values based on min max
+                for (Double i = 0; i <= 1; i += 0.25) {
+                    Double tmpDeltaV = Math.Exp(i * (logMaxDeltaV - logMinDeltaV) + logMinDeltaV);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + PlotWidth + 50), (Single)(PlotPosition.y + (1.0 - i) * (PlotHeight - 5) - 5), 40, 15), String.Format("{0:0}", tmpDeltaV), Styles.stylePlotLegendText);
+                }
+
+                vectMouse = Event.current.mousePosition;
+                //Draw the hover over cross
+                if (new Rect(PlotPosition.x, PlotPosition.y, PlotWidth, PlotHeight).Contains(vectMouse)) {
+                    GUI.Box(new Rect(vectMouse.x, PlotPosition.y, 1, PlotHeight), "", Styles.stylePlotCrossHair);
+                    GUI.Box(new Rect(PlotPosition.x, vectMouse.y, PlotWidth, 1), "", Styles.stylePlotCrossHair);
+
+                    //GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", 
+                    //    DeltaVs[(int)((vectMouse.y - PlotPosition.y) * PlotWidth + (vectMouse.x - PlotPosition.x))]), SkinsLibrary.CurrentTooltip);
+
+                    Int32 iCurrent = (Int32)((vectMouse.y - PlotPosition.y) * PlotWidth + (vectMouse.x - PlotPosition.x));
+
+                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[iCurrent]), SkinsLibrary.CurrentTooltip);
+
+                    if (Event.current.type == EventType.MouseDown && Event.current.button == 0) {
+                        vectSelected = new Vector2(vectMouse.x, vectMouse.y);
+                        SetTransferDetails();
+
+                    }
+
+                }
+
+                //Draw the selected position indicators
+                if (Done && DepartureSelected >= 0) {
+                    GUI.Box(new Rect(vectSelected.x - 8, vectSelected.y - 8, 16, 16), Resources.texSelectedPoint, new GUIStyle());
+                    GUI.Box(new Rect(PlotPosition.x - 9, vectSelected.y - 5, 9, 9), Resources.texSelectedYAxis, new GUIStyle());
+                    GUI.Box(new Rect(vectSelected.x - 5, PlotPosition.y + PlotHeight, 9, 9), Resources.texSelectedXAxis, new GUIStyle());
+
+
+                    ColorIndex = DeltaVsColorIndex[(Int32)(((vectSelected.y - PlotPosition.y)) * PlotHeight + (vectSelected.x - PlotPosition.x))];
+                    Percent = (Double)ColorIndex / DeltaVColorPalette.Count;
+                    GUI.Box(new Rect(PlotPosition.x + PlotWidth + 20, PlotPosition.y + (PlotHeight * (1 - (Single)Percent)) - 5, 30, 9), "", Styles.stylePlotTransferMarkerDV);
+                }
+
+            }
+        }
+
+        private void DrawTransferEntry()
+        {
+            GUILayout.Label("Enter Parameters",Styles.styleTextYellowBold);
+            GUILayout.BeginHorizontal();
+
+            GUILayout.BeginVertical(GUILayout.Width(100));
+            GUILayout.Space(2);
+            GUILayout.Label("Origin:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Initial Orbit:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Destination:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Final Orbit:", Styles.styleTextFieldLabel);
+
+            //Checkbox re insertion burn
+            GUILayout.Label("Earliest Departure:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Latest Departure:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Time of Flight:", Styles.styleTextFieldLabel);
+
+            //GUILayout.Label("Transfer Type:", Styles.styleTextTitle);
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical();
+            ddlOrigin.DrawButton();
+
+            GUILayout.BeginHorizontal();
+            DrawTextField(ref strDepartureAltitude, "[^\\d\\.]+", true, FieldWidth: 172);
+            GUILayout.Label("km", GUILayout.Width(20));
+            GUILayout.EndHorizontal();
+
+            ddlDestination.DrawButton();
+
+            GUILayout.BeginHorizontal();
+            DrawTextField(ref strArrivalAltitude, "[^\\d\\.]+", true, FieldWidth: 172);
+            GUILayout.Label("km", GUILayout.Width(20));
+            GUILayout.EndHorizontal();
+
+            DrawYearDay(ref strDepartureMinYear, ref strDepartureMinDay);
+
+            DrawYearDay(ref strDepartureMaxYear, ref strDepartureMaxDay);
+
+            GUILayout.BeginHorizontal();
+            DrawTextField(ref strTravelMinDays, "[^\\d\\.]+", true, FieldWidth: 60);
+            GUILayout.Label("to", GUILayout.Width(15));
+            DrawTextField(ref strTravelMaxDays, "[^\\d\\.]+", true, FieldWidth: 60);
+            GUILayout.Label("days", GUILayout.Width(30));
+            GUILayout.EndHorizontal();
+            //ddlXferType.DrawButton();
+
+            GUILayout.EndVertical();
+
+            GUILayout.EndHorizontal();
+            if (GUILayout.Button("Plot It!"))
+                StartWorker();
         }
 
         internal Int32 ColorIndex;
