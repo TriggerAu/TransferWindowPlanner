@@ -25,31 +25,26 @@ namespace TransferWindowPlanner
 
 
 
-
-
-
         [Persistent] internal DisplaySkin SelectedSkin = DisplaySkin.Default;
 
-
         internal Boolean BlizzyToolbarIsAvailable = false;
-        [Persistent] internal Boolean UseBlizzyToolbarIfAvailable = false;
 
         internal ButtonStyleEnum ButtonStyleToDisplay {
             get {
                 if (BlizzyToolbarIsAvailable || ButtonStyleChosen != ButtonStyleEnum.Toolbar)
                     return ButtonStyleChosen;
                 else
-                    return ButtonStyleEnum.Basic;
+                    return ButtonStyleEnum.Launcher;
             }
         }
-        [Persistent] internal ButtonStyleEnum ButtonStyleChosen = ButtonStyleEnum.Basic;
+        [Persistent] internal ButtonStyleEnum ButtonStyleChosen = ButtonStyleEnum.Launcher;
         [Persistent] internal Boolean AppTransfererMutuallyExclusive = true;
 
                 internal enum ButtonStyleEnum
         {
-            [Description("Basic button")]                       Basic,
+            //[Description("Basic button")]                       Basic,
             [Description("Common Toolbar (by Blizzy78)")]       Toolbar,
-            [Description("KSP App Transferer Button")]            Transferer,
+            [Description("KSP App Launcher Button")]          Launcher,
         }
 
 

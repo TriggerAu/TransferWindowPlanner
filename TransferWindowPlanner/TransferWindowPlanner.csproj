@@ -48,6 +48,8 @@
     <Compile Include="Framework\MonoBehaviourExtended.cs" />
     <Compile Include="Framework\MonoBehaviourWindow.cs" />
     <Compile Include="Framework\SkinsLibrary.cs" />
+    <Compile Include="SharedStuff\AppLauncher.cs" />
+    <Compile Include="SharedStuff\LambertSolverHelpers.cs" />
     <Compile Include="TimeObjects.cs" />
     <Compile Include="TWPWindow.cs" />
     <Compile Include="TWPWindowDebug.cs" />
@@ -58,6 +60,7 @@
     <Compile Include="TWP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharedStuff\LambertSolver.cs" />
+    <Compile Include="TWPWindowSettings.cs" />
     <Compile Include="TWPWindowWorkers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

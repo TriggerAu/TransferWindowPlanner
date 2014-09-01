@@ -189,7 +189,16 @@ namespace KSPPluginFramework
                     }
                 }
                 _Visible = value;
+                
+                //raise event if theres one registered
+                if(WindowVisibleChanged!=null)
+                    WindowVisibleChanged(this, _Visible);
             }
+        }
+
+        internal void ClampToScreenNow()
+        {
+            WindowRect = WindowRect.ClampToScreen(ClampToScreenOffset);
         }
 
         /// <summary>
@@ -225,14 +234,14 @@ namespace KSPPluginFramework
                         //LogFormatted_DebugOnly("{0}-{1}", WindowRect, WindowPosLast);
                         WindowMoveStarted = true;
                         if (onWindowMoveStarted != null)
-                            onWindowMoveStarted();
+                            onWindowMoveStarted(this);
                     }
                     WindowMoveDetectedAt = DateTime.Now;
                 }
                 if(WindowMoveStarted && WindowMoveDetectedAt.AddSeconds(WindowMoveCompleteAfter)<DateTime.Now)
                 {
                     if (onWindowMoveComplete != null)
-                        onWindowMoveComplete();
+                        onWindowMoveComplete(this);
                     WindowMoveStarted = false;
                 }
                 WindowPosLast = new Vector2(WindowRect.x, WindowRect.y);
@@ -244,8 +253,10 @@ namespace KSPPluginFramework
 
         public event WindowMoveHandler onWindowMoveStarted;
         public event WindowMoveHandler onWindowMoveComplete;
-        public delegate void WindowMoveHandler();
+        public delegate void WindowMoveHandler(MonoBehaviourWindow sender);
 
+        public event WindowVisibleHandler WindowVisibleChanged;
+        public delegate void WindowVisibleHandler(MonoBehaviourWindow sender,Boolean NewVisibleState);
 
         /// <summary>
         /// Time that the last iteration of RepeatingWorkerFunction ran for. Can use this value to see how much impact your code is having
