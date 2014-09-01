@@ -179,8 +179,18 @@ namespace TransferWindowPlanner
             //Settings toggle
             GUIContent contSettings = new GUIContent(Resources.GetSettingsButtonIcon(TransferWindowPlanner.settings.VersionAttentionFlag), "Settings...");
             if (TransferWindowPlanner.settings.VersionAvailable) contSettings.tooltip = "Updated Version Available - Settings...";
-            mbTWP.windowSettings.Visible = GUI.Toggle(new Rect(WindowRect.width - 32, 2, 30, 20), mbTWP.windowSettings.Visible, contSettings, "ButtonSettings");
-          
+            mbTWP.windowSettings.Visible = GUI.Toggle(new Rect(WindowRect.width - 62, 2, 30, 20), mbTWP.windowSettings.Visible, contSettings, "ButtonSettings");
+
+            //Set a default for the MinMax button
+            GUIContent contMaxMin = new GUIContent(Resources.btnChevronUp, "Minimize");
+            if (ShowMinimized)
+            {
+                contMaxMin.image = Resources.btnChevronDown;
+                contMaxMin.tooltip = "Expand";
+            }
+            ShowMinimized = GUI.Toggle(new Rect(WindowRect.width - 32, 2, 30, 20), ShowMinimized, contMaxMin, "ButtonSettings");
+
+
             if (mbTWP.windowSettings.Visible)
             {
                 mbTWP.windowSettings.WindowRect.x = WindowRect.x + WindowRect.width;
@@ -216,7 +226,10 @@ namespace TransferWindowPlanner
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
 
-                DrawTransferDetails();
+                if (DepartureSelected >= 0 && TransferSelected != null)
+                {
+                    DrawTransferDetails();
+                }
             }
         }
 
@@ -224,66 +237,70 @@ namespace TransferWindowPlanner
         {
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical();
-            GUILayout.Label("Origin:", Styles.styleTextFieldLabel);
-            GUILayout.Label("Destination:", Styles.styleTextFieldLabel);
-            GUILayout.Label("Departure:", Styles.styleTextFieldLabel);
-            GUILayout.Label("Phase Angle:", Styles.styleTextFieldLabel);
+            GUILayout.Label("Origin:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Destination:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Departure:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Travel Time:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Ejection Δv:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Total Δv:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.OriginName, TransferSpecs.InitialOrbitAltitude / 1000), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.DestinationName, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
             GUILayout.EndVertical();
         }
 
         private void DrawTransferDetails()
         {
             ////Draw the selected position indicators
-            if (DepartureSelected >= 0 && TransferSelected != null) {
-                GUILayout.Space(105);
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Selected Transfer Details", GUILayout.Width(150));
-                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
-                GUILayout.EndHorizontal();
+            GUILayout.Space(105);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Selected Transfer Details", GUILayout.Width(150));
+            GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
+            GUILayout.EndHorizontal();
 
-                GUILayout.BeginHorizontal();
-                GUILayout.BeginVertical();
-                GUILayout.Label("Departure:", Styles.styleTextFieldLabel);
-                GUILayout.Label("Phase Angle:", Styles.styleTextFieldLabel);
-                GUILayout.EndVertical();
-                GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
-                GUILayout.EndVertical();
+            GUILayout.BeginHorizontal();
+            GUILayout.BeginVertical();
+            GUILayout.Label("Departure:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Phase Angle:", Styles.styleTextDetailsLabel);
+            GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            GUILayout.EndVertical();
 
-                GUILayout.BeginVertical();
-                GUILayout.Label("Arrival:", Styles.styleTextFieldLabel);
-                GUILayout.Label("Ejection Angle:", Styles.styleTextFieldLabel);
-                GUILayout.Label("Ejection Inclination:", Styles.styleTextFieldLabel);
-                GUILayout.Label("Insertion Inclination:", Styles.styleTextFieldLabel);
-                GUILayout.EndVertical();
-                GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
-                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
-                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
-                GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            GUILayout.Label("Arrival:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Ejection Angle:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Ejection Inclination:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Insertion Inclination:", Styles.styleTextDetailsLabel);
+            GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            GUILayout.EndVertical();
 
-                GUILayout.BeginVertical();
-                GUILayout.Label("Travel Time:", Styles.styleTextFieldLabel);
-                GUILayout.Label("Total Δv:", Styles.styleTextFieldLabel);
-                GUILayout.Label("Ejection Δv:", Styles.styleTextFieldLabel);
-                GUILayout.Label("Insertion Δv:", Styles.styleTextFieldLabel);
-                GUILayout.EndVertical();
-                GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
-                GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
-                GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
-                GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
-                GUILayout.EndVertical();
-                GUILayout.EndHorizontal();
-            }
+            GUILayout.BeginVertical();
+            GUILayout.Label("Travel Time:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Total Δv:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Ejection Δv:", Styles.styleTextDetailsLabel);
+            GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
+            GUILayout.EndVertical();
+            GUILayout.BeginVertical();
+            GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
         }
 
         private void DrawTransferPlot()

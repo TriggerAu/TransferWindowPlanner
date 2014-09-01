@@ -26,6 +26,8 @@ namespace TransferWindowPlanner
 
         internal static Texture2D btnSettings = new Texture2D(17, 16, TextureFormat.ARGB32, false);
         internal static Texture2D btnSettingsAttention = new Texture2D(17, 16, TextureFormat.ARGB32, false);
+        internal static Texture2D btnChevronUp = new Texture2D(17, 16, TextureFormat.ARGB32, false);
+        internal static Texture2D btnChevronDown = new Texture2D(17, 16, TextureFormat.ARGB32, false);
 
         internal static Texture2D btnDropDown = new Texture2D(10, 10, TextureFormat.ARGB32, false);
 
@@ -59,6 +61,8 @@ namespace TransferWindowPlanner
 
             LoadImageFromFile(ref btnSettings, "img_buttonSettings.png");
             LoadImageFromFile(ref btnSettingsAttention, "img_buttonSettingsAttention.png");
+            LoadImageFromFile(ref btnChevronDown, "img_buttonChevronDown.png");
+            LoadImageFromFile(ref btnChevronUp, "img_buttonChevronUp.png");
 
             LoadImageFromFile(ref btnDropDown, "img_DropDown.png");
 

@@ -94,7 +94,7 @@ namespace TransferWindowPlanner
 
         internal BackgroundWorker bw;
 
-        class TransferWorkerDetails
+        internal class TransferWorkerDetails
         {
             public Double DepartureMin { get; set; }
             public Double DepartureMax { get; set; }
@@ -107,6 +107,7 @@ namespace TransferWindowPlanner
             public String OriginName { get; set; }
             public String DestinationName { get; set; }
         }
+
 
         internal TransferWorkerDetails TransferSpecs;
 
@@ -124,6 +125,7 @@ namespace TransferWindowPlanner
             InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude) * 1000;
 
             //Store the transfer Specs for display purposes
+            TransferSpecs = new TransferWorkerDetails();
             TransferSpecs.DepartureMin = DepartureMin;
             TransferSpecs.DepartureMax = DepartureMax;
             TransferSpecs.DepartureRange = DepartureRange;

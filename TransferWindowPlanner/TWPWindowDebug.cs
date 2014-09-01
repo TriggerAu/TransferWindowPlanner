@@ -85,6 +85,7 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest5);
 
                 DrawLabel("Hello");
+                //Styles.styleTextFieldLabel.padding.top = intTest1;
 
                 if (GUILayout.Button("KSP")) SkinsLibrary.SetCurrent(SkinsLibrary.DefSkinType.KSP);
                 if (GUILayout.Button("UnityDef")) SkinsLibrary.SetCurrent(SkinsLibrary.DefSkinType.Unity);

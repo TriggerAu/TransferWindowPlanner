@@ -52,6 +52,7 @@ namespace TransferWindowPlanner
         internal static GUIStyle styleSettingsArea;
 
         internal static GUIStyle styleText, styleTextHeading;
+        internal static GUIStyle styleTextDetails, styleTextDetailsLabel;
 
         internal static GUIStyle styleTextCenter;
         internal static GUIStyle styleTextCenterGreen;
@@ -201,20 +202,28 @@ namespace TransferWindowPlanner
             styleTextHeading.fontStyle = FontStyle.Bold;
             styleTextHeading.wordWrap = false;
 
-            styleTextFieldDefault = new GUIStyle(SkinsLibrary.DefUnitySkin.textField);
-            styleTextFieldDefault.fontStyle = FontStyle.Normal;
+            styleTextDetails = new GUIStyle(styleText);
+            styleTextDetails.padding.top = 2;
 
-            styleTextGreen = new GUIStyle(styleText);
+            styleTextDetailsLabel = new GUIStyle(styleTextDetails);
+            styleTextDetailsLabel.alignment = TextAnchor.MiddleRight;
+            styleTextDetailsLabel.fontStyle = FontStyle.Bold;
+
+            styleTextGreen = new GUIStyle(styleTextDetails);
             styleTextGreen.normal.textColor = new Color32(183, 254, 0, 255); ;
-            styleTextYellow = new GUIStyle(styleText);
+            styleTextYellow = new GUIStyle(styleTextDetails);
             styleTextYellow.normal.textColor = Color.yellow;
             styleTextYellowBold = new GUIStyle(styleTextYellow);
             styleTextYellowBold.fontStyle = FontStyle.Bold;
 
-            styleTextCenter = new GUIStyle(styleText);
+            styleTextCenter = new GUIStyle(styleTextDetails);
             styleTextCenter.alignment = TextAnchor.MiddleCenter;
             styleTextCenterGreen = new GUIStyle(styleTextCenter);
             styleTextCenterGreen.normal.textColor = new Color32(183, 254, 0, 255);
+
+            #region TextField Stuff for entry fields
+            styleTextFieldDefault = new GUIStyle(SkinsLibrary.DefUnitySkin.textField);
+            styleTextFieldDefault.fontStyle = FontStyle.Normal;
 
             styleTextField = new GUIStyle(styleTextFieldDefault);
             styleTextField.stretchWidth = true;
@@ -227,7 +236,8 @@ namespace TransferWindowPlanner
             styleTextFieldLabel.padding.top = 4;
 
             styleTextFieldError = new GUIStyle(styleTextField);
-            styleTextFieldError.normal.textColor = Color.red;
+            styleTextFieldError.normal.textColor = Color.red; 
+            #endregion
 
             stylePlotLegendImage = new GUIStyle();
             stylePlotText = new GUIStyle(styleText);
