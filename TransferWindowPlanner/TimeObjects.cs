@@ -240,6 +240,11 @@ namespace TransferWindowPlanner
             strReturn += String.Format("{0} Years, {1} Days, {2:00}:{3:00}:{4:00}", Math.Abs(Year), Math.Abs(Day), Math.Abs(Hour), Math.Abs(Minute), Math.Abs(Second));
             return strReturn;
         }
+        public String IntervalStringLongTrimYears()
+        {
+            String strReturn = IntervalStringLong();
+            return strReturn.Replace("0 Years, ", "");
+        }
 
         public String UTString()
         {

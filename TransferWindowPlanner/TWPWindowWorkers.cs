@@ -23,7 +23,7 @@ namespace TransferWindowPlanner
         Double DepartureMin,DepartureMax,DepartureRange;
         Double TravelMin, TravelMax, TravelRange;
 
-        Double InitialOrbitAltitude = 100000, FinalOrbitAltitide = 100000;
+        Double InitialOrbitAltitude = 100000, FinalOrbitAltitude = 100000;
 
         void SetupDestinationControls()
         {
@@ -84,7 +84,7 @@ namespace TransferWindowPlanner
             strTravelMaxDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
 
             strArrivalAltitude = (InitialOrbitAltitude / 1000).ToString();
-            strDepartureAltitude = (FinalOrbitAltitide / 1000).ToString();
+            strDepartureAltitude = (FinalOrbitAltitude / 1000).ToString();
         }
 
         internal Boolean ShowInstructions = true;
@@ -94,6 +94,22 @@ namespace TransferWindowPlanner
         internal Double workingpercent = 0;
 
         internal BackgroundWorker bw;
+
+        class TransferWorkerDetails
+        {
+            public Double DepartureMin { get; set; }
+            public Double DepartureMax { get; set; }
+            public Double DepartureRange { get; set; }
+            public Double TravelMin { get; set; }
+            public Double TravelMax { get; set; }
+            public Double TravelRange { get; set; }
+            public Double InitialOrbitAltitude { get; set; }
+            public Double FinalOrbitAltitude { get; set; }
+            public String OriginName { get; set; }
+            public String DestinationName { get; set; }
+        }
+
+        internal TransferWorkerDetails TransferSpecs;
 
         private void SetWorkerVariables()
         {
@@ -105,9 +121,21 @@ namespace TransferWindowPlanner
             TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
             TravelRange = TravelMax - TravelMin;
             TravelSelected = -1;
-            FinalOrbitAltitide = Convert.ToDouble(strArrivalAltitude) * 1000;
+            FinalOrbitAltitude = Convert.ToDouble(strArrivalAltitude) * 1000;
             InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude) * 1000;
 
+            //Store the transfer Specs for display purposes
+            TransferSpecs.DepartureMin = DepartureMin;
+            TransferSpecs.DepartureMax = DepartureMax;
+            TransferSpecs.DepartureRange = DepartureRange;
+            TransferSpecs.TravelMin = TravelMin;
+            TransferSpecs.TravelMax = TravelMax;
+            TransferSpecs.TravelRange = TravelRange;
+            TransferSpecs.InitialOrbitAltitude = InitialOrbitAltitude;
+            TransferSpecs.FinalOrbitAltitude = FinalOrbitAltitude;
+            TransferSpecs.OriginName = cbOrigin.bodyName;
+            TransferSpecs.DestinationName = cbDestination.bodyName;
+            
             // minus 1 so when we loop from for PlotX pixels the last pixel is the actual last value
             xResolution = DepartureRange / (PlotWidth - 1);
             yResolution = TravelRange / (PlotHeight - 1);
@@ -172,7 +200,7 @@ namespace TransferWindowPlanner
                     //Set the Value for this position to be the DeltaV of this Transfer
                     DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, 
                         DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution), 
-                        InitialOrbitAltitude, FinalOrbitAltitide);
+                        InitialOrbitAltitude, FinalOrbitAltitude);
 
                     if (DeltaVs[iCurrent] > maxDeltaV)
                         maxDeltaV = DeltaVs[iCurrent];
@@ -241,7 +269,7 @@ namespace TransferWindowPlanner
             DepartureSelected = DepartureMin + (vectSelected.x - PlotPosition.x) * xResolution;
             TravelSelected = TravelMax - (vectSelected.y - PlotPosition.y) * yResolution;
 
-            LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitide, out TransferSelected);
+            LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitude, out TransferSelected);
             TransferSelected.CalcEjectionValues();
         }
 

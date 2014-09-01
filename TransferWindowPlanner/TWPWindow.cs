@@ -254,7 +254,7 @@ namespace TransferWindowPlanner
             if (Running)
             {
                 GUI.Label(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 30, PlotWidth + 45, 20),
-                    String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", strOrigin, strDestination, InitialOrbitAltitude / 1000, FinalOrbitAltitide / 1000),
+                    String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000),
                     Styles.styleTextYellowBold);
                 DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 10, PlotWidth + 45, 20), (Single)workingpercent);
             }
@@ -266,7 +266,7 @@ namespace TransferWindowPlanner
                     DrawPlotTexture(sumlogDeltaV, sumSqLogDeltaV, maxDeltaV);
                 }
 
-                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)",strOrigin,strDestination,InitialOrbitAltitude/1000,FinalOrbitAltitide/1000),Styles.styleTextYellowBold);
+                GUILayout.Label(String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellowBold);
 
                 //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
                 //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
@@ -286,13 +286,13 @@ namespace TransferWindowPlanner
                 GUI.matrix = matrixBackup;
                 //Y Axis
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight-3))-5), 40, 15), String.Format("{0:0}", (TravelMin + (1-i) * TravelRange)/(KSPTime.SecondsPerDay)), Styles.stylePlotYText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight - 3)) - 5), 40, 15), String.Format("{0:0}", (TransferSpecs.TravelMin + (1 - i) * TransferSpecs.TravelRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotYText);
                 }
 
                 //XAxis
                 GUI.Label(new Rect((Single)(PlotPosition.x),(Single)(PlotPosition.y + PlotHeight +20),PlotWidth,15),"Departure Date",Styles.stylePlotXLabel);
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (DepartureMin + i * DepartureRange)/(KSPTime.SecondsPerDay)), Styles.stylePlotXText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (TransferSpecs.DepartureMin + i * TransferSpecs.DepartureRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotXText);
                 }
 
                 //Draw the DeltaV Legend
@@ -350,7 +350,7 @@ namespace TransferWindowPlanner
                 GUILayout.Space(105);
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Selected Transfer Details",GUILayout.Width(150));
-                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", strOrigin, strDestination, InitialOrbitAltitude / 1000, FinalOrbitAltitide / 1000), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
@@ -383,7 +383,7 @@ namespace TransferWindowPlanner
                 GUILayout.Label("Insertion Δv:", Styles.styleTextFieldLabel);
                 GUILayout.EndVertical();
                 GUILayout.BeginVertical();
-                GUILayout.Label(String.Format("{0:0}",new KSPTime(TransferSelected.TravelTime).ToString()), Styles.styleTextYellow);
+                GUILayout.Label(String.Format("{0:0}",new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
                 GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
