@@ -392,6 +392,22 @@ namespace TransferWindowPlanner
 
             }
         }
+        private void DrawInstructions()
+        {
+            DrawSingleInstruction("1.","Select the celestial body you will be departing from.");
+            DrawSingleInstruction("2.","Enter the altitude of your parking orbit around that body. This is assumed to be a circular, equatorial orbit.");
+            DrawSingleInstruction("3.","Select the celestial body you wish to travel to.");
+            DrawSingleInstruction("4.","Enter the altitude of the orbit you wish to establish around your destination body. You may check the \"No insertion burn\" checkbox instead if you intend to perform a fly-by or aerobraking maneuver.");
+            DrawSingleInstruction("5.","Enter the earliest departure date to include in the plot. Generally this should be your current game time, which you can find in the tracking station in the game.");
+            DrawSingleInstruction("6.","Click the \"Plot it!\" button. After a few seconds a plot will appear showing how much Δv is required to reach your destination for different departure dates and times of flight. Click on any point on this plot to see full details of the selected transfer.");
+        }
+        private void DrawSingleInstruction(String Num, String Text)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(Num, Styles.styleTextInstructionNum, GUILayout.Width(20));
+            GUILayout.Label(Text, Styles.styleTextInstruction);
+            GUILayout.EndHorizontal();
+        }
 
         private void DrawTransferEntry()
         {
