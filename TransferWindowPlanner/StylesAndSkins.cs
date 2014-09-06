@@ -129,7 +129,7 @@ namespace TransferWindowPlanner
             styleButtonSettings.padding = new RectOffset(1, 1, 1, 1);
             styleButtonSettings.onNormal.background = styleButtonSettings.active.background;
             styleButtonSettings.alignment = TextAnchor.MiddleCenter;
-            styleButtonSettings.normal.textColor = new Color32(207, 207, 207, 255);
+            styleButtonSettings.normal.textColor = new Color32(177, 193, 205, 255);
             styleButtonSettings.fontStyle = FontStyle.Bold;
             //styleButtonSettings.fixedWidth = 40;
 

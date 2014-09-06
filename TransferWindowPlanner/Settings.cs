@@ -38,9 +38,8 @@ namespace TransferWindowPlanner
             }
         }
         [Persistent] internal ButtonStyleEnum ButtonStyleChosen = ButtonStyleEnum.Launcher;
-        [Persistent] internal Boolean AppTransfererMutuallyExclusive = true;
 
-                internal enum ButtonStyleEnum
+        internal enum ButtonStyleEnum
         {
             //[Description("Basic button")]                       Basic,
             [Description("Common Toolbar (by Blizzy78)")]       Toolbar,
@@ -55,6 +54,10 @@ namespace TransferWindowPlanner
             [Description("Unity/KSP Buttons")]  UnityWKSPButtons
         }
 
+        [Persistent] internal Boolean ClickThroughProtect_KSC=true;
+        [Persistent] internal Boolean ClickThroughProtect_Editor=true;
+        [Persistent] internal Boolean ClickThroughProtect_Flight=true;
+
         //Version Stuff
         [Persistent]
         internal Boolean DailyVersionCheck = true;
@@ -68,6 +71,17 @@ namespace TransferWindowPlanner
         [Persistent]
         internal String VersionCheckDate_SuccessStored;
         public String VersionCheckDate_SuccessString { get { return ConvertVersionCheckDateToString(this.VersionCheckDate_Success); } }
+
+        public override void OnEncodeToConfigNode()
+        {
+            VersionCheckDate_AttemptStored = VersionCheckDate_AttemptString;
+            VersionCheckDate_SuccessStored = VersionCheckDate_SuccessString;
+        }
+        public override void OnDecodeFromConfigNode()
+        {
+            DateTime.TryParseExact(VersionCheckDate_AttemptStored, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out VersionCheckDate_Attempt);
+            DateTime.TryParseExact(VersionCheckDate_SuccessStored, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out VersionCheckDate_Success);
+        }
 
         #region Version Checks
         private String ConvertVersionCheckDateToString(DateTime Date)
@@ -268,5 +282,6 @@ namespace TransferWindowPlanner
         //    return blnReturn;
         //}
         #endregion
+
     }
 }

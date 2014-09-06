@@ -18,12 +18,12 @@ namespace TransferWindowPlanner
 
         internal override void DrawWindow(int id)
         {
-            WindowRect = new Rect(mbTWP.windowSettings.WindowRect.x, mbTWP.windowSettings.WindowRect.y, 310, 200);
+            WindowRect = new Rect(mbTWP.windowSettings.WindowRect.x, mbTWP.windowSettings.WindowRect.y, mbTWP.windowSettings.WindowWidth, mbTWP.windowSettings.WindowHeight);
             GUILayout.Box("", new GUIStyle(), GUILayout.Width(100), GUILayout.Height(100));
         }
-        internal override void Awake()
+        internal override void Start()
         {
-            WindowRect = new Rect(0, 0, 310, 200);
+            WindowRect = new Rect(0, 0, mbTWP.windowSettings.WindowWidth, mbTWP.windowSettings.WindowHeight);
         }
     }
 }

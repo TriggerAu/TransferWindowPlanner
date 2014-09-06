@@ -187,12 +187,13 @@ namespace KSPPluginFramework
                         LogFormatted_DebugOnly("Removing Window from PostDrawQueue", WindowID);
                         RenderingManager.RemoveFromPostDrawQueue(5, this.DrawGUI);
                     }
+
+                    //raise event if theres one registered
+                    if (onWindowVisibleChanged != null)
+                        onWindowVisibleChanged(this, value);
                 }
                 _Visible = value;
                 
-                //raise event if theres one registered
-                if(WindowVisibleChanged!=null)
-                    WindowVisibleChanged(this, _Visible);
             }
         }
 
@@ -255,7 +256,7 @@ namespace KSPPluginFramework
         public event WindowMoveHandler onWindowMoveComplete;
         public delegate void WindowMoveHandler(MonoBehaviourWindow sender);
 
-        public event WindowVisibleHandler WindowVisibleChanged;
+        public event WindowVisibleHandler onWindowVisibleChanged;
         public delegate void WindowVisibleHandler(MonoBehaviourWindow sender,Boolean NewVisibleState);
 
         /// <summary>
@@ -279,6 +280,8 @@ namespace KSPPluginFramework
 
             DrawWindowPost(id);
 
+            _MouseOver = WindowRect.Contains(Event.current.mousePosition);
+
             //Set the Tooltip variable based on whats in this window
             if (TooltipsEnabled)
                 SetTooltipText();
@@ -293,6 +296,9 @@ namespace KSPPluginFramework
             //Now calc the duration
             DrawWindowInternalDuration = (DateTime.Now - Duration);
         }
+
+        private Boolean _MouseOver=false;
+        internal Boolean IsMouseOver { get { return _MouseOver; } }
 
         /// <summary>
         /// This is the optionally overridden function that runs before DrawWindow

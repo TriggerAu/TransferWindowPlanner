@@ -63,6 +63,7 @@ namespace TransferWindowPlanner
     //        throw new ArgumentException("Invalid order", "order");
     //    }
     //}
+
     class TWPWindowDebug : MonoBehaviourWindowPlus
     {
         internal TransferWindowPlanner mbTWP;
@@ -84,7 +85,6 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest4);
                 DrawTextBox(ref intTest5);
 
-                DrawLabel("Hello");
                 //Styles.styleTextFieldLabel.padding.top = intTest1;
 
                 //if (GUILayout.Button("KSP")) SkinsLibrary.SetCurrent(SkinsLibrary.DefSkinType.KSP);
@@ -92,6 +92,10 @@ namespace TransferWindowPlanner
                 if (GUILayout.Button("Default")) SkinsLibrary.SetCurrent("Default");
                 if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
                 if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
+
+                DrawLabel("MouseOverAny:{0}", mbTWP.MouseOverAnyWindow);
+                DrawLabel("MouseOverMain:{0}", mbTWP.windowMain.IsMouseOver);
+                DrawLabel("MouseOverMain:{0}", mbTWP.windowMain.IsMouseOver);
 
                 DrawLabel("Settings:{0}", mbTWP.windowSettings.WindowRect);
                 DrawLabel("SettingsBlocker:{0}", mbTWP.windowSettingsBlockout.WindowRect);

@@ -63,8 +63,8 @@ namespace TransferWindowPlanner
             GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
 
             //do the daily version check if required
-            //if (settings.DailyVersionCheck)
-                //settings.VersionCheck(false);
+            if (settings.DailyVersionCheck)
+                settings.VersionCheck(false);
 
             //APIAwake();
         }
@@ -204,6 +204,8 @@ namespace TransferWindowPlanner
 
         }
 
+        internal Boolean MouseOverAnyWindow = false;
+
         void DrawGUI()
         {
             ////Draw the button - for basic stuff - Not using a button
@@ -211,9 +213,73 @@ namespace TransferWindowPlanner
             //{
 
             //}
+
+            //Do this for control Locks
+            MouseOverAnyWindow=false;
+            MonoBehaviourWindow[] TWPwindows = FindObjectsOfType<MonoBehaviourWindow>();
+            foreach (MonoBehaviourWindow item in TWPwindows)
+            {
+                if (MouseOverWindow(item.WindowRect, item.Visible))
+                {
+                    MouseOverAnyWindow = true;
+                    break;
+                }
+            }
+
+            //If the setting is on and the mouse is over any window then lock it
+            if (MouseOverAnyWindow)
+            {
+                Boolean AddLock = false;
+                switch (HighLogic.LoadedScene)
+                {
+                    case GameScenes.SPACECENTER:    AddLock = settings.ClickThroughProtect_KSC && !(InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.KSC_FACILITIES); break;
+                    case GameScenes.EDITOR:
+                    case GameScenes.SPH:            AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.EDITOR_LOCK); break;
+                    case GameScenes.FLIGHT:         AddLock = settings.ClickThroughProtect_Flight && !(InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.All); break;
+                    case GameScenes.TRACKSTATION:
+                        break;
+                    default:
+                        break;
+                }
+                if (AddLock){
+                    LogFormatted_DebugOnly("AddingLock-{0}", "TWPControlLock");
+
+                    switch (HighLogic.LoadedScene)
+                    {
+                        case GameScenes.SPACECENTER: InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, "TWPControlLock"); break;
+                        case GameScenes.EDITOR:
+                        case GameScenes.SPH:
+                            InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK, "TWPControlLock");
+                            break;
+                        case GameScenes.FLIGHT:
+                            InputLockManager.SetControlLock(ControlTypes.All, "TWPControlLock");
+                            break;
+                        case GameScenes.TRACKSTATION:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            //Otherwise make sure the lock is removed
+            else
+            {
+                if (InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.KSC_FACILITIES ||
+                    InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.EDITOR_LOCK ||
+                    InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.All )
+                {
+                    LogFormatted_DebugOnly("Removing-{0}", "TWPControlLock");
+                    InputLockManager.RemoveControlLock("TWPControlLock");
+                }
+            }
         }
 
-    }
+        private Boolean MouseOverWindow(Rect WindowRect, Boolean WindowVisible)
+        {
+            return WindowVisible && WindowRect.Contains(Event.current.mousePosition);
+        }
+
+     }
 
 
 

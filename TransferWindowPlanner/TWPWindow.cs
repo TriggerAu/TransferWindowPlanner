@@ -63,7 +63,7 @@ namespace TransferWindowPlanner
             //ddlXferType = new DropDownList(lstXFerTypes, this);
             //ddlManager.AddDDL(ddlXferType);
 
-            WindowVisibleChanged += TWPWindow_WindowVisibleChanged;
+            onWindowVisibleChanged += TWPWindow_WindowVisibleChanged;
 
             //Set the defaults
         }
@@ -321,26 +321,27 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-            GUIStyle b = new GUIStyle(SkinsLibrary.CurrentSkin.button);
-            b.fixedHeight = mbTWP.windowDebug.intTest1;
-            b.fixedWidth = mbTWP.windowDebug.intTest2;
-            if(GUILayout.Button(new GUIContent(Resources.btnCopy, "Copy Departure UT"),b))
+            
+            GUIStyle styleCopyButton = new GUIStyle(SkinsLibrary.CurrentSkin.button);
+            styleCopyButton.fixedHeight = 18;
+            styleCopyButton.padding.top = styleCopyButton.padding.bottom = 0;
+            if(GUILayout.Button(new GUIContent(Resources.btnCopy, "Copy Departure UT"),styleCopyButton))
             {
                 Utilities.CopyTextToClipboard(String.Format("{0:0}", TransferSelected.DepartureTime));
             }
             GUILayout.EndHorizontal();
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
-            if (GUI.Button(new Rect(10,WindowRect.height-30,200,20),new GUIContent("Copy Transfer Details", Resources.btnCopy)))
+            if (GUI.Button(new Rect(10,WindowRect.height-30,200,20),new GUIContent("  Copy Transfer Details", Resources.btnCopy)))
             {
                 String Message = String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
-                Message = Message.AppendLine("Depart at:\t{0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
-                Message = Message.AppendLine("\tUT:{0:0}", TransferSelected.DepartureTime);
-                Message = Message.AppendLine("Travel:\t{0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
-                Message = Message.AppendLine("\tUT:{0:0}", TransferSelected.TravelTime);
-                Message = Message.AppendLine("Arrive at:\t{0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
-                Message = Message.AppendLine("\tUT:{0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
-                Message = Message.AppendLine("Phase Angle:\t{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
-                Message = Message.AppendLine("Ejection Angle:\t{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
+                Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
+                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.TravelTime);
+                Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
+                Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
                 Utilities.CopyTextToClipboard(Message);
             }
             GUILayout.EndVertical();

@@ -20,6 +20,9 @@ namespace TransferWindowPlanner
         private DropDownList ddlSettingsSkin;
         private DropDownList ddlSettingsButtonStyle;
 
+        internal Int32 WindowWidth = 320;
+        internal Int32 WindowHeight = 200;
+
         internal enum SettingsTabs
         {
             [Description("General Properties")] General,
@@ -30,7 +33,7 @@ namespace TransferWindowPlanner
         internal override void Awake()
         {
             //WindowRect = new Rect(mbTWP.windowMain.WindowRect.x + mbTWP.windowMain.WindowRect.width, mbTWP.windowMain.WindowRect.y, 300, 200);
-            WindowRect = new Rect(0 ,0, 310, 200);
+            WindowRect = new Rect(0, 0, WindowWidth, WindowHeight);
             settings = TransferWindowPlanner.settings;
 
             TooltipMouseOffset = new Vector2d(-10, 10);
@@ -45,6 +48,22 @@ namespace TransferWindowPlanner
             ddlManager.AddDDL(ddlSettingsButtonStyle);
             ddlManager.AddDDL(ddlSettingsSkin);
             ddlManager.AddDDL(ddlSettingsTab);
+
+            onWindowVisibleChanged += TWPWindowSettings_onWindowVisibleChanged;
+        }
+
+        void TWPWindowSettings_onWindowVisibleChanged(MonoBehaviourWindow sender, bool NewVisibleState)
+        {
+            if (NewVisibleState)
+            {
+                if (settings.VersionAttentionFlag)
+                    ddlSettingsTab.SelectedIndex = (Int32)SettingsTabs.About;
+                else
+                    ddlSettingsTab.SelectedIndex = (Int32)SettingsTabs.General;
+
+                //reset the flag
+                settings.VersionAttentionFlag = false;
+            }
         }
 
         internal override void OnGUIOnceOnly()
@@ -87,7 +106,6 @@ namespace TransferWindowPlanner
                     break;
             }
         }
-
         internal override void DrawWindow(int id)
         {
             if (GUI.Button(new Rect(WindowRect.width - 32, 2, 30, 20), "X", "ButtonSettings"))
@@ -110,14 +128,17 @@ namespace TransferWindowPlanner
             {
                 case SettingsTabs.General:
                     DrawWindow_General();
+                    WindowHeight = 206;
                     break;
                 case SettingsTabs.About:
                     DrawWindow_About();
+                    WindowHeight = 285;
                     break;
             }
             GUILayout.EndVertical();
 
-            WindowRect.width = 310;
+            WindowRect.width = WindowWidth;
+            WindowRect.height = WindowHeight;
         }
 
         //Int32 intBlizzyToolbarMissingHeight = 0;
@@ -161,6 +182,13 @@ namespace TransferWindowPlanner
 
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+
+            GUILayout.Label("Click Through Protection", Styles.styleTextHeading);
+            GUILayout.BeginVertical(Styles.styleSettingsArea);
+            if (DrawToggle(ref settings.ClickThroughProtect_KSC, "Prevent in Space Center", Styles.styleToggle)) settings.Save();
+            if (DrawToggle(ref settings.ClickThroughProtect_Editor, "Prevent in Editors", Styles.styleToggle)) settings.Save();
+            if (DrawToggle(ref settings.ClickThroughProtect_Flight, "Prevent in Flight", Styles.styleToggle)) settings.Save();
+            GUILayout.EndVertical();
         }
         private void DrawWindow_About()
         {
@@ -214,7 +242,7 @@ namespace TransferWindowPlanner
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(80);
                 if (GUILayout.Button("Updated Version Available - Click Here", Styles.styleTextYellowBold))
-                    Application.OpenURL("http://kerbalspaceport.com/kspalternateresourcepanel/");
+                    Application.OpenURL("https://github.com/TriggerAu/TransferWindowPlanner/releases");
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndVertical();
@@ -233,11 +261,11 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             //GUILayout.Label("Trigger Au",KACResources.styleContent);
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                Application.OpenURL("https://sites.google.com/site/kspalternateresourcepanel/");
+                Application.OpenURL("http://triggerau.github.io/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                Application.OpenURL("https://github.com/TriggerAu/AlternateResourcePanel/");
+                Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/60227-KSP-Alternate-Resource-Panel");
+                Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/60227-Transfer-Window-Planner");
 
             GUILayout.EndVertical();
 
