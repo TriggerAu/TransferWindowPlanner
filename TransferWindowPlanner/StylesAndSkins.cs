@@ -54,6 +54,8 @@ namespace TransferWindowPlanner
         internal static GUIStyle styleText, styleTextHeading;
         internal static GUIStyle styleTextDetails, styleTextDetailsLabel;
 
+        internal static GUIStyle styleTextInstruction, styleTextInstructionNum;
+
         internal static GUIStyle styleTextCenter;
         internal static GUIStyle styleTextCenterGreen;
         internal static GUIStyle styleTextGreen;
@@ -126,6 +128,9 @@ namespace TransferWindowPlanner
             styleButtonSettings.name = "ButtonSettings";
             styleButtonSettings.padding = new RectOffset(1, 1, 1, 1);
             styleButtonSettings.onNormal.background = styleButtonSettings.active.background;
+            styleButtonSettings.alignment = TextAnchor.MiddleCenter;
+            styleButtonSettings.normal.textColor = new Color32(177, 193, 205, 255);
+            styleButtonSettings.fontStyle = FontStyle.Bold;
             //styleButtonSettings.fixedWidth = 40;
 
             styleButtonSettingsUnity = new GUIStyle(styleButtonSettings);
@@ -221,6 +226,12 @@ namespace TransferWindowPlanner
             styleTextCenterGreen = new GUIStyle(styleTextCenter);
             styleTextCenterGreen.normal.textColor = new Color32(183, 254, 0, 255);
 
+            #region Instructions Text Styles
+            styleTextInstruction = new GUIStyle(styleText);
+            styleTextInstruction.wordWrap = true;
+            styleTextInstructionNum = new GUIStyle(styleTextYellow);
+            #endregion
+
             #region TextField Stuff for entry fields
             styleTextFieldDefault = new GUIStyle(SkinsLibrary.DefUnitySkin.textField);
             styleTextFieldDefault.fontStyle = FontStyle.Normal;
@@ -314,9 +325,10 @@ namespace TransferWindowPlanner
 
             //Now a Unity Style one
             GUISkin DefUnity = SkinsLibrary.CopySkin(SkinsLibrary.DefSkinType.Unity);
-            DefUnity.window = DefUnity.box;
-            DefUnity.window.border = new RectOffset(6, 6, 6, 6);
-            DefUnity.window.padding = new RectOffset(8, 3, 27, 0);
+            //DefUnity.window.padding.top = 28;
+            //DefUnity.window = DefUnity.box;
+            //DefUnity.window.border = new RectOffset(6, 6, 6, 6);
+            //DefUnity.window.padding = new RectOffset(8, 3, 27, 0);
             DefUnity.horizontalSlider.margin.top = 8;
             SkinsLibrary.AddSkin("Unity", DefUnity);
 

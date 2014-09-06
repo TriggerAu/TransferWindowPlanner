@@ -63,7 +63,7 @@ namespace TransferWindowPlanner
             //ddlXferType = new DropDownList(lstXFerTypes, this);
             //ddlManager.AddDDL(ddlXferType);
 
-            WindowVisibleChanged += TWPWindow_WindowVisibleChanged;
+            onWindowVisibleChanged += TWPWindow_WindowVisibleChanged;
 
             //Set the defaults
         }
@@ -179,7 +179,7 @@ namespace TransferWindowPlanner
             //Settings toggle
             GUIContent contSettings = new GUIContent(Resources.GetSettingsButtonIcon(TransferWindowPlanner.settings.VersionAttentionFlag), "Settings...");
             if (TransferWindowPlanner.settings.VersionAvailable) contSettings.tooltip = "Updated Version Available - Settings...";
-            mbTWP.windowSettings.Visible = GUI.Toggle(new Rect(WindowRect.width - 62, 2, 30, 20), mbTWP.windowSettings.Visible, contSettings, "ButtonSettings");
+            mbTWP.windowSettings.Visible = GUI.Toggle(new Rect(WindowRect.width - 92, 2, 30, 20), mbTWP.windowSettings.Visible, contSettings, "ButtonSettings");
 
             //Set a default for the MinMax button
             GUIContent contMaxMin = new GUIContent(Resources.btnChevronUp, "Minimize");
@@ -188,22 +188,61 @@ namespace TransferWindowPlanner
                 contMaxMin.image = Resources.btnChevronDown;
                 contMaxMin.tooltip = "Expand";
             }
-            ShowMinimized = GUI.Toggle(new Rect(WindowRect.width - 32, 2, 30, 20), ShowMinimized, contMaxMin, "ButtonSettings");
-
-
-            if (mbTWP.windowSettings.Visible)
+            if (GUI.Button(new Rect(WindowRect.width - 62, 2, 30, 20), contMaxMin, "ButtonSettings"))
             {
-                mbTWP.windowSettings.WindowRect.x = WindowRect.x + WindowRect.width;
-                mbTWP.windowSettings.WindowRect.y = WindowRect.y;
+                ShowMinimized = !ShowMinimized;
+                //if its changed then affect the window size
+                if (ShowMinimized)
+                {
+                    WindowRect.x = WindowRect.x + WindowRect.width - 320;
+
+                    WindowRect.width = 350;
+                    WindowRect.height = 0;
+                }
+                else
+                {
+                    WindowRect.x = WindowRect.x + 320 - 750;
+
+                    WindowRect.width = 750;
+                    WindowRect.height = 400;
+                }
             }
 
+            //Close button
+            if (GUI.Button(new Rect(WindowRect.width - 32, 2, 30, 20), "X", "ButtonSettings"))
+            {
+                //Visible = false;
+                if(TransferWindowPlanner.settings.ButtonStyleToDisplay== Settings.ButtonStyleEnum.Launcher)
+                {
+                    mbTWP.btnAppLauncher.SetFalse();
+                }
+                else
+                    Visible = false;
+            }
 
+            //Set the settings window pos
+            if (mbTWP.windowSettings.Visible)
+            {
+                mbTWP.windowSettings.WindowRect.y = WindowRect.y;
+                if (ShowMinimized)
+                {
+                    mbTWP.windowSettings.WindowRect.x = WindowRect.x + WindowRect.width;
+                }
+                else
+                {
+                    mbTWP.windowSettings.WindowRect.x = WindowRect.x + WindowRect.width - mbTWP.windowSettings.WindowRect.width;
+                }
+            }
+            mbTWP.windowSettingsBlockout.Visible = mbTWP.windowSettingsBlockoutExtra.Visible = mbTWP.windowSettings.Visible && !ShowMinimized;
 
-
+            //Now draw the window
             if (ShowMinimized) 
             {
                 if (!Done) {
-                    GUILayout.Label("You need to have run a plot and selected a transfer to get this");
+                    GUILayout.Label("No Selected Transfer to be able to display info",Styles.styleTextInstruction);
+                    GUILayout.Space(10);
+                    GUILayout.Label("Go back to restored mode and plot a transfer first", Styles.styleTextInstruction);
+                    //GUILayout.Label("You need to have run a plot and selected a transfer to get this");
                 }
                 else
                 {
@@ -218,7 +257,7 @@ namespace TransferWindowPlanner
                 GUILayout.EndVertical();
 
                 GUILayout.BeginVertical(GUILayout.Width(10));
-                GUILayout.Box(Resources.texSeparatorV,Styles.styleSeparatorV,GUILayout.Height(200));
+                GUILayout.Box(Resources.texSeparatorV, Styles.styleSeparatorV, GUILayout.Height(335));
                 GUILayout.EndVertical();
 
                 GUILayout.BeginVertical();
@@ -231,6 +270,14 @@ namespace TransferWindowPlanner
                     DrawTransferDetails();
                 }
             }
+
+            //close the settings window if we click elsewhere
+            if (!ShowMinimized && Event.current.type == EventType.mouseDown)
+            {
+                if (!mbTWP.windowSettings.WindowRect.Contains(Event.current.mousePosition))
+                    mbTWP.windowSettings.Visible = false;
+            }
+
         }
 
         private void DrawTransferDetailsMinimal()
@@ -254,12 +301,13 @@ namespace TransferWindowPlanner
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
             GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
         }
 
         private void DrawTransferDetails()
         {
             ////Draw the selected position indicators
-            GUILayout.Space(105);
+            //GUILayout.Space(mbTWP.windowDebug.intTest1);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Selected Transfer Details", GUILayout.Width(150));
             GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
@@ -271,8 +319,31 @@ namespace TransferWindowPlanner
             GUILayout.Label("Phase Angle:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
+            GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            
+            GUIStyle styleCopyButton = new GUIStyle(SkinsLibrary.CurrentSkin.button);
+            styleCopyButton.fixedHeight = 18;
+            styleCopyButton.padding.top = styleCopyButton.padding.bottom = 0;
+            if(GUILayout.Button(new GUIContent(Resources.btnCopy, "Copy Departure UT"),styleCopyButton))
+            {
+                Utilities.CopyTextToClipboard(String.Format("{0:0}", TransferSelected.DepartureTime));
+            }
+            GUILayout.EndHorizontal();
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            if (GUI.Button(new Rect(10,WindowRect.height-30,200,20),new GUIContent("  Copy Transfer Details", Resources.btnCopy)))
+            {
+                String Message = String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
+                Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
+                Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
+                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.TravelTime);
+                Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
+                Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+                Utilities.CopyTextToClipboard(Message);
+            }
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
@@ -305,6 +376,10 @@ namespace TransferWindowPlanner
 
         private void DrawTransferPlot()
         {
+            if (!Running && !Done)
+            {
+                DrawInstructions();
+            }
             if (Running) {
                 GUI.Label(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 30, PlotWidth + 45, 20),
                     String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000),
@@ -312,13 +387,14 @@ namespace TransferWindowPlanner
                 DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 10, PlotWidth + 45, 20), (Single)workingpercent);
             }
             if (Done) {
-                if (TextureReadyToDraw) {
+                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellowBold);
+
+                if (TextureReadyToDraw)
+                {
                     TextureReadyToDraw = false;
                     //Need to move this texure stuff back on to the main thread - set a flag so we know whats done
                     DrawPlotTexture(sumlogDeltaV, sumSqLogDeltaV, maxDeltaV);
                 }
-
-                GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellowBold);
 
                 //GUI.Box(new Rect(340, 50, 306, 305), Resources.texPorkChopAxis);
                 //GUI.Box(new Rect(346, 50, 300, 300), texPlotArea);
@@ -392,12 +468,29 @@ namespace TransferWindowPlanner
 
             }
         }
+        private void DrawInstructions()
+        {
+            GUILayout.Label("Instructions:", Styles.styleTextYellowBold);
+            DrawSingleInstruction("1.","Select the celestial body you will be departing from.");
+            DrawSingleInstruction("2.","Enter the altitude of your parking orbit around that body. This is assumed to be a circular, equatorial orbit.");
+            DrawSingleInstruction("3.","Select the celestial body you wish to travel to.");
+            DrawSingleInstruction("4.", "Enter the altitude of the orbit you wish to establish around your destination body. You can enter 0 if you intend to perform a fly-by or aerobraking maneuver.");
+            //DrawSingleInstruction("4.", "Enter the altitude of the orbit you wish to establish around your destination body. You may check the \"No insertion burn\" checkbox instead if you intend to perform a fly-by or aerobraking maneuver.");
+            DrawSingleInstruction("5.", "Enter the earliest departure date to include in the plot. Generally this should be your current game time, which you can find in the tracking station in the game.");
+            DrawSingleInstruction("6.","Click the \"Plot it!\" button. After a few seconds a plot will appear showing how much Δv is required to reach your destination for different departure dates and times of flight. Click on any point on this plot to see full details of the selected transfer.");
+        }
+        private void DrawSingleInstruction(String Num, String Text)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(Num, Styles.styleTextInstructionNum, GUILayout.Width(16));
+            GUILayout.Label(Text, Styles.styleTextInstruction);
+            GUILayout.EndHorizontal();
+        }
 
         private void DrawTransferEntry()
         {
-            GUILayout.Label("Enter Parameters",Styles.styleTextYellowBold);
+            GUILayout.Label("Enter Parameters", Styles.styleTextYellowBold);
             GUILayout.BeginHorizontal();
-
             GUILayout.BeginVertical(GUILayout.Width(100));
             GUILayout.Space(2);
             GUILayout.Label("Origin:", Styles.styleTextFieldLabel);
@@ -444,9 +537,24 @@ namespace TransferWindowPlanner
 
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Plot It!"))
+            {
                 StartWorker();
+                WindowRect.height = 400;
+            }
         }
+        
+        internal override void OnGUIEvery()
+        {
+            //close the settings window if we click elsewhere
+            if (!ShowMinimized && Event.current.type == EventType.mouseDown)
+            {
+                if (!mbTWP.windowSettings.WindowRect.Contains(Event.current.mousePosition))
+                    mbTWP.windowSettings.Visible = false;
+            }
 
+            base.OnGUIEvery();
+        }
+        
         internal Int32 ColorIndex;
         internal Double Percent;
         internal static Boolean DrawResourceBar(Rect rectBar, Single percentage)
