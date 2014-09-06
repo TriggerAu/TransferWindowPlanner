@@ -10,7 +10,7 @@ using KSPPluginFramework;
 
 namespace TransferWindowPlanner
 {
-    [WindowInitials(TooltipsEnabled=true,Visible=false,DragEnabled=false)]
+    [WindowInitials(TooltipsEnabled=true,Visible=false,DragEnabled=false,Caption="TWP Settings")]
     class TWPWindowSettings:MonoBehaviourWindowPlus
     {
         internal TransferWindowPlanner mbTWP;
@@ -30,7 +30,7 @@ namespace TransferWindowPlanner
         internal override void Awake()
         {
             //WindowRect = new Rect(mbTWP.windowMain.WindowRect.x + mbTWP.windowMain.WindowRect.width, mbTWP.windowMain.WindowRect.y, 300, 200);
-            WindowRect = new Rect(0 ,0, 300, 200);
+            WindowRect = new Rect(0 ,0, 310, 200);
             settings = TransferWindowPlanner.settings;
 
             TooltipMouseOffset = new Vector2d(-10, 10);
@@ -87,17 +87,18 @@ namespace TransferWindowPlanner
                     break;
             }
         }
-        internal override void OnGUIEvery()
-        {
-            //WindowRect.x = mbTWP.windowMain.WindowRect.x + mbTWP.windowMain.WindowRect.width;
-            //WindowRect.y = mbTWP.windowMain.WindowRect.y;
-            base.OnGUIEvery();
-        }
 
         internal override void DrawWindow(int id)
         {
+            if (GUI.Button(new Rect(WindowRect.width - 32, 2, 30, 20), "X", "ButtonSettings"))
+            {
+                Visible = false;
+            }
+
             GUILayout.BeginVertical();
 
+            if (SkinsLibrary.CurrentSkin.name != "Default")
+                GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Settings Section", Styles.styleTextHeading, GUILayout.Width(140));
             GUILayout.Space(5);
@@ -114,13 +115,9 @@ namespace TransferWindowPlanner
                     DrawWindow_About();
                     break;
             }
-
-
-
-
-
-
             GUILayout.EndVertical();
+
+            WindowRect.width = 310;
         }
 
         //Int32 intBlizzyToolbarMissingHeight = 0;

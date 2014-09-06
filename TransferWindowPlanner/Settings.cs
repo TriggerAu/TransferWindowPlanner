@@ -179,7 +179,7 @@ namespace TransferWindowPlanner
 
             //now do the download
             MonoBehaviourExtended.LogFormatted("Reading version from Web");
-            wwwVersionCheck = new WWW("https://sites.google.com/site/kspalternateresourcepanel/latestversion");
+            wwwVersionCheck = new WWW("http://triggerau.github.io/TransferWindowPlanner/versioncheck.txt");
             while (!wwwVersionCheck.isDone) { }
             MonoBehaviourExtended.LogFormatted("Download complete:{0}", wwwVersionCheck.text.Length);
             VersionCheckRunning = false;

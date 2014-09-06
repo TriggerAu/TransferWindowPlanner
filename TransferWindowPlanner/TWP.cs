@@ -30,6 +30,9 @@ namespace TransferWindowPlanner
 
         internal TWPWindow windowMain;
         internal TWPWindowSettings windowSettings;
+        internal TWPWindowSettingsBlockout windowSettingsBlockout;
+        // need two for unity skin
+        internal TWPWindowSettingsBlockout windowSettingsBlockoutExtra;
 
         internal override void Awake()
         {
@@ -90,6 +93,11 @@ namespace TransferWindowPlanner
 
             windowSettings = AddComponent<TWPWindowSettings>();
             windowSettings.mbTWP = this;
+
+            windowSettingsBlockout = AddComponent<TWPWindowSettingsBlockout>();
+            windowSettingsBlockout.mbTWP = this;
+            windowSettingsBlockoutExtra = AddComponent<TWPWindowSettingsBlockout>();
+            windowSettingsBlockoutExtra.mbTWP = this;
 
             InitDebugWindow();
         }

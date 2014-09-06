@@ -128,6 +128,9 @@ namespace TransferWindowPlanner
             styleButtonSettings.name = "ButtonSettings";
             styleButtonSettings.padding = new RectOffset(1, 1, 1, 1);
             styleButtonSettings.onNormal.background = styleButtonSettings.active.background;
+            styleButtonSettings.alignment = TextAnchor.MiddleCenter;
+            styleButtonSettings.normal.textColor = new Color32(207, 207, 207, 255);
+            styleButtonSettings.fontStyle = FontStyle.Bold;
             //styleButtonSettings.fixedWidth = 40;
 
             styleButtonSettingsUnity = new GUIStyle(styleButtonSettings);
@@ -322,6 +325,7 @@ namespace TransferWindowPlanner
 
             //Now a Unity Style one
             GUISkin DefUnity = SkinsLibrary.CopySkin(SkinsLibrary.DefSkinType.Unity);
+            //DefUnity.window.padding.top = 28;
             //DefUnity.window = DefUnity.box;
             //DefUnity.window.border = new RectOffset(6, 6, 6, 6);
             //DefUnity.window.padding = new RectOffset(8, 3, 27, 0);
