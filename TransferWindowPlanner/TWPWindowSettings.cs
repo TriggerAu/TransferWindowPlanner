@@ -261,11 +261,11 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             //GUILayout.Label("Trigger Au",KACResources.styleContent);
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                Application.OpenURL("http://triggerau.github.io/TransferWindowPlanner/");
+                Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
                 Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/60227-Transfer-Window-Planner");
+                Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/93115-Transfer-Window-Planner");
 
             GUILayout.EndVertical();
 
