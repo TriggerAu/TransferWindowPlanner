@@ -38,10 +38,7 @@ namespace TransferWindowPlanner
         internal static Texture2D texSeparatorV = new Texture2D(6, 2, TextureFormat.ARGB32, false);
         internal static Texture2D texSeparatorH = new Texture2D(2, 20, TextureFormat.ARGB32, false);
 
-
         internal static Texture2D texPorkChopAxis = new Texture2D(306, 305, TextureFormat.ARGB32, false);
-        internal static Texture2D texPorkChopLegend = new Texture2D(20, 300, TextureFormat.ARGB32, false);
-        internal static Texture2D texPorkChopExample = new Texture2D(300, 300, TextureFormat.ARGB32, false);
 
         internal static Texture2D texSelectedXAxis = new Texture2D(9, 9, TextureFormat.ARGB32, false);
         internal static Texture2D texSelectedYAxis = new Texture2D(9, 9, TextureFormat.ARGB32, false);
@@ -75,8 +72,6 @@ namespace TransferWindowPlanner
             LoadImageFromFile(ref texSeparatorV, "img_SeparatorVertical.png");
 
             LoadImageFromFile(ref texPorkChopAxis, "img_PorkChopAxis.png");
-            LoadImageFromFile(ref texPorkChopLegend, "img_PorkChopLegend.png");
-            LoadImageFromFile(ref texPorkChopExample, "img_PorkChopExample.png");
 
             LoadImageFromFile(ref texSelectedXAxis, "img_SelectedXAxis.png");
             LoadImageFromFile(ref texSelectedYAxis, "img_SelectedYAxis.png");
