@@ -27,6 +27,11 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.0.1.0		-	KSP Version: 0.24.2
+- Fixed Framerate Issue (Issue #17)
+- Updated links and version code
+- Added Extra details to Copy
+
 Version 1.0.0.0		-	KSP Version: 0.24.2
 - First Public Release
 - In-Game Lambert solver to display dV required for a transfer
