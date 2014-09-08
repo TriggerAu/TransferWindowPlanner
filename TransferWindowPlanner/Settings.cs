@@ -84,6 +84,9 @@ namespace TransferWindowPlanner
         }
 
         #region Version Checks
+        private String VersionCheckURL = "http://triggerau.github.io/TransferWindowPlanner/versioncheck.txt";
+        //Could use this one to see usage, but need to be very aware of data connectivity if its ever used "http://bit.ly/TWPVersion";
+
         private String ConvertVersionCheckDateToString(DateTime Date)
         {
             if (Date < DateTime.Now.AddYears(-10))
@@ -193,9 +196,10 @@ namespace TransferWindowPlanner
 
             //now do the download
             MonoBehaviourExtended.LogFormatted("Reading version from Web");
-            wwwVersionCheck = new WWW("http://triggerau.github.io/TransferWindowPlanner/versioncheck.txt");
+            wwwVersionCheck = new WWW(VersionCheckURL);
             while (!wwwVersionCheck.isDone) { }
             MonoBehaviourExtended.LogFormatted("Download complete:{0}", wwwVersionCheck.text.Length);
+            MonoBehaviourExtended.LogFormatted_DebugOnly("Content:{0}", wwwVersionCheck.text);
             VersionCheckRunning = false;
         }
 

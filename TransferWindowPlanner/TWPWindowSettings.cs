@@ -185,9 +185,21 @@ namespace TransferWindowPlanner
 
             GUILayout.Label("Click Through Protection", Styles.styleTextHeading);
             GUILayout.BeginVertical(Styles.styleSettingsArea);
-            if (DrawToggle(ref settings.ClickThroughProtect_KSC, "Prevent in Space Center", Styles.styleToggle)) settings.Save();
-            if (DrawToggle(ref settings.ClickThroughProtect_Editor, "Prevent in Editors", Styles.styleToggle)) settings.Save();
-            if (DrawToggle(ref settings.ClickThroughProtect_Flight, "Prevent in Flight", Styles.styleToggle)) settings.Save();
+            if (DrawToggle(ref settings.ClickThroughProtect_KSC, "Prevent in Space Center", Styles.styleToggle)) {
+                if (!settings.ClickThroughProtect_KSC && HighLogic.LoadedScene == GameScenes.SPACECENTER)
+                    mbTWP.RemoveInputLock();
+                settings.Save();
+            }
+            if (DrawToggle(ref settings.ClickThroughProtect_Editor, "Prevent in Editors", Styles.styleToggle)) {
+                if (!settings.ClickThroughProtect_KSC && (HighLogic.LoadedScene == GameScenes.EDITOR ||HighLogic.LoadedScene == GameScenes.SPH))
+                    mbTWP.RemoveInputLock();
+                settings.Save();
+            }
+            if (DrawToggle(ref settings.ClickThroughProtect_Flight, "Prevent in Flight", Styles.styleToggle)) {
+                if (!settings.ClickThroughProtect_KSC && HighLogic.LoadedScene == GameScenes.FLIGHT)
+                    mbTWP.RemoveInputLock();
+                settings.Save();
+            }
             GUILayout.EndVertical();
         }
         private void DrawWindow_About()
@@ -261,7 +273,7 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             //GUILayout.Label("Trigger Au",KACResources.styleContent);
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
+                Application.OpenURL("http://triggerau.github.io/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
                 Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
