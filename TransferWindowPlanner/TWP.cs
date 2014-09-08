@@ -265,15 +265,21 @@ namespace TransferWindowPlanner
                 }
                 //Otherwise make sure the lock is removed
                 else if (!MouseOverAnyWindow && InputLockExists) {
-                    if (InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.KSC_FACILITIES ||
-                        InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.EDITOR_LOCK ||
-                        InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.All) {
-                        LogFormatted_DebugOnly("Removing-{0}", "TWPControlLock");
-                        InputLockManager.RemoveControlLock("TWPControlLock");
-                    }
-                    InputLockExists = false;
+                    RemoveInputLock();
                 }
             }
+        }
+
+        internal void RemoveInputLock()
+        {
+            if (InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.KSC_FACILITIES ||
+                InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.EDITOR_LOCK ||
+                InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.All)
+            {
+                LogFormatted_DebugOnly("Removing-{0}", "TWPControlLock");
+                InputLockManager.RemoveControlLock("TWPControlLock");
+            }
+            InputLockExists = false;
         }
 
         private Boolean MouseOverWindow(Rect WindowRect, Boolean WindowVisible)
