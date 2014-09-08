@@ -217,13 +217,18 @@ namespace TransferWindowPlanner
             //Do this for control Locks
             if (settings.ClickThroughProtect_KSC || settings.ClickThroughProtect_Editor || settings.ClickThroughProtect_Flight) {
                 MouseOverAnyWindow = false;
-                MonoBehaviourWindow[] TWPwindows = FindObjectsOfType<MonoBehaviourWindow>();
-                foreach (MonoBehaviourWindow item in TWPwindows) {
-                    if (MouseOverWindow(item.WindowRect, item.Visible)) {
-                        MouseOverAnyWindow = true;
-                        break;
-                    }
-                }
+                MouseOverAnyWindow = MouseOverAnyWindow || MouseOverWindow(windowMain.WindowRect, windowMain.Visible);
+                MouseOverAnyWindow = MouseOverAnyWindow || MouseOverWindow(windowSettings.WindowRect, windowSettings.Visible);
+#if DEBUG
+                MouseOverAnyWindow = MouseOverAnyWindow || MouseOverWindow(windowDebug.WindowRect, windowDebug.Visible);
+#endif
+                //MonoBehaviourWindow[] TWPwindows = FindObjectsOfType<MonoBehaviourWindow>();
+                //foreach (MonoBehaviourWindow item in TWPwindows) {
+                //    if (MouseOverWindow(item.WindowRect, item.Visible)) {
+                //        MouseOverAnyWindow = true;
+                //        break;
+                //    }
+                //}
 
                 //If the setting is on and the mouse is over any window then lock it
                 if (MouseOverAnyWindow && !InputLockExists) {
