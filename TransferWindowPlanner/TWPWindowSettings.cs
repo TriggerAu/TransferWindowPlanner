@@ -261,7 +261,7 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             //GUILayout.Label("Trigger Au",KACResources.styleContent);
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
+                Application.OpenURL("http://triggerau.github.io/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
                 Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
             if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
