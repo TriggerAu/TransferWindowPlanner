@@ -29,8 +29,9 @@
 <body role="document">
 
     <!-- Fixed navbar -->
-	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-		<div class="container">
+    <div class="container">
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <img src="images/TriggerTechLogo.png" alt="Alternate Text" />
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -38,11 +39,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#"><img src="images/TriggerTechLogo.png" alt="Alternate Text" /></a>
-				<p class="navbar-text">Transfer Window Planner</p>
-
+                <a class="navbar-brand" href="#">Bootstrap theme</a>
             </div>
-            <div class="navbar-collapse collapse pull-right">
+            <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#"><i class="fa fa-home fa-2x"></i><br />Home</a></li>
                     <li><a href="#about"><i class="fa fa-info-circle fa-2x"></i><br />About</a></li>
@@ -63,51 +62,14 @@
             </div><!--/.nav-collapse -->
         </div>
     </div>
-<div class="shaded">
+
     <div class="container">
         <div class="page-header">
             <h1>Transfer Window Planner <small> for Kerbal Space Program</small></h1>
             <h4>An in-game implementation of Launch Window Planner <small>by Alexmun</small></h4>
         </div>
-		sdf
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
-		sdf<br>
     </div>
-</div>
+
     <!-- Begin page content -->
     <div class="container">
         <div class="page-header">
@@ -118,7 +80,10 @@
     </div>
 
     <div class="navbar navbar-default navbar-fixed-bottom">
-        <p class="navbar-text navbar-right" style="padding-right: 20px;">&copy; 2014 - TriggerTech</p>
+        <asp:ContentPlaceHolder ID="FooterContent" runat="server">
+        </asp:ContentPlaceHolder>
+
+        <p class="navbar-text navbar-right" style="padding-right: 20px;">&copy; <%: DateTime.Now.Year %> - AD Management Tools</p>
     </div>
 
 
