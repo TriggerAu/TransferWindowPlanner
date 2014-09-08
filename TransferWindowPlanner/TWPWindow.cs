@@ -173,6 +173,7 @@ namespace TransferWindowPlanner
 
         internal Boolean ShowInstructions = true;
         internal Boolean ShowMinimized = false;
+        internal Boolean ShowEjectionDetails = false;
 
         internal override void DrawWindow(int id)
         {
@@ -342,6 +343,14 @@ namespace TransferWindowPlanner
                 Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
                 Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
                 Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Inc.:  {0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Δv:    {0:0} m/s", TransferSelected.DVEjection);
+                Message = Message.AppendLine("Prograde Δv:    {0:0.0} m/s", TransferSelected.EjectionDVPrograde);
+                Message = Message.AppendLine("Normal Δv:      {0:0.0} m/s", TransferSelected.EjectionDVNormal);
+                Message = Message.AppendLine("Heading:        {0:0.00}°", TransferSelected.EjectionHeading * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Insertion Inc.: {0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Insertion Δv:   {0:0} m/s", TransferSelected.DVInjection);
+                Message = Message.AppendLine("Total Δv:       {0:0} m/s", TransferSelected.DVTotal);
                 Utilities.CopyTextToClipboard(Message);
             }
             GUILayout.EndVertical();
@@ -362,7 +371,12 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             GUILayout.Label("Travel Time:", Styles.styleTextDetailsLabel);
             GUILayout.Label("Total Δv:", Styles.styleTextDetailsLabel);
+//            GUILayout.BeginHorizontal();
             GUILayout.Label("Ejection Δv:", Styles.styleTextDetailsLabel);
+//            if (GUILayout.Button(new GUIContent(Resources.btnInfo, "Show Details..."), new GUIStyle())) {
+//                ShowEjectionDetails = true;
+//            }
+//            GUILayout.EndHorizontal();
             GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
@@ -540,6 +554,7 @@ namespace TransferWindowPlanner
             {
                 StartWorker();
                 WindowRect.height = 400;
+                ShowEjectionDetails = false;
             }
         }
         
