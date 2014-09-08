@@ -154,3 +154,12 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+
+# ==========================
+# Ignore VisualStudio files
+# ==========================
+*.sln
+*.suo
+web.config
+web.debug.config
+vwd.webinfo
