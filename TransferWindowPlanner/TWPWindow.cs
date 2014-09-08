@@ -74,6 +74,10 @@ namespace TransferWindowPlanner
             if (NewVisibleState)
             {
                 this.ClampToScreenNow();
+                if (!Running && !Done) {
+                    SetupDestinationControls();
+                    //Set the Departure min to be yesterday
+                }
             }
         }
 
@@ -305,8 +309,13 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
         }
 
+        private Single EjectionDetailsYOffset;
         private void DrawTransferDetails()
         {
+            if (ShowEjectionDetails) {
+                GUI.Box(new Rect(10,EjectionDetailsYOffset,WindowRect.width - 20,mbTWP.windowDebug.intTest2),"");
+                //Styles.styleSettingsArea if needed
+            }
             ////Draw the selected position indicators
             //GUILayout.Space(mbTWP.windowDebug.intTest1);
             GUILayout.BeginHorizontal();
@@ -318,6 +327,9 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             GUILayout.Label("Departure:", Styles.styleTextDetailsLabel);
             GUILayout.Label("Phase Angle:", Styles.styleTextDetailsLabel);
+            if (ShowEjectionDetails) {
+                GUILayout.Label(""); GUILayout.Label("Ejection Heading:", Styles.styleTextDetailsLabel);
+            }
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
@@ -332,26 +344,13 @@ namespace TransferWindowPlanner
             }
             GUILayout.EndHorizontal();
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
-            if (GUI.Button(new Rect(10,WindowRect.height-30,200,20),new GUIContent("  Copy Transfer Details", Resources.btnCopy)))
+            GUILayout.Label("Phase Angle:", Styles.styleTextDetailsLabel);
+            if (ShowEjectionDetails) {
+                GUILayout.Label(""); GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionHeading * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            }
+            if (GUI.Button(new Rect(10, WindowRect.height - 30, 200, 20), new GUIContent("  Copy Transfer Details", Resources.btnCopy)))
             {
-                String Message = String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
-                Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
-                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
-                Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
-                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.TravelTime);
-                Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
-                Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
-                Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
-                Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
-                Message = Message.AppendLine("Ejection Inc.:  {0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg);
-                Message = Message.AppendLine("Ejection Δv:    {0:0} m/s", TransferSelected.DVEjection);
-                Message = Message.AppendLine("Prograde Δv:    {0:0.0} m/s", TransferSelected.EjectionDVPrograde);
-                Message = Message.AppendLine("Normal Δv:      {0:0.0} m/s", TransferSelected.EjectionDVNormal);
-                Message = Message.AppendLine("Heading:        {0:0.00}°", TransferSelected.EjectionHeading * LambertSolver.Rad2Deg);
-                Message = Message.AppendLine("Insertion Inc.: {0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg);
-                Message = Message.AppendLine("Insertion Δv:   {0:0} m/s", TransferSelected.DVInjection);
-                Message = Message.AppendLine("Total Δv:       {0:0} m/s", TransferSelected.DVTotal);
-                Utilities.CopyTextToClipboard(Message);
+                CopyAllDetailsToClipboard();
             }
             GUILayout.EndVertical();
 
@@ -359,33 +358,69 @@ namespace TransferWindowPlanner
             GUILayout.Label("Arrival:", Styles.styleTextDetailsLabel);
             GUILayout.Label("Ejection Angle:", Styles.styleTextDetailsLabel);
             GUILayout.Label("Ejection Inclination:", Styles.styleTextDetailsLabel);
+            if (ShowEjectionDetails) {
+                GUILayout.Label("Ejection Normal Δv:", Styles.styleTextDetailsLabel);
+            }
             GUILayout.Label("Insertion Inclination:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            if (ShowEjectionDetails) {
+                GUILayout.Label(String.Format("{0:0.0} m/s", TransferSelected.EjectionDVNormal), Styles.styleTextYellow);
+            }
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
             GUILayout.Label("Travel Time:", Styles.styleTextDetailsLabel);
             GUILayout.Label("Total Δv:", Styles.styleTextDetailsLabel);
-//            GUILayout.BeginHorizontal();
             GUILayout.Label("Ejection Δv:", Styles.styleTextDetailsLabel);
-//            if (GUILayout.Button(new GUIContent(Resources.btnInfo, "Show Details..."), new GUIStyle())) {
-//                ShowEjectionDetails = true;
-//            }
-//            GUILayout.EndHorizontal();
+            if (ShowEjectionDetails) {
+                GUILayout.Label("Ejection Prograde Δv:", Styles.styleTextDetailsLabel);
+            }
             GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
+            GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
+            if (Event.current.type == EventType.Repaint)
+                EjectionDetailsYOffset = GUILayoutUtility.GetLastRect().y + mbTWP.windowDebug.intTest1;
+            if (GUILayout.Button(new GUIContent(Resources.btnInfo, "Show Details..."), new GUIStyle())) {
+                ShowEjectionDetails = true;
+            }
+            GUILayout.EndHorizontal();
+            if (ShowEjectionDetails) {
+                GUILayout.Label(String.Format("{0:0.0} m/s", TransferSelected.EjectionDVPrograde), Styles.styleTextYellow);
+            }
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+        }
+
+        private void CopyAllDetailsToClipboard()
+        {
+            String Message = String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
+            Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+            Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
+            Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
+            Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.TravelTime);
+            Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+            Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
+            Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
+            Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+            Message = Message.AppendLine("Ejection Inc.:  {0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg);
+            Message = Message.AppendLine("Ejection Δv:    {0:0} m/s", TransferSelected.DVEjection);
+            Message = Message.AppendLine("Prograde Δv:    {0:0.0} m/s", TransferSelected.EjectionDVPrograde);
+            Message = Message.AppendLine("Normal Δv:      {0:0.0} m/s", TransferSelected.EjectionDVNormal);
+            Message = Message.AppendLine("Heading:        {0:0.00}°", TransferSelected.EjectionHeading * LambertSolver.Rad2Deg);
+            Message = Message.AppendLine("Insertion Inc.: {0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg);
+            Message = Message.AppendLine("Insertion Δv:   {0:0} m/s", TransferSelected.DVInjection);
+            Message = Message.AppendLine("Total Δv:       {0:0} m/s", TransferSelected.DVTotal);
+            Utilities.CopyTextToClipboard(Message);
         }
 
         private void DrawTransferPlot()
@@ -550,12 +585,21 @@ namespace TransferWindowPlanner
             GUILayout.EndVertical();
 
             GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(Resources.btnReset, "ButtonSettings")) {
+                Done = false;
+                if (bw.IsBusy)
+                    bw.CancelAsync();
+                Running = false;
+                SetupDestinationControls();
+            }
             if (GUILayout.Button("Plot It!"))
             {
                 StartWorker();
                 WindowRect.height = 400;
                 ShowEjectionDetails = false;
             }
+            GUILayout.EndHorizontal();
         }
         
         internal override void OnGUIEvery()

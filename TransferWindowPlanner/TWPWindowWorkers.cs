@@ -52,7 +52,8 @@ namespace TransferWindowPlanner
             synodicPeriod = Math.Abs(1 / (1 / cbDestination.orbit.period - 1 / cbOrigin.orbit.period));
             DepartureRange = Math.Min(2 * synodicPeriod, 2 * cbOrigin.orbit.period);
 
-            DepartureMin = 0;
+            //Set this to yesterday
+            //DepartureMin = 0;
             DepartureMax = DepartureMin + DepartureRange;
 
             //Work out the time necessary for a hohmann transfer between the two orbits
