@@ -56,6 +56,7 @@
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#"><i class="fa fa-home fa-2x"></i><br />Home</a></li>
                     <li><a href="install.html"><i class="fa fa-gears fa-2x"></i><br />Install</a></li>
+                    <li class="disabled" title="Not Ready Yet"><a href="tutorial.html"><i class="fa fa-book fa-2x"></i><br />Tutorial</a></li>
                     <li><a href="about.html"><i class="fa fa-info-circle fa-2x"></i><br />About</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
@@ -68,8 +69,8 @@
             <h4>An in-game implementation of Alexmun's Launch Window Planner</h4>
         </div>
         <p>The Transfer Window Planner is a plugin for Kerbal Space Program that brings some functionality from some great web apps in-game. I wrapped my brain around some orbital maths and Alexmun provided some of the important code to help me show data visualisations of Delta-V required to transfer between planetary bodies in KSP</p>
-        
-        <p>Here you will find information and pictures about the Transfer Window Planner plugin.</p> 
+
+        <p>Here you will find information and pictures about the Transfer Window Planner plugin.</p>
     </div>
 
 
@@ -132,12 +133,39 @@
         <p>Once you open up the Tool using the AppLauncher of integrated toolbar you select the Origin and Destination for your interplanetary transfer. Review and change any timings you want and Click "Plot".</p>
         <p>Once the porkchop is plotted it gives you a visualisation of how much Delta-V is required to transfer a vessel from the origin to the destination and where the "sweet spot" is. By clicking on the plot it will show you all the important details about the transfer thats selected and give you the capability to copy these to the clipboard</p>
     </div>
-
+    <div class="ShadedBlock">
+        <div class="container">
+            <h3>Further Information and Links</h3>
+            <h4>Licensing</h4>
+            <img src="images/DT-OSILogo16.png" alt="OSI" /> This work is licensed under an MIT license - <a href="https://github.com/TriggerAu/TransferWindowPlanner/blob/master/LICENSE" target="_blank">included in source code</a>
+            <h4>Special Thanks</h4>
+            <ul>
+                <li>
+                    A big thanks to Alexmun for his WebApp that does this and his providing of a lot of the maths code involved
+                </li>
+                <li>
+                    Also thanks to NathanKell for his persistence in explaining Real Solar System to me so I could test with it
+                </li>
+            </ul>
+    <h4>Links</h4>
+    <ul class="list-links">
+        <li>
+            <a href="http://forum.kerbalspaceprogram.com/threads/93115-Transfer-Window-Planner" target="_blank"><i class="fa fa-rocket"></i>Transfer Window Planner Forum Thread</a>
+        </li>
+        <li><a href="https://github.com/TriggerAu/TransferWindowPlanner/releases" target="_blank"><i class="fa fa-download"></i>Downloads on Github</a></li>
+        <li><a href="http://kerbal.curseforge.com/ksp-mods/224116-transfer-window-planner/files" target="_blank"><i class="fa fa-download"></i>Downloads on CurseForge</a></li>
+        <li><a href="https://github.com/TriggerAu/TransferWindowPlanner"><i class="fa fa-github"></i>Source Code and Project on Github</a></li>
+    </ul>
+</div>
+    </div>
     <!-- Begin footer content -->
     <div class="navbar navbar-default navbar-fixed-bottom">
-        <p class="navbar-text navbar-left" style="padding-left: 20px;">&copy; 2014 - TriggerTech</p>
+        <p class="navbar-text navbar-left" style="padding-left: 20px;">&copy; 2014 - TriggerTech - 
+            <img src="images/DT-OSILogo16.png" alt="OSI" /> MIT License</p>
         <p class="navbar-text navbar-right" style="padding-right: 20px;">
-            <a href="https://github.com/TriggerAu/TransferWindowPlanner/releases" target="_blank"><i class="fa fa-download"></i>Downloads</a><a href="https://github.com/TriggerAu/TransferWindowPlanner/releases"><i class="fa fa-github"></i>Source on Github</a>
+            <a href="http://forum.kerbalspaceprogram.com/threads/93115-Transfer-Window-Planner" target="_blank"><i class="fa fa-rocket"></i>Forum Thread</a>
+            <a href="https://github.com/TriggerAu/TransferWindowPlanner/releases" target="_blank"><i class="fa fa-download"></i>Downloads</a>
+            <a href="https://github.com/TriggerAu/TransferWindowPlanner"><i class="fa fa-github"></i>Source on Github</a>
         </p>
     </div>
 
@@ -151,10 +179,8 @@
     <script src="js/jquery.flexslider-min.js"></script>
     <script src="js/lightbox.min.js"></script>
 
-    <script src="js/jquery.carouFredSel-6.2.1.js"></script>
-
     <script type="text/javascript" charset="utf-8">
-        $(window).load(function () {
+        $(document).ready(function () {
             $('.flexslider').flexslider({
                 animation: "slide",
                 animationLoop: false,
@@ -162,6 +188,8 @@
                 itemMargin: 5,
                 slideshow: false
             });
+
+            $(".disabled").bind("click", false);
         });
 
     </script>

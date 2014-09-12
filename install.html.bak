@@ -56,7 +56,6 @@
                 <ul class="nav navbar-nav">
                     <li><a href="index.html"><i class="fa fa-home fa-2x"></i><br />Home</a></li>
                     <li class="active"><a href="#"><i class="fa fa-gears fa-2x"></i><br />Install</a></li>
-                    <li class="disabled" title="Not Ready Yet"><a href="tutorial.html"><i class="fa fa-book fa-2x"></i><br />Tutorial</a></li>
                     <li><a href="about.html"><i class="fa fa-info-circle fa-2x"></i><br />About</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
@@ -108,11 +107,10 @@
     <div class="navbar navbar-default navbar-fixed-bottom">
         <p class="navbar-text navbar-left" style="padding-left: 20px;">&copy; 2014 - TriggerTech</p>
         <p class="navbar-text navbar-right" style="padding-right: 20px;">
-            <a href="http://forum.kerbalspaceprogram.com/threads/93115-Transfer-Window-Planner" target="_blank"><i class="fa fa-rocket"></i>Forum Thread</a>
-            <a href="https://github.com/TriggerAu/TransferWindowPlanner/releases" target="_blank"><i class="fa fa-download"></i>Downloads</a>
-            <a href="https://github.com/TriggerAu/TransferWindowPlanner"><i class="fa fa-github"></i>Source on Github</a>
+            <a href="https://github.com/TriggerAu/TransferWindowPlanner/releases" target="_blank"><i class="fa fa-download"></i>Downloads</a><a href="https://github.com/TriggerAu/TransferWindowPlanner"><i class="fa fa-github"></i>Source on Github</a>
         </p>
     </div>
+
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -124,10 +122,17 @@
     <script src="js/jquery.flexslider-min.js"></script>
     <script src="js/lightbox.min.js"></script>
 
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function () {
+    <script src="js/jquery.carouFredSel-6.2.1.js"></script>
 
-            $(".disabled").bind("click", false);
+    <script type="text/javascript" charset="utf-8">
+        $(window).load(function () {
+            $('.flexslider').flexslider({
+                animation: "slide",
+                animationLoop: false,
+                itemWidth: 310,
+                itemMargin: 5,
+                slideshow: false
+            });
         });
 
     </script>

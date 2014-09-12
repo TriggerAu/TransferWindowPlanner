@@ -56,9 +56,15 @@
                 <ul class="nav navbar-nav">
                     <li><a href="index.html"><i class="fa fa-home fa-2x"></i><br />Home</a></li>
                     <li><a href="install.html"><i class="fa fa-gears fa-2x"></i><br />Install</a></li>
+                    <li class="disabled" title="Not Ready Yet"><a href="tutorial.html"><i class="fa fa-book fa-2x"></i><br />Tutorial</a></li>
                     <li class="active"><a href="#"><i class="fa fa-info-circle fa-2x"></i><br />About</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
+            <!--<div style="position:fixed;right:0px;top:79px;background-image: linear-gradient(to bottom,#fff 0,#f8f8f8 100%);box-shadow: inset 0 1px 0 rgba(255,255,255,.15),0 1px 5px rgba(0,0,0,.075);" >
+                <div style="padding-right:10px;">
+                    Latest Version: 1.0.1.0
+                </div>
+            </div>-->
         </div>
     </div>
 
@@ -66,8 +72,22 @@
         <div class="page-header">
             <h2>About the Transfer Window Planner</h2>
         </div>
-        <p>The Transfer Window Planner is a plugin for Kerbal Space Program that brings some functionality from some great web apps in-game. I wrapped my brain around some orbital maths and Alexmun provided some of the important code to help me show data visualisations of Delta-V required to transfer between planetary bodies in KSP</p>
-        
+        <p>The Transfer Window Planner is a plugin for Kerbal Space Program that brings some functionality from some great web apps in-game.</p>
+        <p>It was especially great in this project to see how some very smart people helped out in getting this useful functionality in game</p>
+        <h4>Licensing</h4>
+        <img src="images/DT-OSILogo16.png" alt="OSI" /> This work is licensed under an MIT license - <a href="https://github.com/TriggerAu/TransferWindowPlanner/blob/master/LICENSE" target="_blank">included in source code</a>
+        <h4>Thanks</h4>
+        <ul>
+            <li>
+                Thanks to Squad for providing KSP and such a great moddable game
+            </li>
+            <li>
+                A big thanks to Alexmun for his WebApp that does this and his providing of a lot of the maths code involved
+            </li>
+            <li>
+                Also thanks to NathanKell for his persistence in explaining Real Solar System to me so I could test with it
+            </li>
+        </ul>
     </div>
 
 
@@ -76,10 +96,11 @@
     <div class="navbar navbar-default navbar-fixed-bottom">
         <p class="navbar-text navbar-left" style="padding-left: 20px;">&copy; 2014 - TriggerTech</p>
         <p class="navbar-text navbar-right" style="padding-right: 20px;">
-            <a href="https://github.com/TriggerAu/TransferWindowPlanner/releases" target="_blank"><i class="fa fa-download"></i>Downloads</a><a href="https://github.com/TriggerAu/TransferWindowPlanner/releases"><i class="fa fa-github"></i>Source on Github</a>
+            <a href="http://forum.kerbalspaceprogram.com/threads/93115-Transfer-Window-Planner" target="_blank"><i class="fa fa-rocket"></i>Forum Thread</a>
+            <a href="https://github.com/TriggerAu/TransferWindowPlanner/releases" target="_blank"><i class="fa fa-download"></i>Downloads</a>
+            <a href="https://github.com/TriggerAu/TransferWindowPlanner"><i class="fa fa-github"></i>Source on Github</a>
         </p>
     </div>
-
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -91,18 +112,22 @@
     <script src="js/jquery.flexslider-min.js"></script>
     <script src="js/lightbox.min.js"></script>
 
-    <script src="js/jquery.carouFredSel-6.2.1.js"></script>
-
     <script type="text/javascript" charset="utf-8">
-        $(window).load(function () {
-            $('.flexslider').flexslider({
-                animation: "slide",
-                animationLoop: false,
-                itemWidth: 310,
-                itemMargin: 5,
-                slideshow: false
-            });
+        $(document).ready(function () {
+
+            $(".disabled").bind("click", false);
+
+            //$.get("VersionCheck.txt", null, versionGrabComplete);
         });
+
+        //function versionGrabComplete(object, textStatus, jqXHR) {
+        //    if (jqXHR.status == 200) {
+        //        var versionText = object.split("|")[2];
+
+        //    } else {
+
+        //    }
+        //}
 
     </script>
 </body>

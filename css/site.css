@@ -40,10 +40,16 @@
         -ms-transition: all .3s;
     }
 
-        .navbar-nav li > a:hover {
+        .navbar-nav > li > a:hover {
             background-color: #007acc !important;
             color: white !important;
         }
+        .navbar-nav > li.disabled > a:hover {
+            background-color: transparent !important;
+            color: #ccc !important;
+        }
+
+
 
 .navbar-default .navbar-nav > .active > a:hover {
     background-image: none;
@@ -75,4 +81,12 @@
 
     .flexslider .slides > li a {
         cursor: zoom-in;
+    }
+
+
+        .list-links i {
+        font-size:18px;
+        padding-left:5px;
+        padding-right:5px;
+        color:#777;
     }
