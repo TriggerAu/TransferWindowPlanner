@@ -69,7 +69,10 @@
     </div>
     <!--Version Banner-->
     <div class="version-banner">
-        Current Version: <span id="lblVersionText">Querying...</span>
+        Current Version:
+        <span id="lblVersionQuery">Querying...</span>
+        <span id="lblVersionResult" style="display:none;"><a href="https://github.com/TriggerAu/TransferWindowPlanner/releases/latest" style="color:white;"><span id="lblVersionText"></span></a> </span>
+        <span id="lblVersionError" style="display:none;color:#ff8a37;">Unknown</span>
     </div>
 
     <div class="container">
@@ -121,16 +124,21 @@
 
             $(".disabled").bind("click", false);
 
-            $.get("versioncheck.txt", null, versionGrabComplete);
+            $.get("versioncheck.txt", null, versionGrabComplete).fail(versionGrabFailed);
         });
 
         function versionGrabComplete(object, textStatus, jqXHR) {
-            if (jqXHR.status == 200) {
-                var versionText = object.split("|")[2];
-                $("#lblVersionText").text(versionText);
-            } else {
+            var versionText = object.split("|")[2];
+            $("#lblVersionText").text(versionText);
 
-            }
+            $("#lblVersionQuery").hide();
+            $("#lblVersionResult").show();
+        }
+        function versionGrabFailed(jqXHR, textStatus, message) {
+            $("#lblVersionError").attr("title", "Status: " + jqXHR.status + "\r\nMessage: " + message);
+
+            $("#lblVersionQuery").hide();
+            $("#lblVersionError").show();
         }
 
     </script>
