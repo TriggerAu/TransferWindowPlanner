@@ -67,6 +67,10 @@
             </div>-->
         </div>
     </div>
+    <!--Version Banner-->
+    <div class="version-banner">
+        Current Version: <span id="lblVersionText">Querying...</span>
+    </div>
 
     <div class="container">
         <div class="page-header">
@@ -117,17 +121,17 @@
 
             $(".disabled").bind("click", false);
 
-            //$.get("VersionCheck.txt", null, versionGrabComplete);
+            $.get("VersionCheck.txt", null, versionGrabComplete);
         });
 
-        //function versionGrabComplete(object, textStatus, jqXHR) {
-        //    if (jqXHR.status == 200) {
-        //        var versionText = object.split("|")[2];
+        function versionGrabComplete(object, textStatus, jqXHR) {
+            if (jqXHR.status == 200) {
+                var versionText = object.split("|")[2];
+                $("#lblVersionText").text(versionText);
+            } else {
 
-        //    } else {
-
-        //    }
-        //}
+            }
+        }
 
     </script>
 </body>
