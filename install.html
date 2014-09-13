@@ -132,7 +132,7 @@
         $(document).ready(function () {
 
             $(".disabled").bind("click", false);
-            $.get("VersionCheck.txt", null, versionGrabComplete);
+            $.get("versioncheck.txt", null, versionGrabComplete);
         });
 
         function versionGrabComplete(object, textStatus, jqXHR) {
