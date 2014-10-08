@@ -8,6 +8,7 @@ using UnityEngine;
 using KSPPluginFramework;
 
 using TWPToolbarWrapper;
+using TWP_KACWrapper;
 
 namespace TransferWindowPlanner
 {
@@ -65,8 +66,6 @@ namespace TransferWindowPlanner
             //do the daily version check if required
             if (settings.DailyVersionCheck)
                 settings.VersionCheck(false);
-
-            //APIAwake();
         }
 
         internal override void OnDestroy()
@@ -83,8 +82,34 @@ namespace TransferWindowPlanner
 
             DestroyToolbarButton(btnToolbar);
 
-            //APIDestroy();
+            DestroyAPIHooks();
         }
+
+
+        internal override void Start()
+        {
+            KACWrapper.InitKACWrapper();
+
+            if (KACWrapper.APIReady)
+            {
+                LogFormatted("Successfully Hooked the KAC");
+
+                KACWrapper.KAC.onAlarmStateChanged += KAC_onAlarmStateChanged;
+            }
+        }
+        private void DestroyAPIHooks()
+        {
+            if (KACWrapper.APIReady)
+            {
+                KACWrapper.KAC.onAlarmStateChanged -= KAC_onAlarmStateChanged;
+            }
+        }
+
+        void KAC_onAlarmStateChanged(KACWrapper.KACAPI.AlarmStateChangedEventArgs e)
+        {
+            LogFormatted("AlarmStateChanged:{0}-{1}", e.alarm.Name, e.eventType);
+        }
+
         private void InitWindows()
         {
             windowMain = AddComponent<TWPWindow>();
@@ -293,7 +318,7 @@ namespace TransferWindowPlanner
 
 #if DEBUG
     //This will kick us into the save called default and set the first vessel active
-    [KSPAddon(KSPAddon.Startup.MainMenu, false)]
+    //[KSPAddon(KSPAddon.Startup.MainMenu, false)]
     public class Debug_AutoLoadPersistentSaveOnStartup : MonoBehaviour
     {
         //use this variable for first run to avoid the issue with when this is true and multiple addons use it
