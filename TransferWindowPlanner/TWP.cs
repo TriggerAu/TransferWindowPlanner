@@ -115,6 +115,7 @@ namespace TransferWindowPlanner
             windowMain = AddComponent<TWPWindow>();
             windowMain.WindowRect = new Rect(100, 200, 750, 400);
             windowMain.mbTWP = this;
+            windowMain.settings = settings;
 
             windowSettings = AddComponent<TWPWindowSettings>();
             windowSettings.mbTWP = this;

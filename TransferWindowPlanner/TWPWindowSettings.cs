@@ -8,6 +8,8 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
+using TWP_KACWrapper;
+
 namespace TransferWindowPlanner
 {
     [WindowInitials(TooltipsEnabled=true,Visible=false,DragEnabled=false,Caption="TWP Settings")]
@@ -119,7 +121,7 @@ namespace TransferWindowPlanner
             if (SkinsLibrary.CurrentSkin.name != "Default")
                 GUILayout.Space(5);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Settings Section", Styles.styleTextHeading, GUILayout.Width(140));
+            GUILayout.Label("Settings Section", Styles.styleTextHeading, GUILayout.Width(120));
             GUILayout.Space(5);
             ddlSettingsTab.DrawButton();
             GUILayout.Space(4);
@@ -212,38 +214,42 @@ namespace TransferWindowPlanner
         {
             GUILayout.Label("Kerbal Alarm Clock Options", Styles.styleTextHeading);
 
-            if (!TWP_KACWrapper.KACWrapper.APIReady)
+            if (!TWP_KACWrapper.KACWrapper.AssemblyExists)
             {
                 //draw something with a link for the KAC
+                if (GUILayout.Button(new GUIContent("Not Installed. Click for Alarm Clock Info", "Click to open your browser and find out more about the Kerbal Alarm Clock"), Styles.styleTextCenterGreen))
+                    Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/24786");
+
+            }
+            else if (TWP_KACWrapper.KACWrapper.NeedUpgrade)
+            {
+                if (GUILayout.Button(new GUIContent("You need a newer version of KAC", "Click to open your browser and download a newer Kerbal Alarm Clock"), Styles.styleTextCenterGreen))
+                    Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/24786");
+                
             }
             else
             {
                 //Alarm Area
                 GUILayout.BeginVertical(Styles.styleSettingsArea);
+                //if (KACWrapper.KAC.DrawAlarmActionChoice(ref KACAlarmAction, "On Alarm:", 108, 61))
+                if (KACWrapper.KAC.DrawAlarmActionChoice(ref settings.KACAlarmAction, "Action:", 90 , 50))
+                    {
+                    settings.Save();
+                }
+
                 GUILayout.BeginHorizontal();
-                GUILayout.BeginVertical();
-                //GUILayout.Label("Written by:", Styles.styleStageTextHead);
-                GUILayout.Label("Documentation and Links:", Styles.styleTextHeading);
-                GUILayout.Label("GitHub Page:", Styles.styleTextHeading);
-                GUILayout.Label("Forum Page:", Styles.styleTextHeading);
-                GUILayout.EndVertical();
-
-                GUILayout.BeginVertical();
-                //GUILayout.Label("Trigger Au",KACResources.styleContent);
-                if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                    Application.OpenURL("http://triggerau.github.io/TransferWindowPlanner/");
-                if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                    Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
-                if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
-                    Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/93115-Transfer-Window-Planner");
-
-                GUILayout.EndVertical();
+                GUILayout.Label("Margin", Styles.styleText,GUILayout.Width(85));
+                if (DrawTextBox(ref settings.KACMargin))
+                    settings.Save();
+                GUILayout.Label("(hours)", Styles.styleTextYellow, GUILayout.Width(50));
 
                 GUILayout.EndHorizontal();
 
                 GUILayout.EndVertical();
             }
         }
+
+
         private void DrawWindow_About()
         {
             //Update Check Area

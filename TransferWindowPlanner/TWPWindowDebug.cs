@@ -75,7 +75,7 @@ namespace TransferWindowPlanner
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
-        public Int32 intTest5 = 0;
+        public Int32 intTest5 = 300;
 
         internal override void DrawWindow(int id)
         {
@@ -97,24 +97,32 @@ namespace TransferWindowPlanner
 
                 if (GUILayout.Button("CreateAlarm"))
                 {
-                    String tmp = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.Raw,"Hello There",Planetarium.GetUniversalTime()+900);
-                    //tmp.Notes = "FRED FLINTSTONE";
+                    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, 
+                        String.Format("{0} -> {1}",mbTWP.windowMain.TransferSelected.Origin.bodyName,mbTWP.windowMain.TransferSelected.Destination.bodyName), 
+                        mbTWP.windowMain.TransferSelected.DepartureTime);
 
-                    KACWrapper.KAC.Alarms[0].Notes = "BARNEY RUBBLE";
-
-
-
-                    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, "", mbTWP.windowMain.TransferSelected.DepartureTime);
 
                     KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
-                    alarmNew.Notes = "";
+                    LogFormatted("{0}==11=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
+                    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
+                    alarmNew.AlarmAction = settings.KACAlarmAction;
+                    LogFormatted("{0}==22=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
+                    LogFormatted("{0}==33=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
+
+                    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
                     
                 }
-                DrawLabel("{0}", KACWrapper.KAC.Alarms.Count);
-                foreach ( KACWrapper.KACAPI.KACAlarm a in KACWrapper.KAC.Alarms)
-                {
-                    DrawLabel("{1}-{2}-{3} ({0})", a.ID,a.Name, a.Notes,a.AlarmType);
-                }
+                DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
+
+                //DrawLabel("{0}", KACWrapper.KAC.Alarms.Count);
+                //foreach ( KACWrapper.KACAPI.KACAlarm a in KACWrapper.KAC.Alarms)
+                //{
+                //    DrawLabel("{1}-{2} ({0})", a.ID,a.Name, a.AlarmType);
+                //}
+
 
                 //DrawLabel("MouseOverAny:{0}", mbTWP.MouseOverAnyWindow);
                 //DrawLabel("MouseOverMain:{0}", mbTWP.windowMain.IsMouseOver);

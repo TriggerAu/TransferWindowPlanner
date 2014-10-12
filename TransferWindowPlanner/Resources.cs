@@ -31,6 +31,7 @@ namespace TransferWindowPlanner
 
         internal static Texture2D btnDropDown = new Texture2D(10, 10, TextureFormat.ARGB32, false);
         internal static Texture2D btnCopy = new Texture2D(16, 16, TextureFormat.ARGB32, false);
+        internal static Texture2D btnKAC = new Texture2D(16, 16, TextureFormat.ARGB32, false);
         internal static Texture2D btnInfo = new Texture2D(16, 16, TextureFormat.ARGB32, false);
         internal static Texture2D btnReset = new Texture2D(16, 16, TextureFormat.ARGB32, false);
 
@@ -66,6 +67,7 @@ namespace TransferWindowPlanner
 
             LoadImageFromFile(ref btnDropDown, "img_DropDown.png");
             LoadImageFromFile(ref btnCopy, "img_buttonCopy.png");
+            LoadImageFromFile(ref btnKAC, "img_buttonKAC.png");
             LoadImageFromFile(ref btnInfo, "img_fa-info-circle.png");
             LoadImageFromFile(ref btnReset, "img_fa-recycle.png");
 

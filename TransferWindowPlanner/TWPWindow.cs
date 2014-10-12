@@ -9,6 +9,8 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
+using TWP_KACWrapper;
+
 namespace TransferWindowPlanner
 {
     [WindowInitials(Caption="Transfer Window Planner",
@@ -19,6 +21,7 @@ namespace TransferWindowPlanner
     internal partial class TWPWindow:MonoBehaviourWindowPlus
     {
         internal TransferWindowPlanner mbTWP;
+        internal Settings settings;
 
         DropDownList ddlOrigin;
         DropDownList ddlDestination;
@@ -349,10 +352,40 @@ namespace TransferWindowPlanner
             if (ShowEjectionDetails) {
                 GUILayout.Label(""); GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionHeading * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             }
-            if (GUI.Button(new Rect(10, WindowRect.height - 30, 200, 20), new GUIContent("  Copy Transfer Details", Resources.btnCopy)))
+
+            //Action Buttons
+            if (KACWrapper.APIReady)
             {
-                CopyAllDetailsToClipboard();
+                if (GUI.Button(new Rect(10, WindowRect.height - 30, 132, 20), new GUIContent("  Add KAC Alarm", Resources.btnKAC)))
+                {
+                    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled,
+                        String.Format("{0} -> {1}", mbTWP.windowMain.TransferSelected.Origin.bodyName, mbTWP.windowMain.TransferSelected.Destination.bodyName),
+                        mbTWP.windowMain.TransferSelected.DepartureTime);
+
+
+                    KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
+                    alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
+                    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
+                    alarmNew.AlarmAction = settings.KACAlarmAction;
+                    alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
+                    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
+
+                }
+
+                if (GUI.Button(new Rect(132 + 15, WindowRect.height - 30, 120, 20), new GUIContent("  Copy Details", Resources.btnCopy)))
+                {
+                    CopyAllDetailsToClipboard();
+                }
             }
+            else
+            {
+                if (GUI.Button(new Rect(10, WindowRect.height - 30, 250, 20), new GUIContent("  Copy Transfer Details", Resources.btnCopy)))
+                {
+                    CopyAllDetailsToClipboard();
+                }
+            }
+            
+            
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
@@ -410,6 +443,12 @@ namespace TransferWindowPlanner
 
         private void CopyAllDetailsToClipboard()
         {
+            String Message = GenerateTransferDetailsText();
+            Utilities.CopyTextToClipboard(Message);
+        }
+
+        internal string GenerateTransferDetailsText()
+        {
             String Message = String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
             Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
@@ -427,7 +466,7 @@ namespace TransferWindowPlanner
             Message = Message.AppendLine("Insertion Inc.: {0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg);
             Message = Message.AppendLine("Insertion Δv:   {0:0} m/s", TransferSelected.DVInjection);
             Message = Message.AppendLine("Total Δv:       {0:0} m/s", TransferSelected.DVTotal);
-            Utilities.CopyTextToClipboard(Message);
+            return Message;
         }
 
         private void DrawTransferPlot()
