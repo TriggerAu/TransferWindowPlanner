@@ -67,7 +67,7 @@ namespace TransferWindowPlanner
             LoadImageFromFile(ref btnDropDown, "img_DropDown.png");
             LoadImageFromFile(ref btnCopy, "img_buttonCopy.png");
             LoadImageFromFile(ref btnInfo, "img_fa-info-circle.png");
-            LoadImageFromFile(ref btnReset, "img_fa-info-circle.png");
+            LoadImageFromFile(ref btnReset, "img_fa-recycle.png");
 
             LoadImageFromFile(ref texBox, "tex_Box.png");
             LoadImageFromFile(ref texBoxUnity, "tex_BoxUnity.png");

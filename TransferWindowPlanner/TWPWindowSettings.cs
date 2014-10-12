@@ -26,6 +26,7 @@ namespace TransferWindowPlanner
         internal enum SettingsTabs
         {
             [Description("General Properties")] General,
+            [Description("Alarm Clock Integration")] AlarmIntegration,
             //[Description("Styling/Visuals")]    Styling,
             [Description("About...")]   About,
         }
@@ -130,6 +131,10 @@ namespace TransferWindowPlanner
                     DrawWindow_General();
                     WindowHeight = 206;
                     break;
+                case SettingsTabs.AlarmIntegration:
+                    DrawWindow_Alarm();
+                    WindowHeight = mbTWP.windowDebug.intTest5;
+                    break;
                 case SettingsTabs.About:
                     DrawWindow_About();
                     WindowHeight = 285;
@@ -201,6 +206,43 @@ namespace TransferWindowPlanner
                 settings.Save();
             }
             GUILayout.EndVertical();
+        }
+
+        private void DrawWindow_Alarm()
+        {
+            GUILayout.Label("Kerbal Alarm Clock Options", Styles.styleTextHeading);
+
+            if (!TWP_KACWrapper.KACWrapper.APIReady)
+            {
+                //draw something with a link for the KAC
+            }
+            else
+            {
+                //Alarm Area
+                GUILayout.BeginVertical(Styles.styleSettingsArea);
+                GUILayout.BeginHorizontal();
+                GUILayout.BeginVertical();
+                //GUILayout.Label("Written by:", Styles.styleStageTextHead);
+                GUILayout.Label("Documentation and Links:", Styles.styleTextHeading);
+                GUILayout.Label("GitHub Page:", Styles.styleTextHeading);
+                GUILayout.Label("Forum Page:", Styles.styleTextHeading);
+                GUILayout.EndVertical();
+
+                GUILayout.BeginVertical();
+                //GUILayout.Label("Trigger Au",KACResources.styleContent);
+                if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
+                    Application.OpenURL("http://triggerau.github.io/TransferWindowPlanner/");
+                if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
+                    Application.OpenURL("http://github.com/TriggerAu/TransferWindowPlanner/");
+                if (GUILayout.Button("Click Here", Styles.styleTextCenterGreen))
+                    Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/93115-Transfer-Window-Planner");
+
+                GUILayout.EndVertical();
+
+                GUILayout.EndHorizontal();
+
+                GUILayout.EndVertical();
+            }
         }
         private void DrawWindow_About()
         {

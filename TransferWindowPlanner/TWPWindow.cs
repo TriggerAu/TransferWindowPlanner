@@ -310,10 +310,11 @@ namespace TransferWindowPlanner
         }
 
         private Single EjectionDetailsYOffset;
+        private Rect DVEjectionRect;
         private void DrawTransferDetails()
         {
             if (ShowEjectionDetails) {
-                GUI.Box(new Rect(10,EjectionDetailsYOffset,WindowRect.width - 20,mbTWP.windowDebug.intTest2),"");
+                GUI.Box(new Rect(10,EjectionDetailsYOffset,WindowRect.width - 20, 23),"");
                 //Styles.styleSettingsArea if needed
             }
             ////Draw the selected position indicators
@@ -328,7 +329,7 @@ namespace TransferWindowPlanner
             GUILayout.Label("Departure:", Styles.styleTextDetailsLabel);
             GUILayout.Label("Phase Angle:", Styles.styleTextDetailsLabel);
             if (ShowEjectionDetails) {
-                GUILayout.Label(""); GUILayout.Label("Ejection Heading:", Styles.styleTextDetailsLabel);
+                GUILayout.Label(""); GUILayout.Label("    Ejection Heading:", Styles.styleTextDetailsLabel);
             }
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
@@ -344,7 +345,7 @@ namespace TransferWindowPlanner
             }
             GUILayout.EndHorizontal();
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
-            GUILayout.Label("Phase Angle:", Styles.styleTextDetailsLabel);
+            //GUILayout.Label("Phase Angle:", Styles.styleTextDetailsLabel);
             if (ShowEjectionDetails) {
                 GUILayout.Label(""); GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionHeading * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             }
@@ -387,10 +388,16 @@ namespace TransferWindowPlanner
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
             GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
-            if (Event.current.type == EventType.Repaint)
-                EjectionDetailsYOffset = GUILayoutUtility.GetLastRect().y + mbTWP.windowDebug.intTest1;
-            if (GUILayout.Button(new GUIContent(Resources.btnInfo, "Show Details..."), new GUIStyle())) {
-                ShowEjectionDetails = true;
+            if (Event.current.type == EventType.Repaint){
+                DVEjectionRect = GUILayoutUtility.GetLastRect();
+                EjectionDetailsYOffset = DVEjectionRect.y + 20;
+            }
+            if (DVEjectionRect!=null){
+                if (GUI.Button(new Rect(DVEjectionRect.x + DVEjectionRect.width-20, DVEjectionRect.y, 16, 16), new GUIContent(Resources.btnInfo, "Toggle Details..."), new GUIStyle()))
+                {
+                    ShowEjectionDetails = !ShowEjectionDetails;
+                    if (!ShowEjectionDetails) WindowRect.height = 400;
+                }
             }
             GUILayout.EndHorizontal();
             if (ShowEjectionDetails) {
@@ -586,11 +593,13 @@ namespace TransferWindowPlanner
 
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(Resources.btnReset, "ButtonSettings")) {
+            if (GUILayout.Button(new GUIContent("Reset",Resources.btnReset), "ButtonSettings")) {
                 Done = false;
                 if (bw.IsBusy)
                     bw.CancelAsync();
                 Running = false;
+                TransferSelected = null;
+                WindowRect.height = 400;
                 SetupDestinationControls();
             }
             if (GUILayout.Button("Plot It!"))

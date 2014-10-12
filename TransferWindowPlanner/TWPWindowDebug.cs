@@ -101,6 +101,14 @@ namespace TransferWindowPlanner
                     //tmp.Notes = "FRED FLINTSTONE";
 
                     KACWrapper.KAC.Alarms[0].Notes = "BARNEY RUBBLE";
+
+
+
+                    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, "", mbTWP.windowMain.TransferSelected.DepartureTime);
+
+                    KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
+                    alarmNew.Notes = "";
+                    
                 }
                 DrawLabel("{0}", KACWrapper.KAC.Alarms.Count);
                 foreach ( KACWrapper.KACAPI.KACAlarm a in KACWrapper.KAC.Alarms)
