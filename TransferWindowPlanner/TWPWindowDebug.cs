@@ -7,6 +7,8 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
+using TWP_KACWrapper;
+
 namespace TransferWindowPlanner
 {
     //public static class OrbitExtensions
@@ -73,7 +75,7 @@ namespace TransferWindowPlanner
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
-        public Int32 intTest5 = 0;
+        public Int32 intTest5 = 300;
 
         internal override void DrawWindow(int id)
         {
@@ -89,17 +91,46 @@ namespace TransferWindowPlanner
 
                 //if (GUILayout.Button("KSP")) SkinsLibrary.SetCurrent(SkinsLibrary.DefSkinType.KSP);
                 //if (GUILayout.Button("UnityDef")) SkinsLibrary.SetCurrent(SkinsLibrary.DefSkinType.Unity);
-                if (GUILayout.Button("Default")) SkinsLibrary.SetCurrent("Default");
-                if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
-                if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
+                //if (GUILayout.Button("Default")) SkinsLibrary.SetCurrent("Default");
+                //if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
+                //if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
 
-                DrawLabel("MouseOverAny:{0}", mbTWP.MouseOverAnyWindow);
-                DrawLabel("MouseOverMain:{0}", mbTWP.windowMain.IsMouseOver);
-                DrawLabel("MouseOverMain:{0}", mbTWP.windowMain.IsMouseOver);
+                if (GUILayout.Button("CreateAlarm"))
+                {
+                    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, 
+                        String.Format("{0} -> {1}",mbTWP.windowMain.TransferSelected.Origin.bodyName,mbTWP.windowMain.TransferSelected.Destination.bodyName), 
+                        mbTWP.windowMain.TransferSelected.DepartureTime);
 
-                DrawLabel("Settings:{0}", mbTWP.windowSettings.WindowRect);
-                DrawLabel("SettingsBlocker:{0}", mbTWP.windowSettingsBlockout.WindowRect);
-                DrawLabel("CI:{0} P:{1}", mbTWP.windowMain.ColorIndex, mbTWP.windowMain.Percent);
+
+                    KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
+                    LogFormatted("{0}==11=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
+                    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
+                    alarmNew.AlarmAction = settings.KACAlarmAction;
+                    LogFormatted("{0}==22=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
+                    LogFormatted("{0}==33=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
+
+                    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    
+                }
+                DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
+
+                //DrawLabel("{0}", KACWrapper.KAC.Alarms.Count);
+                //foreach ( KACWrapper.KACAPI.KACAlarm a in KACWrapper.KAC.Alarms)
+                //{
+                //    DrawLabel("{1}-{2} ({0})", a.ID,a.Name, a.AlarmType);
+                //}
+
+
+                //DrawLabel("MouseOverAny:{0}", mbTWP.MouseOverAnyWindow);
+                //DrawLabel("MouseOverMain:{0}", mbTWP.windowMain.IsMouseOver);
+                //DrawLabel("MouseOverMain:{0}", mbTWP.windowMain.IsMouseOver);
+
+                //DrawLabel("Settings:{0}", mbTWP.windowSettings.WindowRect);
+                //DrawLabel("SettingsBlocker:{0}", mbTWP.windowSettingsBlockout.WindowRect);
+                //DrawLabel("CI:{0} P:{1}", mbTWP.windowMain.ColorIndex, mbTWP.windowMain.Percent);
 
                 DrawLabel("Mouse:{0}", mbTWP.windowMain.vectMouse);
                 DrawLabel("Plot:{0}", new Rect(mbTWP.windowMain.PlotPosition.x, mbTWP.windowMain.PlotPosition.y, mbTWP.windowMain.PlotWidth, mbTWP.windowMain.PlotHeight));

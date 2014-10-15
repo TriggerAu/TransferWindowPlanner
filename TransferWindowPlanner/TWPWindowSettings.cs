@@ -8,6 +8,8 @@ using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
+using TWP_KACWrapper;
+
 namespace TransferWindowPlanner
 {
     [WindowInitials(TooltipsEnabled=true,Visible=false,DragEnabled=false,Caption="TWP Settings")]
@@ -26,6 +28,7 @@ namespace TransferWindowPlanner
         internal enum SettingsTabs
         {
             [Description("General Properties")] General,
+            [Description("Alarm Clock Integration")] AlarmIntegration,
             //[Description("Styling/Visuals")]    Styling,
             [Description("About...")]   About,
         }
@@ -118,7 +121,7 @@ namespace TransferWindowPlanner
             if (SkinsLibrary.CurrentSkin.name != "Default")
                 GUILayout.Space(5);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Settings Section", Styles.styleTextHeading, GUILayout.Width(140));
+            GUILayout.Label("Settings Section", Styles.styleTextHeading, GUILayout.Width(120));
             GUILayout.Space(5);
             ddlSettingsTab.DrawButton();
             GUILayout.Space(4);
@@ -128,6 +131,10 @@ namespace TransferWindowPlanner
             {
                 case SettingsTabs.General:
                     DrawWindow_General();
+                    WindowHeight = 206;
+                    break;
+                case SettingsTabs.AlarmIntegration:
+                    DrawWindow_Alarm();
                     WindowHeight = 206;
                     break;
                 case SettingsTabs.About:
@@ -202,6 +209,47 @@ namespace TransferWindowPlanner
             }
             GUILayout.EndVertical();
         }
+
+        private void DrawWindow_Alarm()
+        {
+            GUILayout.Label("Kerbal Alarm Clock Options", Styles.styleTextHeading);
+
+            if (!TWP_KACWrapper.KACWrapper.AssemblyExists)
+            {
+                //draw something with a link for the KAC
+                if (GUILayout.Button(new GUIContent("Not Installed. Click for Alarm Clock Info", "Click to open your browser and find out more about the Kerbal Alarm Clock"), Styles.styleTextCenterGreen))
+                    Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/24786");
+
+            }
+            else if (TWP_KACWrapper.KACWrapper.NeedUpgrade)
+            {
+                if (GUILayout.Button(new GUIContent("You need a newer version of KAC", "Click to open your browser and download a newer Kerbal Alarm Clock"), Styles.styleTextCenterGreen))
+                    Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/24786");
+                
+            }
+            else
+            {
+                //Alarm Area
+                GUILayout.BeginVertical(Styles.styleSettingsArea);
+                //if (KACWrapper.KAC.DrawAlarmActionChoice(ref KACAlarmAction, "On Alarm:", 108, 61))
+                if (KACWrapper.KAC.DrawAlarmActionChoice(ref settings.KACAlarmAction, "Action:", 90 , 50))
+                    {
+                    settings.Save();
+                }
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Margin", Styles.styleText,GUILayout.Width(85));
+                if (DrawTextBox(ref settings.KACMargin))
+                    settings.Save();
+                GUILayout.Label("(hours)", Styles.styleTextYellow, GUILayout.Width(50));
+
+                GUILayout.EndHorizontal();
+
+                GUILayout.EndVertical();
+            }
+        }
+
+
         private void DrawWindow_About()
         {
             //Update Check Area

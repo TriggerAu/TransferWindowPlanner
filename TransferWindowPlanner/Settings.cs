@@ -54,22 +54,22 @@ namespace TransferWindowPlanner
             [Description("Unity/KSP Buttons")]  UnityWKSPButtons
         }
 
+        [Persistent] internal TWP_KACWrapper.KACWrapper.KACAPI.AlarmActionEnum KACAlarmAction = TWP_KACWrapper.KACWrapper.KACAPI.AlarmActionEnum.KillWarp;
+        [Persistent] internal Double KACMargin = 24;
+
         [Persistent] internal Boolean ClickThroughProtect_KSC=true;
         [Persistent] internal Boolean ClickThroughProtect_Editor=true;
         [Persistent] internal Boolean ClickThroughProtect_Flight=true;
 
         //Version Stuff
-        [Persistent]
-        internal Boolean DailyVersionCheck = true;
+        [Persistent] internal Boolean DailyVersionCheck = true;
         internal Boolean VersionAttentionFlag = false;
         //When did we last check??
         internal DateTime VersionCheckDate_Attempt = new DateTime();
-        [Persistent]
-        internal String VersionCheckDate_AttemptStored;
+        [Persistent] internal String VersionCheckDate_AttemptStored;
         public String VersionCheckDate_AttemptString { get { return ConvertVersionCheckDateToString(this.VersionCheckDate_Attempt); } }
         internal DateTime VersionCheckDate_Success = new DateTime();
-        [Persistent]
-        internal String VersionCheckDate_SuccessStored;
+        [Persistent] internal String VersionCheckDate_SuccessStored;
         public String VersionCheckDate_SuccessString { get { return ConvertVersionCheckDateToString(this.VersionCheckDate_Success); } }
 
         public override void OnEncodeToConfigNode()
