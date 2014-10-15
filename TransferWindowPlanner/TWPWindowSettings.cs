@@ -135,7 +135,7 @@ namespace TransferWindowPlanner
                     break;
                 case SettingsTabs.AlarmIntegration:
                     DrawWindow_Alarm();
-                    WindowHeight = mbTWP.windowDebug.intTest5;
+                    WindowHeight = 206;
                     break;
                 case SettingsTabs.About:
                     DrawWindow_About();

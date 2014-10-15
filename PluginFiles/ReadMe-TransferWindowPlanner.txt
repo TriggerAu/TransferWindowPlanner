@@ -27,6 +27,10 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.1.0.0		-	KSP Version: 0.25.0
+- Added Ejection Burn Details and fiddle Start Date calcs
+- Added KAC Alarm Integration - Requires at least KAC 3.0.0.5 (Issue #16)
+
 Version 1.0.1.0		-	KSP Version: 0.24.2
 - Fixed Framerate Issue (Issue #17)
 - Updated links and version code
