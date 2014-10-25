@@ -27,6 +27,10 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.1.1.0		-	KSP Version: 0.25.0
+- Redid Start date calcs - defaults to yesterday (Issue #21)
+- Redid project references 
+
 Version 1.1.0.0		-	KSP Version: 0.25.0
 - Added Ejection Burn Details and fiddle Start Date calcs
 - Added KAC Alarm Integration - Requires at least KAC 3.0.0.5 (Issue #16)
