@@ -95,6 +95,39 @@ function CreateKerbalStuffRelease() {
 
 }
 
+
+function UpdateVersionCheckGHPagesAndPublish() {
+    write-host -ForegroundColor Yellow "`r`nMERGING GHPages Dev to Master"
+
+    $GHPagesPath = "$($PSScriptRoot)\..\..\$($PluginName)_gh-pages"
+
+	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages_develop
+    #update the version file
+
+    "|LATESTVERSION|$($Version)|LATESTVERSION|" | Out-File "$($GHPagesPath)\versioncheck.txt"
+
+    #Commit these changes
+    git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" add "$($GHPagesPath)\versioncheck.txt"
+    git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" commit -m "Updating versioncheck.text for v$($Version)"
+	write-host -ForegroundColor Yellow "`r`nPUSHING gh-pages_develop TO GITHUB"
+    git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" push
+
+    #merge to main branch
+	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages
+	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" merge --no-ff gh-pages_develop -m "Merge versioncheck $($Version) to ghpages"
+
+	write-host -ForegroundColor Yellow "`r`nPUSHING gh-pages TO GITHUB"
+	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" push
+	
+	write-host -ForegroundColor Yellow "Back to Develop Branch"
+    git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages_develop
+
+	write-host -ForegroundColor Yellow "----------------------------"
+	write-host -ForegroundColor Yellow "Finished Website versioncheck update $($Version)"
+	write-host -ForegroundColor Yellow "----------------------------"
+	
+}
+
 #Get newest version
 $Version =""
 $VersionRead =  (Get-ChildItem $UploadDir -Filter "v*.*.*.*"|sort -Descending)[0].name.replace("v","")
@@ -131,6 +164,7 @@ else
                 $OAuthToken = $GitHubToken
             } else {
                 $OAuthToken = Read-Host -Prompt "GitHub OAuth Token"
+                $GitHubToken = $OAuthToken
             }
 
             #if ($CurseForgeToken -eq $null -or $CurseForgeToken -eq "") {
@@ -162,15 +196,7 @@ $ChoiceRtn = $host.ui.PromptForChoice("Do you wish to Continue?","Be sure develo
 
 if($ChoiceRtn -eq 0)
 {
-	#git add -A *
-	#git commit -m "Version history $($Version)"
-	
-	#write-host -ForegroundColor Yellow "`r`nPUSHING DEVELOP TO GITHUB"
-	#git push
-
-    #MergeDevToMaster
-
-
+    "Generating the readme content`r`n"
     $readme = (Get-Content -Raw "$($PSScriptRoot)\..\PluginFiles\ReadMe-$($PluginName).txt")
 
     #If couldn't load it then bork out
@@ -187,7 +213,7 @@ if($ChoiceRtn -eq 0)
 	$reldescr = [regex]::replace($reldescr,"^.+?\r\n","","singleline,ignorecase")
 	
 	$reldescr = $reldescr.Trim("`r`n")
-	$reldescr = $reldescr.Replace("- ","* ")
+	$reldescr = [regex]::replace($reldescr,"^- ","* ","multiline,ignorecase")
 	$reldescr = $reldescr.Replace("`r`n","\r\n")
 	$reldescr = $reldescr.Replace("`"","\`"")
 	
@@ -197,14 +223,35 @@ if($ChoiceRtn -eq 0)
 	$reldescr = "$($reldescr)\r\n\r\n``````$($KSPVersion)``````"
 
     $relKStuff = $reldescr.Replace("\r\n","`r`n")
+    
 
-
+    MergeDevToMaster
 
     CreateGitHubRelease
 
     #CreateCurseRelease 
 
     CreateKerbalStuffRelease
+
+    $Choices= [System.Management.Automation.Host.ChoiceDescription[]] @("&Yes","&No")
+    $ChoiceRtn = $host.ui.PromptForChoice("Update versioncheck.txt file","Do you wish to updatethe versioncheck file in ghpages?",$Choices,0)
+
+    if($ChoiceRtn -eq 0)
+    {
+        UpdateVersionCheckGHPagesAndPublish
+    }
+
+    "GitHub Description:"
+    "-------------------"
+    "$($reldescr)`r`n"
+
+    "KStuff Description:"
+    "-------------------"
+    "$($relKStuff)`r`n"
+
+    "Forum List text:"
+    "-------------------"
+    "$($ForumList)`r`n"
 
 }
 else

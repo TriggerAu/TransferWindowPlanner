@@ -54,6 +54,7 @@ namespace TransferWindowPlanner
 
             ddlOrigin = new DropDownList(lstPlanets.Select(x => x.NameFormatted), 2, this);
             ddlDestination = new DropDownList(lstPlanets.Select(x => x.NameFormatted), 0, this);
+            SetDepartureMinToYesterday();
             SetupDestinationControls();
             SetupTransferParams();
 
@@ -78,10 +79,20 @@ namespace TransferWindowPlanner
             {
                 this.ClampToScreenNow();
                 if (!Running && !Done) {
+                    SetDepartureMinToYesterday();
                     SetupDestinationControls();
-                    //Set the Departure min to be yesterday
                 }
             }
+        }
+
+        private void SetDepartureMinToYesterday()
+        {
+            //Set the Departure min to be yesterday
+            KSPTime timeYesterday = new KSPTime(Planetarium.GetUniversalTime() - KSPTime.SecondsPerDay);
+            LogFormatted("Setting to y{0} d{1}", timeYesterday.Year, timeYesterday.Day);
+            strDepartureMinYear = (timeYesterday.Year+1).ToString();
+            strDepartureMinDay = (timeYesterday.Day+1).ToString();
+            DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
         }
 
         void ddlOrigin_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
@@ -634,12 +645,16 @@ namespace TransferWindowPlanner
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(new GUIContent("Reset",Resources.btnReset), "ButtonSettings")) {
                 Done = false;
-                if (bw.IsBusy)
+                if (bw!=null && bw.IsBusy)
                     bw.CancelAsync();
                 Running = false;
                 TransferSelected = null;
                 WindowRect.height = 400;
+
+                SetDepartureMinToYesterday();
+                LogFormatted("Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
                 SetupDestinationControls();
+                LogFormatted("Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
             }
             if (GUILayout.Button("Plot It!"))
             {
