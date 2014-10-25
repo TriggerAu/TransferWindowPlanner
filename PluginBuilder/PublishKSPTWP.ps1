@@ -110,14 +110,14 @@ function UpdateVersionCheckGHPagesAndPublish() {
     git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" add "$($GHPagesPath)\versioncheck.txt"
     git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" commit -m "Updating versioncheck.text for v$($Version)"
 	write-host -ForegroundColor Yellow "`r`nPUSHING gh-pages_develop TO GITHUB"
-    git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" 
+    git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" push
 
     #merge to main branch
-	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages_develop
-	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)"  merge --no-ff develop -m "Merge versioncheck $($Version) to ghpages"
+	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages
+	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" merge --no-ff gh-pages_develop -m "Merge versioncheck $($Version) to ghpages"
 
 	write-host -ForegroundColor Yellow "`r`nPUSHING gh-pages TO GITHUB"
-	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)"  push
+	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" push
 	
 	write-host -ForegroundColor Yellow "Back to Develop Branch"
     git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages_develop
@@ -196,15 +196,7 @@ $ChoiceRtn = $host.ui.PromptForChoice("Do you wish to Continue?","Be sure develo
 
 if($ChoiceRtn -eq 0)
 {
-	#git add -A *
-	#git commit -m "Version history $($Version)"
-	
-	#write-host -ForegroundColor Yellow "`r`nPUSHING DEVELOP TO GITHUB"
-	#git push
-
-    #MergeDevToMaster
-
-
+    "Generating the readme content`r`n"
     $readme = (Get-Content -Raw "$($PSScriptRoot)\..\PluginFiles\ReadMe-$($PluginName).txt")
 
     #If couldn't load it then bork out
@@ -231,12 +223,13 @@ if($ChoiceRtn -eq 0)
 	$reldescr = "$($reldescr)\r\n\r\n``````$($KSPVersion)``````"
 
     $relKStuff = $reldescr.Replace("\r\n","`r`n")
+    
 
-
+    MergeDevToMaster
 
     CreateGitHubRelease
 
-    CreateCurseRelease 
+    #CreateCurseRelease 
 
     CreateKerbalStuffRelease
 
@@ -250,15 +243,15 @@ if($ChoiceRtn -eq 0)
 
     "GitHub Description:"
     "-------------------"
-    "$($reldescr)\r\n"
+    "$($reldescr)`r`n"
 
     "KStuff Description:"
     "-------------------"
-    "$($relKStuff)\r\n"
+    "$($relKStuff)`r`n"
 
     "Forum List text:"
     "-------------------"
-    "$($ForumList)\r\n"
+    "$($ForumList)`r`n"
 
 }
 else
