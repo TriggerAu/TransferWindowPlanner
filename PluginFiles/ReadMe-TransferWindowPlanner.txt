@@ -27,6 +27,10 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.1.2.0		-	KSP Version: 0.25.0
+- Added extra logging and null checks re AppLauncher
+- Updated KACWrapper to handle Alarmtime properly and add repeat properties
+
 Version 1.1.1.0		-	KSP Version: 0.25.0
 - Redid Start date calcs - defaults to yesterday (Issue #21)
 - Redid project references 

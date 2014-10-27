@@ -8,23 +8,27 @@ $KerbalStuffWrapper = "D:\Programming\KSP\_Scripts\KerbalStuffWrapper\KerbalStuf
 
 
 function MergeDevToMaster() {
-    write-host -ForegroundColor Yellow "`r`nMERGING DEVELOP TO MASTER"
+    $Choices= [System.Management.Automation.Host.ChoiceDescription[]] @("&Yes","&No")
+    $ChoiceRtn = $host.ui.PromptForChoice("`r`nGit Merge Dev To Master Confirmation","Do you wish to merge Dev and Master?",$Choices,0)
+    if ($ChoiceRtn -eq 0 )
+    {
+        write-host -ForegroundColor Yellow "`r`nMERGING DEVELOP TO MASTER"
 
-	git checkout master
-	git merge --no-ff develop -m "Merge $($Version) to master"
-	git tag -a "v$($Version)" -m "Released version $($Version)"
+	    git checkout master
+	    git merge --no-ff develop -m "Merge $($Version) to master"
+	    git tag -a "v$($Version)" -m "Released version $($Version)"
 
-	write-host -ForegroundColor Yellow "`r`nPUSHING MASTER AND TAGS TO GITHUB"
-	git push
-	git push --tags
+	    write-host -ForegroundColor Yellow "`r`nPUSHING MASTER AND TAGS TO GITHUB"
+	    git push
+	    git push --tags
 	
-	write-host -ForegroundColor Yellow "Back to Develop Branch"
-    git checkout develop
+	    write-host -ForegroundColor Yellow "Back to Develop Branch"
+        git checkout develop
 
-	write-host -ForegroundColor Yellow "----------------------------"
-	write-host -ForegroundColor Yellow "Finished Version $($Version)"
-	write-host -ForegroundColor Yellow "----------------------------"
-	
+	    write-host -ForegroundColor Yellow "----------------------------"
+	    write-host -ForegroundColor Yellow "Finished Version $($Version)"
+	    write-host -ForegroundColor Yellow "----------------------------"
+	}
 }
 
 function CreateGitHubRelease() {
@@ -89,17 +93,21 @@ function CreateCurseRelease() {
 }
 
 function CreateKerbalStuffRelease() {
-    "Updating Mod at KerbalStuff"
-    $File = get-item "$($UploadDir)\v$($Version)\$($pluginname)_$($Version).zip"
-    & $KerbalStuffWrapper updatemod /m:$KerbalStuffModID /u:"$KerbalStuffLogin" /p:"$KerbalStuffPW" /k:"$KSPVersion" /v:"$Version" /f:"$($File.FullName)" /l:"$relKStuff" /n:true
-
+    $Choices= [System.Management.Automation.Host.ChoiceDescription[]] @("&Yes","&No")
+    $ChoiceRtn = $host.ui.PromptForChoice("`r`nKerbalStuff Confirmation","Do you wish to upload v$($Version) to KerbalStuff?",$Choices,0)
+    if ($ChoiceRtn -eq 0 )
+    {
+		"Updating Mod at KerbalStuff"
+		$File = get-item "$($UploadDir)\v$($Version)\$($pluginname)_$($Version).zip"
+		& $KerbalStuffWrapper updatemod /m:$KerbalStuffModID /u:"$KerbalStuffLogin" /p:"$KerbalStuffPW" /k:"$KSPVersion" /v:"$Version" /f:"$($File.FullName)" /l:"$relKStuff" /n:true
+	}
 }
 
 
 function UpdateVersionCheckGHPagesAndPublish() {
     write-host -ForegroundColor Yellow "`r`nMERGING GHPages Dev to Master"
 
-    $GHPagesPath = "$($PSScriptRoot)\..\..\$($PluginName)_gh-pages"
+    $GHPagesPath = "$($PSScriptRoot)\..\..\$($GitHubName)_gh-pages"
 
 	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages_develop
     #update the version file
@@ -164,7 +172,7 @@ else
                 $OAuthToken = $GitHubToken
             } else {
                 $OAuthToken = Read-Host -Prompt "GitHub OAuth Token"
-                $GitHubToken = $OAuthToken
+                $global:GitHubToken = $OAuthToken
             }
 
             #if ($CurseForgeToken -eq $null -or $CurseForgeToken -eq "") {
@@ -172,8 +180,8 @@ else
             #}
 
             if ($KerbalStuffPW -eq $null) {
-                $KerbalStuffLogin = Read-Host -Prompt "KerbalStuff Login"
-                $KerbalStuffPW = Read-Host -Prompt "KerbalStuff Password"
+                $global:KerbalStuffLogin = Read-Host -Prompt "KerbalStuff Login"
+                $global:KerbalStuffPW = Read-Host -Prompt "KerbalStuff Password"
             }
 
         }
