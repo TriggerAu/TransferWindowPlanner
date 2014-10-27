@@ -107,7 +107,7 @@ namespace TransferWindowPlanner
 
         void KAC_onAlarmStateChanged(KACWrapper.KACAPI.AlarmStateChangedEventArgs e)
         {
-            LogFormatted("AlarmStateChanged:{0}-{1}", e.alarm.Name, e.eventType);
+            //LogFormatted("AlarmStateChanged:{0}-{1}", e.alarm.Name, e.eventType);
         }
 
         private void InitWindows()
