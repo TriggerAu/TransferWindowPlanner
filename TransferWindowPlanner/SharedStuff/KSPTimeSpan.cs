@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KSPPluginFramework
 {
-    public struct KSPTimeSpan
+    public class KSPTimeSpan
     {
 
         //Descriptors of DateTime
