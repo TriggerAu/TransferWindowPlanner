@@ -7,41 +7,26 @@ namespace KSPPluginFramework
 {
     public class KSPDateTime
     {
-        //Define the Epoch
-        static public int EpochDay { get { return KSPDateTimeStructure.EpochDay; } set { KSPDateTimeStructure.EpochDay = value; } }
-        static public int EpochYear { get; set; }
-
-        //Define the Calendar
-        static public int SecondsPerMinute { get; set; }
-        static public int MinutesPerHour { get; set; }
-        static public int HoursPerDay { get; set; }
-        static public int DaysPerYear { get; set; }
-
-        static public int SecondsPerHour { get { return SecondsPerMinute * MinutesPerHour; } }
-        static public int SecondsPerDay { get { return SecondsPerHour * HoursPerDay; } }
-        static public int SecondsPerYear { get { return SecondsPerDay * DaysPerYear; } }
-
-
-        
+       
         //Descriptors of DateTime - uses UT as the Root value
-        public int Year { 
-            get { return EpochYear + (Int32)UT / SecondsPerYear; }
-            set { UT = UT - (Year - EpochYear) * SecondsPerYear + (value - EpochYear) * SecondsPerYear; } 
+        public int Year {
+            get { return KSPDateTimeStructure.EpochYear + (Int32)UT / KSPDateTimeStructure.SecondsPerYear; }
+            set { UT = UT - (Year - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear + (value - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear; } 
         }
-        public int Day { 
-            get { return EpochDay + (Int32)UT / SecondsPerDay % SecondsPerYear; } 
-            set { UT = UT - (Day-EpochDay) * SecondsPerDay + (value - EpochDay) * SecondsPerDay; } 
+        public int Day {
+            get { return KSPDateTimeStructure.EpochDay + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.SecondsPerYear; }
+            set { UT = UT - (Day - KSPDateTimeStructure.EpochDay) * KSPDateTimeStructure.SecondsPerDay + (value - KSPDateTimeStructure.EpochDay) * KSPDateTimeStructure.SecondsPerDay; } 
         }
-        public int Hour { 
-            get { return (Int32)UT / SecondsPerHour % SecondsPerDay; } 
-            set { UT = UT - Hour * SecondsPerHour + value * SecondsPerHour; } 
+        public int Hour {
+            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerHour % KSPDateTimeStructure.SecondsPerDay; }
+            set { UT = UT - Hour * KSPDateTimeStructure.SecondsPerHour + value * KSPDateTimeStructure.SecondsPerHour; } 
         }
         public int Minute {
-            get { return (Int32)UT / SecondsPerMinute % SecondsPerHour; } 
-            set { UT = UT - Minute * SecondsPerMinute + value* SecondsPerMinute; } 
+            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerMinute % KSPDateTimeStructure.SecondsPerHour; }
+            set { UT = UT - Minute * KSPDateTimeStructure.SecondsPerMinute + value * KSPDateTimeStructure.SecondsPerMinute; } 
         }
-        public int Second { 
-            get { return (Int32)UT % SecondsPerMinute; } 
+        public int Second {
+            get { return (Int32)UT % KSPDateTimeStructure.SecondsPerMinute; } 
             set { UT = UT - Second + value; } 
         }
         public int Millisecond { 
@@ -58,17 +43,6 @@ namespace KSPPluginFramework
 
 
         #region Constructors
-        static KSPDateTime()
-        {
-            EpochYear = 1;
-            EpochDay = 1;
-            SecondsPerMinute = 60;
-            MinutesPerHour = 60;
-            HoursPerDay = 6;
-            DaysPerYear = 425;
-        }
-
-
         public KSPDateTime()
         {
             _UT = 0;
@@ -100,7 +74,7 @@ namespace KSPPluginFramework
 
         #region Calculated Properties
         public KSPDateTime Date { get { return new KSPDateTime(Year, Day); } }
-        public KSPTimeSpan TimeOfDay { get { return new KSPTimeSpan(UT % SecondsPerDay); } }
+        public KSPTimeSpan TimeOfDay { get { return new KSPTimeSpan(UT % KSPDateTimeStructure.SecondsPerDay); } }
 
 
         public static KSPDateTime Now {
@@ -120,19 +94,19 @@ namespace KSPPluginFramework
         }
         public KSPDateTime AddYears(Double value)
         {
-            return new KSPDateTime(UT + value * SecondsPerYear);
+            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerYear);
         }
         public KSPDateTime AddDays(Double value)
         {
-            return new KSPDateTime(UT + value * SecondsPerDay);
+            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerDay);
         }
         public KSPDateTime AddHours(Double value)
         {
-            return new KSPDateTime(UT + value * SecondsPerHour);
+            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerHour);
         }
         public KSPDateTime AddMinutes(Double value)
         {
-            return new KSPDateTime(UT + value * SecondsPerMinute);
+            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerMinute);
         }
         public KSPDateTime AddSeconds(Double value)
         {
@@ -175,8 +149,7 @@ namespace KSPPluginFramework
         #endregion        
         
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return UT.GetHashCode();
         }
 
@@ -201,26 +174,33 @@ namespace KSPPluginFramework
 
         #endregion
 
-        public static KSPTimeSpan operator -(KSPDateTime d1, KSPDateTime d2) {
+        #region Operators
+        public static KSPTimeSpan operator -(KSPDateTime d1, KSPDateTime d2)
+        {
             return new KSPTimeSpan(d1.UT - d2.UT);
         }
-        public static KSPDateTime operator -(KSPDateTime d, KSPTimeSpan t) {
+        public static KSPDateTime operator -(KSPDateTime d, KSPTimeSpan t)
+        {
             return new KSPDateTime(d.UT - t.UT);
         }
-        public static KSPDateTime operator +(KSPDateTime d, KSPTimeSpan t) {
+        public static KSPDateTime operator +(KSPDateTime d, KSPTimeSpan t)
+        {
             return new KSPDateTime(d.UT + t.UT);
         }
-        public static Boolean operator !=(KSPDateTime d1, KSPDateTime d2) {
+        public static Boolean operator !=(KSPDateTime d1, KSPDateTime d2)
+        {
             return !(d1 == d2);
         }
-        public static Boolean operator ==(KSPDateTime d1, KSPDateTime d2) {
+        public static Boolean operator ==(KSPDateTime d1, KSPDateTime d2)
+        {
             return d1.UT == d2.UT;
         }
 
 
 
-        public static Boolean operator <=(KSPDateTime d1, KSPDateTime d2) {
-            return d1.CompareTo(d2)<=0;
+        public static Boolean operator <=(KSPDateTime d1, KSPDateTime d2)
+        {
+            return d1.CompareTo(d2) <= 0;
         }
         public static Boolean operator <(KSPDateTime d1, KSPDateTime d2)
         {
@@ -233,7 +213,8 @@ namespace KSPPluginFramework
         public static Boolean operator >(KSPDateTime d1, KSPDateTime d2)
         {
             return d1.CompareTo(d2) > 0;
-        }
+        } 
+        #endregion
 
         //DaysInMonth
         //Day - is Day Of Month
@@ -241,18 +222,10 @@ namespace KSPPluginFramework
         //IsLeapYear
 
 
-
-        //From
-
-
-        //To
+        //To String Formats
     }
 
 
 
-    public class KSPMonth
-    {
-        public int Days { get; set; }
-        public String Name { get; set; }
-    }
+
 }

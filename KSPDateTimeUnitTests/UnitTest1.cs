@@ -71,6 +71,12 @@ namespace KSPDateTimeUnitTests
             Assert.AreEqual(2, dt.Year, "Hello");
             dt.Day = 50;
             Assert.AreEqual(50, dt.Day);
+
+
+            KSPTimeSpan2 a = new KSPTimeSpan2();
+            a.UT = 300;
+            a.Second = 32;
+
         }
     }
 }

@@ -26,24 +26,33 @@ namespace TransferWindowPlanner
         }
 
         //Descriptors of DateTime - uses UT as the Root value
-        public virtual int Year
+        private int _Year;
+        protected virtual int Year
         {
             get { return (Int32)UT / SecondsPerYear; }
-            set { UT = UT - Year * SecondsPerYear + value * SecondsPerYear; }
+            set { 
+                UT = UT - _Year * SecondsPerYear + value * SecondsPerYear;
+                _Year = value;
+            }
         }
-        public virtual int Day
+
+        private int _Day;
+        protected virtual int Day
         {
-            get { return (Int32)UT / SecondsPerDay % SecondsPerYear; }
-            set { UT = UT - Day * SecondsPerDay + value * SecondsPerDay; }
+            get { return (Int32)UT / SecondsPerDay % DaysPerYear; }
+            set { 
+                UT = UT - _Day * SecondsPerDay + value * SecondsPerDay;
+                _Day = value;
+            }
         }
         public int Hour
         {
-            get { return (Int32)UT / SecondsPerHour % SecondsPerDay; }
+            get { return (Int32)UT / SecondsPerHour % HoursPerDay; }
             set { UT = UT - Hour * SecondsPerHour + value * SecondsPerHour; }
         }
         public int Minute
         {
-            get { return (Int32)UT / SecondsPerMinute % SecondsPerHour; }
+            get { return (Int32)UT / SecondsPerMinute % MinutesPerHour; }
             set { UT = UT - Minute * SecondsPerMinute + value * SecondsPerMinute; }
         }
         public int Second
@@ -79,25 +88,29 @@ namespace TransferWindowPlanner
 
         }
 
-        public override int Year {
-            get {
-                return base.Year + EpochYear;
-            }
-            set {
-                base.Year = value - EpochYear;
-            }
+        new public int Year {
+            get { return base.Year + EpochYear; }
+            set { base.Year = value - EpochYear; }
         }
-        public override int Day {
-            get {
-                return base.Day + EpochDay;
-            }
-            set {
-                base.Day = value + EpochDay;
-            }
+        new public int Day {
+            get { return base.Day + EpochDay; }
+            set { base.Day = value - EpochDay; }
         }
+        new public int Hour { get { return base.Hour; } set { base.Hour = value; } }
+        new public int Minute { get { return base.Minute; } set { base.Minute = value; } }
+        new public int Second { get { return base.Second; } set { base.Second = value; } }
+        new public int Millisecond { get { return base.Millisecond; } set { base.Millisecond = value; } }
+
     }
     public class KSPTimeSpan2 : KSPDateTimeSpanAbstract
     {
+        public int Years { get { return base.Year; } set { base.Year = value; } }
+        public int Days { get { return base.Day; } set { base.Day = value; } }
+        public int Hours { get { return base.Hour; } set { base.Hour = value; } }
+        public int Minutes { get { return base.Minute; } set { base.Minute = value; } }
+        public int Seconds { get { return base.Second; } set { base.Second = value; } }
+        public int Milliseconds { get { return base.Millisecond; } set { base.Millisecond = value; } }
+
 
     }
 

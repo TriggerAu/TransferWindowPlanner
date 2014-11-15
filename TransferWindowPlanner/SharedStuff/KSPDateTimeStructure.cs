@@ -27,8 +27,18 @@ namespace KSPPluginFramework
             EpochDay = 1;
             SecondsPerMinute = 60;
             MinutesPerHour = 60;
-            HoursPerDay = 6;
-            DaysPerYear = 425;
+                        
+            HoursPerDay = GameSettings.KERBIN_TIME ? 6 : 24;
+            DaysPerYear = GameSettings.KERBIN_TIME ? 425 : 365;
         }
+
+
+        
+    }
+
+    public class KSPMonth
+    {
+        public int Days { get; set; }
+        public String Name { get; set; }
     }
 }
