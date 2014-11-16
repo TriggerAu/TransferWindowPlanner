@@ -7,42 +7,59 @@ namespace KSPPluginFramework
 {
     public class KSPDateTime
     {
-       
+        //Define the Epoch
+        static public int EpochDay { get; set; }
+        static public int EpochYear { get; set; }
+
+        //Define the Calendar
+        static public int SecondsPerMinute { get { return KSPTimeSpan.SecondsPerMinute; } set { KSPTimeSpan.SecondsPerMinute = value; } }
+        static public int MinutesPerHour { get { return KSPTimeSpan.MinutesPerHour; } set { KSPTimeSpan.MinutesPerHour = value; } }
+        static public int HoursPerDay { get { return KSPTimeSpan.HoursPerDay; } set { KSPTimeSpan.HoursPerDay = value; } }
+        static public int DaysPerYear { get; set; }
+
+        static public int SecondsPerHour { get { return KSPTimeSpan.SecondsPerHour; } }
+        static public int SecondsPerDay { get { return KSPTimeSpan.SecondsPerDay; } }
+        static public int SecondsPerYear { get { return SecondsPerDay * DaysPerYear; } }
+
         //Descriptors of DateTime - uses UT as the Root value
         public int Year {
-            get { return KSPDateTimeStructure.EpochYear + (Int32)UT / KSPDateTimeStructure.SecondsPerYear; }
-            set { UT = UT - (Year - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear + (value - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear; } 
+            get { return EpochYear + (Int32)UT / SecondsPerYear; }
+            set { UT = UT - (Year - EpochYear) * SecondsPerYear + (value - EpochYear) * SecondsPerYear; } 
         }
-        public int Day {
-            get { return KSPDateTimeStructure.EpochDay + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.SecondsPerYear; }
-            set { UT = UT - (Day - KSPDateTimeStructure.EpochDay) * KSPDateTimeStructure.SecondsPerDay + (value - KSPDateTimeStructure.EpochDay) * KSPDateTimeStructure.SecondsPerDay; } 
+        public int DayOfYear {
+            get { return EpochDay + (Int32)UT / SecondsPerDay % SecondsPerYear; }
+            set { UT = UT - (DayOfYear - EpochDay) * SecondsPerDay + (value - EpochDay) * SecondsPerDay; }
         }
-        public int Hour {
-            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerHour % KSPDateTimeStructure.SecondsPerDay; }
-            set { UT = UT - Hour * KSPDateTimeStructure.SecondsPerHour + value * KSPDateTimeStructure.SecondsPerHour; } 
+        public int Day
+        {
+
         }
-        public int Minute {
-            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerMinute % KSPDateTimeStructure.SecondsPerHour; }
-            set { UT = UT - Minute * KSPDateTimeStructure.SecondsPerMinute + value * KSPDateTimeStructure.SecondsPerMinute; } 
-        }
-        public int Second {
-            get { return (Int32)UT % KSPDateTimeStructure.SecondsPerMinute; } 
-            set { UT = UT - Second + value; } 
-        }
-        public int Millisecond { 
-            get { return (Int32) (Math.Round(UT - Math.Floor(UT), 3) * 1000); } 
-            set { UT = Math.Floor(UT) + ((Double)value / 1000); } 
-        }
+
+        public int Hour { get { return _TimeSpan.Hours; } set { _TimeSpan.Hours = value; }  }
+        public int Minute { get { return _TimeSpan.Minutes; } set { _TimeSpan.Minutes = value; }  }
+        public int Second { get { return _TimeSpan.Seconds; } set { _TimeSpan.Seconds = value; } }
+        public int Millisecond { get { return _TimeSpan.Milliseconds; } set { _TimeSpan.Milliseconds = value;}  }
 
         /// <summary>
         /// Replaces the normal "Ticks" function. This is Seconds of UT since game time 0
         /// </summary>
-        public Double UT { get { return _UT; } set { _UT = value; } }
+        public Double UT { 
+            get { return _TimeSpan.UT; }
+            set { _TimeSpan = new KSPTimeSpan(value); } 
+        }
 
         private Double _UT;
-
+        private KSPTimeSpan _TimeSpan;
 
         #region Constructors
+         static KSPDateTime()
+        {
+            EpochYear = 1;
+            EpochDay = 1;
+
+             DaysPerYear = GameSettings.KERBIN_TIME ? 425 : 365;
+        }
+
         public KSPDateTime()
         {
             _UT = 0;
@@ -74,7 +91,7 @@ namespace KSPPluginFramework
 
         #region Calculated Properties
         public KSPDateTime Date { get { return new KSPDateTime(Year, Day); } }
-        public KSPTimeSpan TimeOfDay { get { return new KSPTimeSpan(UT % KSPDateTimeStructure.SecondsPerDay); } }
+        public KSPTimeSpan TimeOfDay { get { return new KSPTimeSpan(UT % SecondsPerDay); } }
 
 
         public static KSPDateTime Now {
@@ -92,21 +109,23 @@ namespace KSPPluginFramework
         {
             return new KSPDateTime(UT + value.UT);
         }
-        public KSPDateTime AddYears(Double value)
+        public KSPDateTime AddYears(Int32 value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerYear);
+            KSPDateTime dteReturn = new KSPDateTime(UT);
+            dteReturn.Year+=value;
+            return dteReturn;
         }
         public KSPDateTime AddDays(Double value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerDay);
+            return new KSPDateTime(UT + value * SecondsPerDay);
         }
         public KSPDateTime AddHours(Double value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerHour);
+            return new KSPDateTime(UT + value * SecondsPerHour);
         }
         public KSPDateTime AddMinutes(Double value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerMinute);
+            return new KSPDateTime(UT + value * SecondsPerMinute);
         }
         public KSPDateTime AddSeconds(Double value)
         {
