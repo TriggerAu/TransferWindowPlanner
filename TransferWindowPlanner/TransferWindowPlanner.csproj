@@ -127,7 +127,7 @@ rem and copy the new dll
 copy "$(TargetPath)" "%25DestPath%25"
 
 rem and then run the game
-"%25Binary%25"
+"%25Binary%25" -force-d3d11
 
 goto END
 

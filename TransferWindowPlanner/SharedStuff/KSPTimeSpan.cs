@@ -7,33 +7,25 @@ namespace KSPPluginFramework
 {
     public class KSPTimeSpan
     {
-        //Define the Calendar
-        static public int SecondsPerMinute { get; set; }
-        static public int MinutesPerHour { get; set; }
-        static public int HoursPerDay { get; set; }
-
-        static public int SecondsPerHour { get { return SecondsPerMinute * MinutesPerHour; } }
-        static public int SecondsPerDay { get { return SecondsPerHour * HoursPerDay; } }
-
         //Descriptors of Timespan - uses UT as the Root value
         public int Days
         {
-            get { return (Int32)UT / SecondsPerDay; }
-            set { UT = UT - Days * SecondsPerDay + value * SecondsPerDay; }
+            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerDay; }
+            set { UT = UT - Days * KSPDateTimeStructure.SecondsPerDay + value * KSPDateTimeStructure.SecondsPerDay; }
         }
         public int Hours
         {
-            get { return (Int32)UT / SecondsPerHour % SecondsPerDay; }
-            set { UT = UT - Hours * SecondsPerHour + value * SecondsPerHour; }
+            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerHour % KSPDateTimeStructure.SecondsPerDay; }
+            set { UT = UT - Hours * KSPDateTimeStructure.SecondsPerHour + value * KSPDateTimeStructure.SecondsPerHour; }
         }
         public int Minutes
         {
-            get { return (Int32)UT / SecondsPerMinute % SecondsPerHour; }
-            set { UT = UT - Minutes * SecondsPerMinute + value * SecondsPerMinute; }
+            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerMinute % KSPDateTimeStructure.SecondsPerHour; }
+            set { UT = UT - Minutes * KSPDateTimeStructure.SecondsPerMinute + value * KSPDateTimeStructure.SecondsPerMinute; }
         }
         public int Seconds
         {
-            get { return (Int32)UT % SecondsPerMinute; }
+            get { return (Int32)UT % KSPDateTimeStructure.SecondsPerMinute; }
             set { UT = UT - Seconds + value; }
         }
         public int Milliseconds
@@ -48,13 +40,6 @@ namespace KSPPluginFramework
         public Double UT { get; set; }
 
         #region Constructors
-        static KSPTimeSpan()
-        {
-            SecondsPerMinute = 60;
-            MinutesPerHour = 60;
-            HoursPerDay = GameSettings.KERBIN_TIME ? 6 : 24;
-        }
-
         public KSPTimeSpan()
         {
             UT = 0;
@@ -86,9 +71,9 @@ namespace KSPPluginFramework
         #region Calculated Properties
         public Double TotalMilliseconds { get { return UT * 1000; } }
         public Double TotalSeconds { get { return UT; } }
-        public Double TotalMinutes { get { return UT / SecondsPerMinute; } }
-        public Double TotalHours { get { return UT / SecondsPerHour; } }
-        public Double TotalDays { get { return UT / SecondsPerDay; } }
+        public Double TotalMinutes { get { return UT / KSPDateTimeStructure.SecondsPerMinute; } }
+        public Double TotalHours { get { return UT / KSPDateTimeStructure.SecondsPerHour; } }
+        public Double TotalDays { get { return UT / KSPDateTimeStructure.SecondsPerDay; } }
         #endregion
 
         #region Instance Methods
@@ -145,13 +130,13 @@ namespace KSPPluginFramework
 
 
         public static KSPTimeSpan FromDays(Double value) {
-            return new KSPTimeSpan(value * SecondsPerDay);
+            return new KSPTimeSpan(value * KSPDateTimeStructure.SecondsPerDay);
         }
         public static KSPTimeSpan FromHours(Double value) {
-            return new KSPTimeSpan(value * SecondsPerHour);
+            return new KSPTimeSpan(value * KSPDateTimeStructure.SecondsPerHour);
         }
         public static KSPTimeSpan FromMinutes(Double value) {
-            return new KSPTimeSpan(value * SecondsPerMinute);
+            return new KSPTimeSpan(value * KSPDateTimeStructure.SecondsPerMinute);
         }
         public static KSPTimeSpan FromSeconds(Double value) {
             return new KSPTimeSpan(value);

@@ -95,28 +95,40 @@ namespace TransferWindowPlanner
                 //if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
                 //if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
 
-
-                if (GUILayout.Button("CreateAlarm"))
+                if (GUILayout.Button("Make Date"))
                 {
-                    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, 
-                        String.Format("{0} -> {1}",mbTWP.windowMain.TransferSelected.Origin.bodyName,mbTWP.windowMain.TransferSelected.Destination.bodyName), 
-                        mbTWP.windowMain.TransferSelected.DepartureTime);
+                    LogFormatted("a");
+                    //KSPDateTimeStructure.CalendarType = CalendarTypeEnum.Earth;
+                    KSPDateTime dt = new KSPDateTime(301.123);
 
+                    LogFormatted("1:{0}", dt.Minute);
+                    LogFormatted("2:{0}", dt.UT);
+                    LogFormatted("3:{0}", dt.Year);
+                    //LogFormatted("4:{0}", KSPDateTimeStructure.CalendarType);
+                    //LogFormatted("5:{0}", dt.Day);
 
-                    KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
-                    LogFormatted("{0}==11=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
-                    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
-                    alarmNew.AlarmAction = settings.KACAlarmAction;
-                    LogFormatted("{0}==22=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
-                    LogFormatted("{0}==33=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
-
-                    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    
                 }
-                DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
+                //if (GUILayout.Button("CreateAlarm"))
+                //{
+                //    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, 
+                //        String.Format("{0} -> {1}",mbTWP.windowMain.TransferSelected.Origin.bodyName,mbTWP.windowMain.TransferSelected.Destination.bodyName), 
+                //        mbTWP.windowMain.TransferSelected.DepartureTime);
+
+
+                //    KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
+                //    LogFormatted("{0}==11=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                //    alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
+                //    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
+                //    alarmNew.AlarmAction = settings.KACAlarmAction;
+                //    LogFormatted("{0}==22=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                //    alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
+                //    LogFormatted("{0}==33=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                //    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
+
+                //    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                    
+                //}
+                //DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
 
                 //DrawLabel("{0}", KACWrapper.KAC.Alarms.Count);
                 //foreach ( KACWrapper.KACAPI.KACAlarm a in KACWrapper.KAC.Alarms)

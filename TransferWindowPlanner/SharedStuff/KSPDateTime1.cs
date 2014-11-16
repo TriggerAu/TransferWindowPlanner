@@ -14,8 +14,8 @@ namespace KSPPluginFramework
             set { UT = UT - (Year - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear + (value - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear; } 
         }
         public int Day {
-            get { return KSPDateTimeStructure.EpochDay + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.SecondsPerYear; }
-            set { UT = UT - (Day - KSPDateTimeStructure.EpochDay) * KSPDateTimeStructure.SecondsPerDay + (value - KSPDateTimeStructure.EpochDay) * KSPDateTimeStructure.SecondsPerDay; } 
+            get { return KSPDateTimeStructure.EpochDayOfYear + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.SecondsPerYear; }
+            set { UT = UT - (Day - KSPDateTimeStructure.EpochDayOfYear) * KSPDateTimeStructure.SecondsPerDay + (value - KSPDateTimeStructure.EpochDayOfYear) * KSPDateTimeStructure.SecondsPerDay; } 
         }
         public int Hour {
             get { return (Int32)UT / KSPDateTimeStructure.SecondsPerHour % KSPDateTimeStructure.SecondsPerDay; }
