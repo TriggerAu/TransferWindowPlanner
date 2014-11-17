@@ -12,11 +12,9 @@ namespace KSPPluginFramework
         //Descriptors of DateTime - uses UT as the Root value
         public int Year {
             get { return KSPDateTimeStructure.EpochYear + (Int32)UT / KSPDateTimeStructure.SecondsPerYear; }
-            set { UT = UT - (Year - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear + (value - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.SecondsPerYear; } 
         }
         public int DayOfYear {
-            get { return KSPDateTimeStructure.EpochDayOfYear + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.SecondsPerYear; }
-            set { UT = UT - (DayOfYear - KSPDateTimeStructure.EpochDayOfYear) * KSPDateTimeStructure.SecondsPerDay + (value - KSPDateTimeStructure.EpochDayOfYear) * KSPDateTimeStructure.SecondsPerDay; }
+            get { return KSPDateTimeStructure.EpochDayOfYear + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.DaysPerYear; }
         }
         public int Day
         {
@@ -26,7 +24,7 @@ namespace KSPPluginFramework
                 {
                     case CalendarTypeEnum.KSPStock: return DayOfYear;
                     case CalendarTypeEnum.Earth:
-                        break;
+                        return KSPDateTimeStructure.CustomEpochEarth.AddSeconds(UT).Day;
                     case CalendarTypeEnum.Custom:
                         break;
                     default: return DayOfYear;
@@ -42,8 +40,7 @@ namespace KSPPluginFramework
                 {
                     case CalendarTypeEnum.KSPStock: return 0;
                     case CalendarTypeEnum.Earth:
-                        return new DateTime()
-                        break;
+                        return KSPDateTimeStructure.CustomEpochEarth.AddSeconds(UT).Month;
                     case CalendarTypeEnum.Custom:
                         break;
                     default: return 0;
@@ -52,10 +49,10 @@ namespace KSPPluginFramework
             }
         }
 
-        public int Hour { get { return _TimeSpan.Hours; } set { _TimeSpan.Hours = value; } }
-        public int Minute { get { return _TimeSpan.Minutes; } set { _TimeSpan.Minutes = value; } }
-        public int Second { get { return _TimeSpan.Seconds; } set { _TimeSpan.Seconds = value; } }
-        public int Millisecond { get { return _TimeSpan.Milliseconds; } set { _TimeSpan.Milliseconds = value; } }
+        public int Hour { get { return _TimeSpanFromEpoch.Hours; } }
+        public int Minute { get { return _TimeSpanFromEpoch.Minutes; } }
+        public int Second { get { return _TimeSpanFromEpoch.Seconds; } }
+        public int Millisecond { get { return _TimeSpanFromEpoch.Milliseconds; } }
 
         /// <summary>
         /// Replaces the normal "Ticks" function. This is Seconds of UT since game time 0
@@ -64,18 +61,18 @@ namespace KSPPluginFramework
             get
             {
                 if (KSPDateTimeStructure.CalendarType== CalendarTypeEnum.Earth)
-                    return _EarthDateTime.Subtract(new DateTime(KSPDateTimeStructure.EpochYear,1,KSPDateTimeStructure.EpochDayOfYear)).TotalSeconds;
+                    return _EarthDateTime.Subtract(KSPDateTimeStructure.CustomEpochEarth).TotalSeconds;
                 else
-                    return _TimeSpan.UT; 
+                    return _TimeSpanFromEpoch.UT; 
             }
             set { 
-                _TimeSpan = new KSPTimeSpan(value);
-                if (KSPDateTimeStructure.CalendarType == CalendarTypeEnum.Earth) 
-                    _EarthDateTime = new DateTime(KSPDateTimeStructure.EpochYear, 1, KSPDateTimeStructure.EpochDayOfYear).AddSeconds(value);
+                _TimeSpanFromEpoch = new KSPTimeSpan(value);
+                if (KSPDateTimeStructure.CalendarType == CalendarTypeEnum.Earth)
+                    _EarthDateTime = KSPDateTimeStructure.CustomEpochEarth.AddSeconds(value);
             } 
         }
 
-        private KSPTimeSpan _TimeSpan;
+        private KSPTimeSpan _TimeSpanFromEpoch;
         private DateTime _EarthDateTime;
         private DateTime _EarthDateTimeEpoch { get { return new DateTime(KSPDateTimeStructure.EpochYear, 1, KSPDateTimeStructure.EpochDayOfYear); } }
 
@@ -85,23 +82,28 @@ namespace KSPPluginFramework
             UT = 0;
         }
         public KSPDateTime(int year, int dayofyear)
-            : this()
         {
-            Year = year; DayOfYear = dayofyear;
+            UT = new KSPDateTime(year, dayofyear, 0, 0, 0).UT;
         }
         public KSPDateTime(int year, int day, int hour, int minute, int second)
-            : this(year, day)
         {
-            Hour = hour; Minute = minute; Second = second;
+
+            UT = new KSPDateTime(year, day, hour, minute, second, 0).UT;
         }
         public KSPDateTime(int year, int day, int hour, int minute, int second, int millisecond)
-            : this(year, day, hour, minute, second)
         {
-            Millisecond = millisecond;
+            //Test for entering values outside the norm - eg 25 hours, day 600
+
+            UT = new KSPTimeSpan((year - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.DaysPerYear  +
+                                (day - KSPDateTimeStructure.EpochDayOfYear),
+                                hour,
+                                minute,
+                                second,
+                                millisecond
+                                ).UT;
         }
 
         public KSPDateTime(Double ut)
-            : this()
         {
             UT = ut;
         } 

@@ -15,8 +15,7 @@ namespace KSPDateTimeUnitTests
             Double DateUT = 301.123;
 
             KSPDateTime dt = new KSPDateTime(DateUT);
-            //Console.Write(dt.Day);
-
+            
             Assert.AreEqual(5, dt.Minute);
             Assert.AreEqual(1, dt.Second);
             Assert.AreEqual(123, dt.Millisecond);
@@ -24,20 +23,16 @@ namespace KSPDateTimeUnitTests
             Assert.AreEqual(1, dt.DayOfYear);
             Assert.AreEqual(1, dt.Year);
 
-            dt.Millisecond = 456;
+            dt = dt.AddMilliSeconds(456);
             Assert.AreEqual(5, dt.Minute);
             Assert.AreEqual(1, dt.Second);
-            Assert.AreEqual(456, dt.Millisecond);
+            Assert.AreEqual(579, dt.Millisecond);
 
-            dt.Second = 68;
+            dt = new KSPDateTime(2, 50, 0, 6, 8,456);
             Assert.AreEqual(6, dt.Minute);
             Assert.AreEqual(8, dt.Second);
             Assert.AreEqual(456, dt.Millisecond);
-
-
-            dt.Year = 2; 
             Assert.AreEqual(2, dt.Year,"Hello");
-            dt.DayOfYear = 50;
             Assert.AreEqual(50, dt.DayOfYear);
 
         }
@@ -57,21 +52,26 @@ namespace KSPDateTimeUnitTests
             Assert.AreEqual(1, dt.DayOfYear);
             Assert.AreEqual(1951, dt.Year);
 
-            dt.Millisecond = 456;
+            dt.AddMilliSeconds(456);
             Assert.AreEqual(5, dt.Minute);
             Assert.AreEqual(1, dt.Second);
-            Assert.AreEqual(456, dt.Millisecond);
+            Assert.AreEqual(579, dt.Millisecond);
 
-            dt.Second = 68;
-            Assert.AreEqual(6, dt.Minute);
-            Assert.AreEqual(8, dt.Second);
-            Assert.AreEqual(456, dt.Millisecond);
+            //dt.Second = 68;
+            //Assert.AreEqual(6, dt.Minute);
+            //Assert.AreEqual(8, dt.Second);
+            //Assert.AreEqual(456, dt.Millisecond);
 
 
-            dt.Year = 1969;
-            Assert.AreEqual(1969, dt.Year, "Hello");
-            dt.DayOfYear = 50;
-            Assert.AreEqual(50, dt.DayOfYear);
+            //dt.Year = 1969;
+            //Assert.AreEqual(1969, dt.Year, "Hello");
+            //dt.DayOfYear = 50;
+            //Assert.AreEqual(50, dt.DayOfYear);
+
+            //KSPDateTimeStructure.SetCalendarTypeEarth(1951,1,1);
+            //dt = new KSPDateTime(1951, 50, 10, 20, 30);
+            //Assert.AreEqual(2, dt.Month);
+            //Assert.AreEqual(19, dt.Day);
 
         }
         [TestMethod]
@@ -80,7 +80,7 @@ namespace KSPDateTimeUnitTests
 
             Double DateUT = 301.123;
 
-            KSPDateTime2 dt = new KSPDateTime2();
+            KSPDateTime20 dt = new KSPDateTime20();
             dt.UT = DateUT;
             Assert.AreEqual(5, dt.Minute);
             Assert.AreEqual(1, dt.Second);
@@ -106,7 +106,7 @@ namespace KSPDateTimeUnitTests
             Assert.AreEqual(50, dt.Day);
 
 
-            KSPTimeSpan2 a = new KSPTimeSpan2();
+            KSPTimeSpan20 a = new KSPTimeSpan20();
             a.UT = 300;
             a.Second = 32;
 

@@ -52,10 +52,12 @@
     <Compile Include="Framework\SkinsLibrary.cs" />
     <Compile Include="SharedStuff\KACWrapper.cs" />
     <Compile Include="SharedStuff\AppLauncher.cs" />
+    <Compile Include="SharedStuff\KSPDateTime2.cs" />
     <Compile Include="SharedStuff\KSPDateTime1.cs" />
     <Compile Include="SharedStuff\KSPDateTime.cs" />
     <Compile Include="SharedStuff\KSPDateTimeSpanAbstract.cs" />
     <Compile Include="SharedStuff\KSPDateTimeStructure.cs" />
+    <Compile Include="SharedStuff\KSPTimeSpan2.cs" />
     <Compile Include="SharedStuff\KSPTimeSpan.cs" />
     <Compile Include="SharedStuff\LambertSolverHelpers.cs" />
     <Compile Include="SharedStuff\Utilities.cs" />

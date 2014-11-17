@@ -21,8 +21,10 @@ namespace KSPPluginFramework
         static public Int32 SecondsPerDay { get { return SecondsPerHour * HoursPerDay; } }
         static public Int32 SecondsPerYear { get { return SecondsPerDay * DaysPerYear; } }
 
-        static public Int32 CustomEpochDayOfYear { get; set; }
-        static public Int32 CustomEpochYear { get; set; }
+        static public Int32 CustomEpochDayOfYear { get; private set; }
+        static public Int32 CustomEpochYear { get; private set; }
+
+        static public DateTime CustomEpochEarth { get; private set; }
 
         ////Define the Calendar
         static public Int32 CustomSecondsPerMinute { get; set; }
@@ -46,6 +48,7 @@ namespace KSPPluginFramework
         }
         static public void SetCalendarType(CalendarTypeEnum caltype)
         {
+            CalendarType = caltype;
             switch (caltype)
             {
                 case CalendarTypeEnum.KSPStock:
@@ -77,6 +80,13 @@ namespace KSPPluginFramework
                     break;
             }
 
+        }
+
+        static public void SetCalendarTypeEarth(Int32 EpochYear, Int32 EpochMonth, Int32 EpochDay)
+        {
+            SetCalendarType( CalendarTypeEnum.Earth);
+
+            CustomEpochEarth = new DateTime(EpochYear, EpochMonth, EpochDay);
         }
 
         //    }

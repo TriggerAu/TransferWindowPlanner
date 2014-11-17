@@ -8,34 +8,24 @@ namespace KSPPluginFramework
     public class KSPTimeSpan
     {
         //Descriptors of Timespan - uses UT as the Root value
-        public int Days
-        {
+        public Int32 Days {
             get { return (Int32)UT / KSPDateTimeStructure.SecondsPerDay; }
-            set { UT = UT - Days * KSPDateTimeStructure.SecondsPerDay + value * KSPDateTimeStructure.SecondsPerDay; }
         }
-        public int Hours
-        {
-            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerHour % KSPDateTimeStructure.SecondsPerDay; }
-            set { UT = UT - Hours * KSPDateTimeStructure.SecondsPerHour + value * KSPDateTimeStructure.SecondsPerHour; }
+        public int Hours {
+            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerHour % KSPDateTimeStructure.HoursPerDay; }
         }
-        public int Minutes
-        {
-            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerMinute % KSPDateTimeStructure.SecondsPerHour; }
-            set { UT = UT - Minutes * KSPDateTimeStructure.SecondsPerMinute + value * KSPDateTimeStructure.SecondsPerMinute; }
+        public int Minutes {
+            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerMinute % KSPDateTimeStructure.MinutesPerHour; }
         }
-        public int Seconds
-        {
+        public int Seconds {
             get { return (Int32)UT % KSPDateTimeStructure.SecondsPerMinute; }
-            set { UT = UT - Seconds + value; }
         }
-        public int Milliseconds
-        {
+        public int Milliseconds {
             get { return (Int32)(Math.Round(UT - Math.Floor(UT), 3) * 1000); }
-            set { UT = Math.Floor(UT) + ((Double)value / 1000); }
         }
 
         /// <summary>
-        /// Replaces the normal "Ticks" function. This is Seconds of UT since game time 0
+        /// Replaces the normal "Ticks" function. This is Seconds of UT
         /// </summary>
         public Double UT { get; set; }
 
@@ -44,20 +34,21 @@ namespace KSPPluginFramework
         {
             UT = 0;
         }
-        public KSPTimeSpan(int hour, int minute, int second)
-            : this()
+        public KSPTimeSpan(int hours, int minutes, int seconds)
         {
-            Hours = hour; Minutes = minute; Seconds = second;
+            UT = new KSPTimeSpan(0, hours, minutes, seconds, 0).UT;
         }
-        public KSPTimeSpan(int day, int hour, int minute, int second)
-            : this(hour, minute,second)
+        public KSPTimeSpan(int days, int hours, int minutes, int seconds)
         {
-            Days=day;
+            UT = new KSPTimeSpan(days, hours, minutes, seconds, 0).UT;
         }
-        public KSPTimeSpan(int day, int hour, int minute, int second, int millisecond)
-            : this(day, hour, minute, second)
+        public KSPTimeSpan(int days, int hours, int minutes, int seconds, int milliseconds)
         {
-            Milliseconds = millisecond;
+            UT = days * KSPDateTimeStructure.SecondsPerDay +
+                 hours * KSPDateTimeStructure.SecondsPerHour +
+                 minutes * KSPDateTimeStructure.SecondsPerMinute +
+                 seconds +
+                (Double)milliseconds / 1000;
         }
 
         public KSPTimeSpan(Double ut)

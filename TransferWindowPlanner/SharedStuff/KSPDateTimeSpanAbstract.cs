@@ -75,13 +75,13 @@ namespace TransferWindowPlanner
     }
 
 
-    public class KSPDateTime2 : KSPDateTimeSpanAbstract
+    public class KSPDateTime20 : KSPDateTimeSpanAbstract
     {
         //Define the Epoch
         static public int EpochDay { get; set; }
         static public int EpochYear { get; set; }
 
-        static KSPDateTime2()
+        static KSPDateTime20()
         {
             EpochYear = 1;
             EpochDay = 1;
@@ -102,7 +102,7 @@ namespace TransferWindowPlanner
         new public int Millisecond { get { return base.Millisecond; } set { base.Millisecond = value; } }
 
     }
-    public class KSPTimeSpan2 : KSPDateTimeSpanAbstract
+    public class KSPTimeSpan20 : KSPDateTimeSpanAbstract
     {
         public int Years { get { return base.Year; } set { base.Year = value; } }
         public int Days { get { return base.Day; } set { base.Day = value; } }
