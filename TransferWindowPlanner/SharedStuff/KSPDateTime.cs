@@ -7,35 +7,43 @@ namespace KSPPluginFramework
 {
     public class KSPDateTime
     {
-        private Boolean EarthTime = false;
+        private CalendarTypeEnum CalType { get { return KSPDateTimeStructure.CalendarType; } }
 
+        
         //Descriptors of DateTime - uses UT as the Root value
         public int Year {
-            get { return KSPDateTimeStructure.EpochYear + (Int32)UT / KSPDateTimeStructure.SecondsPerYear; }
+            get { if (CalType == CalendarTypeEnum.Earth) 
+                return _EarthDateTime.Year;
+            else
+                return KSPDateTimeStructure.EpochYear + (Int32)UT / KSPDateTimeStructure.SecondsPerYear; 
+            }
         }
         public int DayOfYear {
-            get { return KSPDateTimeStructure.EpochDayOfYear + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.DaysPerYear; }
+            get { if (CalType == CalendarTypeEnum.Earth) 
+                return _EarthDateTime.DayOfYear;
+            else
+                return KSPDateTimeStructure.EpochDayOfYear + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.DaysPerYear; 
+            }
         }
         public int Day
         {
-            get
-            {
-                switch (KSPDateTimeStructure.CalendarType)
-                {
-                    case CalendarTypeEnum.KSPStock: return DayOfYear;
-                    case CalendarTypeEnum.Earth:
-                        return KSPDateTimeStructure.CustomEpochEarth.AddSeconds(UT).Day;
-                    case CalendarTypeEnum.Custom:
-                        break;
-                    default: return DayOfYear;
-                }
-                return DayOfYear;
+            get { if (CalType == CalendarTypeEnum.Earth) 
+                return _EarthDateTime.Day;
+            else
+                return DayOfYear; 
             }
         }
         public int Month
         {
-            get
-            {
+            get { if (CalType == CalendarTypeEnum.Earth) 
+                return _EarthDateTime.Month;
+            else{
+                if (KSPDateTimeStructure.MonthCount<1)
+                    return 0; 
+                else
+                    return 1;
+            }
+            }
                 switch (KSPDateTimeStructure.CalendarType)
                 {
                     case CalendarTypeEnum.KSPStock: return 0;
@@ -49,10 +57,10 @@ namespace KSPPluginFramework
             }
         }
 
-        public int Hour { get { return _TimeSpanFromEpoch.Hours; } }
-        public int Minute { get { return _TimeSpanFromEpoch.Minutes; } }
-        public int Second { get { return _TimeSpanFromEpoch.Seconds; } }
-        public int Millisecond { get { return _TimeSpanFromEpoch.Milliseconds; } }
+        public int Hour { get { if (CalType == CalendarTypeEnum.Earth) return _EarthDateTime.Hour; else return _TimeSpanFromEpoch.Hours; } }
+        public int Minute { get { if (CalType == CalendarTypeEnum.Earth) return _EarthDateTime.Minute; else return _TimeSpanFromEpoch.Minutes; } }
+        public int Second { get { if (CalType == CalendarTypeEnum.Earth) return _EarthDateTime.Second; else return _TimeSpanFromEpoch.Seconds; } }
+        public int Millisecond { get { if (CalType == CalendarTypeEnum.Earth) return _EarthDateTime.Millisecond; else return _TimeSpanFromEpoch.Milliseconds; } }
 
         /// <summary>
         /// Replaces the normal "Ticks" function. This is Seconds of UT since game time 0
@@ -132,9 +140,7 @@ namespace KSPPluginFramework
         }
         public KSPDateTime AddYears(Int32 value)
         {
-            KSPDateTime dteReturn = new KSPDateTime(UT);
-            dteReturn.Year+=value;
-            return dteReturn;
+            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerYear);
         }
         public KSPDateTime AddDays(Double value)
         {

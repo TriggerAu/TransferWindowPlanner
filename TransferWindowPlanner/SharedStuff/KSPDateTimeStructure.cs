@@ -21,83 +21,65 @@ namespace KSPPluginFramework
         static public Int32 SecondsPerDay { get { return SecondsPerHour * HoursPerDay; } }
         static public Int32 SecondsPerYear { get { return SecondsPerDay * DaysPerYear; } }
 
-        static public Int32 CustomEpochDayOfYear { get; private set; }
-        static public Int32 CustomEpochYear { get; private set; }
-
         static public DateTime CustomEpochEarth { get; private set; }
 
-        ////Define the Calendar
-        static public Int32 CustomSecondsPerMinute { get; set; }
-        static public Int32 CustomMinutesPerHour { get; set; }
-        static public Int32 CustomHoursPerDay { get; set; }
-        static public Int32 CustomDaysPerYear { get {return CustomDaysPerYear;}
-            set { CustomDaysPerYear=value;
-            if (CalendarType == CalendarTypeEnum.Custom)
-                DaysPerYear = value;
-            } 
-        }
+        static public CalendarTypeEnum CalendarType {get; private set;}
 
 
-        static public CalendarTypeEnum CalendarType {get;set;}
 
-        static public void SetCalendarType(CalendarTypeEnum caltype, Int32 EpochYear, Int32 EpochDayOfYear)
+        static public void SetKSPStockCalendar()
         {
-            SetCalendarType(caltype);
-            CustomEpochYear = EpochYear;
-            CustomEpochDayOfYear = EpochDayOfYear;
+            CalendarType = CalendarTypeEnum.KSPStock;
+
+            EpochYear = 1;
+            EpochDayOfYear = 1;
+            SecondsPerMinute = 60;
+            MinutesPerHour = 60;
+
+            HoursPerDay = GameSettings.KERBIN_TIME ? 6 : 24;
+            DaysPerYear = GameSettings.KERBIN_TIME ? 425 : 365;
         }
-        static public void SetCalendarType(CalendarTypeEnum caltype)
+
+        static public void SetEarthCalendar()
         {
-            CalendarType = caltype;
-            switch (caltype)
-            {
-                case CalendarTypeEnum.KSPStock:
-                    EpochYear = 1;
-                    EpochDayOfYear = 1;
-                    SecondsPerMinute = 60;
-                    MinutesPerHour = 60;
-
-                    HoursPerDay = GameSettings.KERBIN_TIME ? 6 : 24;
-                    DaysPerYear = GameSettings.KERBIN_TIME ? 425 : 365;
-                    break;
-                case CalendarTypeEnum.Earth:
-                    EpochYear = 1951;
-                    EpochDayOfYear = 1;
-                    SecondsPerMinute = 60;
-                    MinutesPerHour = 60;
-                    HoursPerDay = 24;
-                    DaysPerYear = 365;
-                    break;
-                case CalendarTypeEnum.Custom:
-                    EpochYear = CustomEpochYear;
-                    EpochDayOfYear = CustomEpochDayOfYear;
-                    SecondsPerMinute = CustomSecondsPerMinute;
-                    MinutesPerHour = CustomMinutesPerHour;
-                    HoursPerDay = CustomHoursPerDay;
-                    DaysPerYear = CustomDaysPerYear;
-                    break;
-                default:
-                    break;
-            }
-
+            SetEarthCalendar(1951, 1, 1);
         }
-
-        static public void SetCalendarTypeEarth(Int32 EpochYear, Int32 EpochMonth, Int32 EpochDay)
+        static public void SetEarthCalendar(Int32 epochyear, Int32 epochmonth, Int32 epochday)
         {
-            SetCalendarType( CalendarTypeEnum.Earth);
+            CalendarType = CalendarTypeEnum.Earth;
 
-            CustomEpochEarth = new DateTime(EpochYear, EpochMonth, EpochDay);
+            CustomEpochEarth = new DateTime(epochyear, epochmonth, epochday);
+
+            EpochYear = epochyear;
+            EpochDayOfYear = CustomEpochEarth.DayOfYear;
+            SecondsPerMinute = 60;
+            MinutesPerHour = 60;
+
+            HoursPerDay = 24;
+            DaysPerYear = 365;
+
         }
 
-        //    }
-        //}
+        static public void SetCustomCalendar(Int32 CustomEpochYear, Int32 CustomEpochDayOfYear, Int32 CustomDaysPerYear, Int32 CustomHoursPerDay, Int32 CustomMinutesPerHour, Int32 CustomSecondsPerMinute)
+        {
+            CalendarType = CalendarTypeEnum.Custom;
+
+            EpochYear = CustomEpochYear;
+            EpochDayOfYear = CustomEpochDayOfYear;
+            SecondsPerMinute = CustomSecondsPerMinute;
+            MinutesPerHour = CustomMinutesPerHour;
+            HoursPerDay = CustomHoursPerDay;
+            DaysPerYear = CustomDaysPerYear;
+
+        }
+
 
         static public List<KSPMonth> Months {get; set;}
         static public Int32 MonthCount { get { return Months.Count; } }
 
         static KSPDateTimeStructure()
         {
-            SetCalendarType(CalendarTypeEnum.KSPStock);
+            SetKSPStockCalendar();
 
             Months = new List<KSPMonth>();
         }

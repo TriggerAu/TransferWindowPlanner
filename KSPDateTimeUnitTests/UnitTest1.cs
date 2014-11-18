@@ -40,7 +40,7 @@ namespace KSPDateTimeUnitTests
         [TestMethod]
         public void TestEarthDateTime()
         {
-            KSPDateTimeStructure.SetCalendarType(CalendarTypeEnum.Earth);
+            KSPDateTimeStructure.SetEarthCalendar();
             Double DateUT = 301.123;
             KSPDateTime dt = new KSPDateTime(DateUT);
             //Console.Write(dt.Day);
