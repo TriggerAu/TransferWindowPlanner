@@ -52,7 +52,7 @@ namespace KSPDateTimeUnitTests
             Assert.AreEqual(1, dt.DayOfYear);
             Assert.AreEqual(1951, dt.Year);
 
-            dt.AddMilliSeconds(456);
+            dt = dt.AddMilliSeconds(456);
             Assert.AreEqual(5, dt.Minute);
             Assert.AreEqual(1, dt.Second);
             Assert.AreEqual(579, dt.Millisecond);

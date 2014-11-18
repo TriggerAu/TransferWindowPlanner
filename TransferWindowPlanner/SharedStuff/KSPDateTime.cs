@@ -35,25 +35,16 @@ namespace KSPPluginFramework
         }
         public int Month
         {
-            get { if (CalType == CalendarTypeEnum.Earth) 
-                return _EarthDateTime.Month;
-            else{
-                if (KSPDateTimeStructure.MonthCount<1)
-                    return 0; 
+            get {
+                if (CalType == CalendarTypeEnum.Earth)
+                    return _EarthDateTime.Month;
                 else
-                    return 1;
-            }
-            }
-                switch (KSPDateTimeStructure.CalendarType)
                 {
-                    case CalendarTypeEnum.KSPStock: return 0;
-                    case CalendarTypeEnum.Earth:
-                        return KSPDateTimeStructure.CustomEpochEarth.AddSeconds(UT).Month;
-                    case CalendarTypeEnum.Custom:
-                        break;
-                    default: return 0;
+                    if (KSPDateTimeStructure.MonthCount < 1)
+                        return 0;
+                    else
+                        return 1;
                 }
-                return 0;
             }
         }
 
