@@ -148,14 +148,25 @@ public static class LambertSolver
                 double finalOrbitVelocity = Math.Sqrt(destination.gravParameter / (finalOrbitAltitude.Value + destination.Radius));
                 vesselDestinationOrbitalSpeed = finalOrbitVelocity;                      //Store this for later
                 insertionDeltaV = Math.Sqrt(insertionDeltaV * insertionDeltaV + 2 * finalOrbitVelocity * finalOrbitVelocity - 2 * destination.gravParameter / destination.sphereOfInfluence) - finalOrbitVelocity;
+
+                //Store away the extra details about the Destination/Injection
+                oTransfer.DestinationVesselOrbitalSpeed = vesselDestinationOrbitalSpeed;
+                oTransfer.DestinationVelocity = destinationVelocity;
+                //oTransfer.InjectionDeltaVector = (velocityBeforeInsertion - destinationVelocity);
+                oTransfer.InjectionDeltaVector = oTransfer.EjectionDeltaVector.normalized * insertionDeltaV;
+                oTransfer.InsertionInclination = insertionInclination;
+            }
+            else
+            {
+                //This is a flyby so there is no injection burn
+                //Store away the extra details about the Destination/Injection
+                oTransfer.DestinationVesselOrbitalSpeed = velocityBeforeInsertion.magnitude;
+                oTransfer.DestinationVelocity = destinationVelocity;
+                oTransfer.InjectionDeltaVector = new Vector3d();
+                oTransfer.InsertionInclination = 0;
             }
 
-            //Store away the extra details about the Destination/Injection
-            oTransfer.DestinationVesselOrbitalSpeed = vesselDestinationOrbitalSpeed;
-            oTransfer.DestinationVelocity = destinationVelocity;
-            oTransfer.InjectionDeltaVector = (velocityBeforeInsertion - destinationVelocity);
-            oTransfer.InjectionDeltaVector = oTransfer.EjectionDeltaVector.normalized * insertionDeltaV;
-            oTransfer.InsertionInclination = insertionInclination;
+
         }
         
         return ejectionDeltaV + insertionDeltaV;
