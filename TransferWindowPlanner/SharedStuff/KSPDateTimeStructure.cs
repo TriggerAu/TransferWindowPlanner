@@ -60,6 +60,12 @@ namespace KSPPluginFramework
 
         }
 
+        static public void SetCustomCalendar()
+        {
+            SetKSPStockCalendar();
+            CalendarType = CalendarTypeEnum.Custom;
+        }
+
         static public void SetCustomCalendar(Int32 CustomEpochYear, Int32 CustomEpochDayOfYear, Int32 CustomDaysPerYear, Int32 CustomHoursPerDay, Int32 CustomMinutesPerHour, Int32 CustomSecondsPerMinute)
         {
             CalendarType = CalendarTypeEnum.Custom;
@@ -74,20 +80,20 @@ namespace KSPPluginFramework
         }
 
 
-        static public List<KSPMonth> Months {get; set;}
-        static public Int32 MonthCount { get { return Months.Count; } }
-
         static KSPDateTimeStructure()
         {
             SetKSPStockCalendar();
 
             Months = new List<KSPMonth>();
+            //LeapDays = new List<KSPLeapDay>();
         }
 
+        static public List<KSPMonth> Months { get; set; }
+        static public Int32 MonthCount { get { return Months.Count; } }
 
-        
+        //static public List<KSPLeapDay> LeapDays { get; set; }
+        //static public Int32 LeapDaysCount { get { return LeapDays.Count; } }
     }
-     
 
     public enum CalendarTypeEnum
     {
@@ -98,7 +104,18 @@ namespace KSPPluginFramework
 
     public class KSPMonth
     {
-        public int Days { get; set; }
+        public KSPMonth(String name, Int32 days) { Name = name; Days = days; }
+
         public String Name { get; set; }
+        public Int32 Days { get; set; }
     }
+
+    //public class KSPLeapDay
+    //{
+    //    public Int32 Frequency { get; set; }
+    //    public String MonthApplied { get; set; }
+    //    public Int32 DaysToAdd { get; set; }
+    //}
+
+
 }

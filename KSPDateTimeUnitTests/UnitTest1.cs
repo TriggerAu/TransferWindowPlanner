@@ -74,6 +74,32 @@ namespace KSPDateTimeUnitTests
             //Assert.AreEqual(19, dt.Day);
 
         }
+
+
+        [TestMethod]
+        public void TestMonths()
+        {
+            KSPDateTimeStructure.SetCustomCalendar();
+
+            //empty months structure
+            KSPDateTime dt = new KSPDateTime(1, 100);
+            Assert.AreEqual(0, dt.Month);
+            Assert.AreEqual(100, dt.Day);
+
+            //set up some months
+            KSPDateTimeStructure.Months.Add(new KSPMonth("Billtempber", 200));
+            KSPDateTimeStructure.Months.Add(new KSPMonth("Jebuary", 265));
+
+            Assert.AreEqual(1, dt.Month);
+            Assert.AreEqual(100, dt.Day);
+            dt = dt.AddDays(100);
+            Assert.AreEqual(1, dt.Month);
+            Assert.AreEqual(200, dt.Day);
+            dt = dt.AddDays(100);
+            Assert.AreEqual(2, dt.Month);
+            dt = dt.AddDays(100);
+        }
+
         [TestMethod]
         public void TestAbstract()
         {

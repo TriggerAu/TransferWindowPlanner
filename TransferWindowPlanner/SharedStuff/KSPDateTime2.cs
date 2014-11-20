@@ -7,8 +7,6 @@ namespace KSPPluginFramework
 {
     public class KSPDateTime2
     {
-        private Boolean EarthTime = false;
-
         //Descriptors of DateTime - uses UT as the Root value
         public int Year {
             get { return KSPDateTimeStructure.EpochYear + (Int32)UT / KSPDateTimeStructure.SecondsPerYear; }

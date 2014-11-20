@@ -27,10 +27,12 @@ namespace KSPPluginFramework
         }
         public int Day
         {
-            get { if (CalType == CalendarTypeEnum.Earth) 
-                return _EarthDateTime.Day;
-            else
-                return DayOfYear; 
+            get
+            {
+                if (CalType == CalendarTypeEnum.Earth)
+                    return _EarthDateTime.Day;
+                else
+                    return DayOfMonth;
             }
         }
         public int Month
@@ -43,10 +45,38 @@ namespace KSPPluginFramework
                     if (KSPDateTimeStructure.MonthCount < 1)
                         return 0;
                     else
-                        return 1;
+                        return KSPDateTimeStructure.Months.IndexOf(MonthObj)+1;
                 }
             }
         }
+
+        private KSPMonth MonthObj {
+            get {
+                if (KSPDateTimeStructure.MonthCount < 1)
+                    return null;
+                Int32 monthMaxDay=0;
+                for (int i = 0; i < KSPDateTimeStructure.MonthCount; i++){
+                    if (DayOfYear <= monthMaxDay + KSPDateTimeStructure.Months[i].Days)
+                        return KSPDateTimeStructure.Months[i];
+                }
+                return KSPDateTimeStructure.Months.Last();
+            }
+        }
+        private Int32 DayOfMonth {
+            get {
+                if (KSPDateTimeStructure.MonthCount < 1)
+                    return DayOfYear;
+
+                Int32 monthMaxDay = 0;
+                for (int i = 0; i < KSPDateTimeStructure.MonthCount; i++)
+                {
+                    if (DayOfYear <= monthMaxDay + KSPDateTimeStructure.Months[i].Days)
+                        return DayOfYear - monthMaxDay;
+                }
+                return DayOfYear;
+            }
+        }
+
 
         public int Hour { get { if (CalType == CalendarTypeEnum.Earth) return _EarthDateTime.Hour; else return _TimeSpanFromEpoch.Hours; } }
         public int Minute { get { if (CalType == CalendarTypeEnum.Earth) return _EarthDateTime.Minute; else return _TimeSpanFromEpoch.Minutes; } }
@@ -253,16 +283,5 @@ namespace KSPPluginFramework
         } 
         #endregion
 
-        //DaysInMonth
-        //Day - is Day Of Month
-        //DayOfYear
-        //IsLeapYear
-
-
-        //To String Formats
     }
-
-
-
-
 }
