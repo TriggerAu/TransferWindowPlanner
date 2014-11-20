@@ -260,10 +260,10 @@ namespace TransferWindowPlanner
                 if (MouseOverAnyWindow && !InputLockExists) {
                     Boolean AddLock = false;
                     switch (HighLogic.LoadedScene) {
-                        case GameScenes.SPACECENTER: AddLock = settings.ClickThroughProtect_KSC && !(InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.KSC_FACILITIES); break;
+                        case GameScenes.SPACECENTER: AddLock = settings.ClickThroughProtect_KSC && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.EDITOR:
-                        case GameScenes.SPH: AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.EDITOR_LOCK); break;
-                        case GameScenes.FLIGHT: AddLock = settings.ClickThroughProtect_Flight && !(InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.All); break;
+                        case GameScenes.SPH: AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
+                        case GameScenes.FLIGHT: AddLock = settings.ClickThroughProtect_Flight && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.TRACKSTATION:
                             break;
                         default:
@@ -279,7 +279,7 @@ namespace TransferWindowPlanner
                                 InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK, "TWPControlLock");
                                 break;
                             case GameScenes.FLIGHT:
-                                InputLockManager.SetControlLock(ControlTypes.All, "TWPControlLock");
+                                InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "TWPControlLock");
                                 break;
                             case GameScenes.TRACKSTATION:
                                 break;
