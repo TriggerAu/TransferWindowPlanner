@@ -66,6 +66,7 @@ namespace TransferWindowPlanner
     //    }
     //}
 
+#if DEBUG
     class TWPWindowDebug : MonoBehaviourWindowPlus
     {
         internal TransferWindowPlanner mbTWP;
@@ -330,4 +331,5 @@ namespace TransferWindowPlanner
 
 
     }
+#endif
 }

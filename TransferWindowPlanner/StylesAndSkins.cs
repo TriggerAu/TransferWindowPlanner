@@ -47,7 +47,8 @@ namespace TransferWindowPlanner
 
         internal static GUIStyle stylePlotCrossHair;
 
-        internal static GUIStyle stylePlotTransferMarker, stylePlotTransferMarkerXAxis, stylePlotTransferMarkerYAxis, stylePlotTransferMarkerDV;
+        //internal static GUIStyle stylePlotTransferMarker, stylePlotTransferMarkerXAxis, stylePlotTransferMarkerYAxis, 
+        internal static GUIStyle stylePlotTransferMarkerDV;
 
         internal static GUIStyle styleSettingsArea;
 
