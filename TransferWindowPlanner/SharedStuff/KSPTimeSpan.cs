@@ -9,16 +9,16 @@ namespace KSPPluginFramework
     {
         //Descriptors of Timespan - uses UT as the Root value
         public Int32 Days {
-            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerDay; }
+            get { return (Int32)UT / KSPDateStructure.SecondsPerDay; }
         }
         public int Hours {
-            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerHour % KSPDateTimeStructure.HoursPerDay; }
+            get { return (Int32)UT / KSPDateStructure.SecondsPerHour % KSPDateStructure.HoursPerDay; }
         }
         public int Minutes {
-            get { return (Int32)UT / KSPDateTimeStructure.SecondsPerMinute % KSPDateTimeStructure.MinutesPerHour; }
+            get { return (Int32)UT / KSPDateStructure.SecondsPerMinute % KSPDateStructure.MinutesPerHour; }
         }
         public int Seconds {
-            get { return (Int32)UT % KSPDateTimeStructure.SecondsPerMinute; }
+            get { return (Int32)UT % KSPDateStructure.SecondsPerMinute; }
         }
         public int Milliseconds {
             get { return (Int32)(Math.Round(UT - Math.Floor(UT), 3) * 1000); }
@@ -44,9 +44,9 @@ namespace KSPPluginFramework
         }
         public KSPTimeSpan(int days, int hours, int minutes, int seconds, int milliseconds)
         {
-            UT = days * KSPDateTimeStructure.SecondsPerDay +
-                 hours * KSPDateTimeStructure.SecondsPerHour +
-                 minutes * KSPDateTimeStructure.SecondsPerMinute +
+            UT = days * KSPDateStructure.SecondsPerDay +
+                 hours * KSPDateStructure.SecondsPerHour +
+                 minutes * KSPDateStructure.SecondsPerMinute +
                  seconds +
                 (Double)milliseconds / 1000;
         }
@@ -62,9 +62,9 @@ namespace KSPPluginFramework
         #region Calculated Properties
         public Double TotalMilliseconds { get { return UT * 1000; } }
         public Double TotalSeconds { get { return UT; } }
-        public Double TotalMinutes { get { return UT / KSPDateTimeStructure.SecondsPerMinute; } }
-        public Double TotalHours { get { return UT / KSPDateTimeStructure.SecondsPerHour; } }
-        public Double TotalDays { get { return UT / KSPDateTimeStructure.SecondsPerDay; } }
+        public Double TotalMinutes { get { return UT / KSPDateStructure.SecondsPerMinute; } }
+        public Double TotalHours { get { return UT / KSPDateStructure.SecondsPerHour; } }
+        public Double TotalDays { get { return UT / KSPDateStructure.SecondsPerDay; } }
         #endregion
 
         #region Instance Methods
@@ -121,13 +121,13 @@ namespace KSPPluginFramework
 
 
         public static KSPTimeSpan FromDays(Double value) {
-            return new KSPTimeSpan(value * KSPDateTimeStructure.SecondsPerDay);
+            return new KSPTimeSpan(value * KSPDateStructure.SecondsPerDay);
         }
         public static KSPTimeSpan FromHours(Double value) {
-            return new KSPTimeSpan(value * KSPDateTimeStructure.SecondsPerHour);
+            return new KSPTimeSpan(value * KSPDateStructure.SecondsPerHour);
         }
         public static KSPTimeSpan FromMinutes(Double value) {
-            return new KSPTimeSpan(value * KSPDateTimeStructure.SecondsPerMinute);
+            return new KSPTimeSpan(value * KSPDateStructure.SecondsPerMinute);
         }
         public static KSPTimeSpan FromSeconds(Double value) {
             return new KSPTimeSpan(value);

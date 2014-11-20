@@ -40,7 +40,7 @@ namespace KSPDateTimeUnitTests
         [TestMethod]
         public void TestEarthDateTime()
         {
-            KSPDateTimeStructure.SetEarthCalendar();
+            KSPDateStructure.SetEarthCalendar();
             Double DateUT = 301.123;
             KSPDateTime dt = new KSPDateTime(DateUT);
             //Console.Write(dt.Day);
@@ -79,7 +79,7 @@ namespace KSPDateTimeUnitTests
         [TestMethod]
         public void TestMonths()
         {
-            KSPDateTimeStructure.SetCustomCalendar();
+            KSPDateStructure.SetCustomCalendar();
 
             //empty months structure
             KSPDateTime dt = new KSPDateTime(1, 100);
@@ -87,8 +87,8 @@ namespace KSPDateTimeUnitTests
             Assert.AreEqual(100, dt.Day);
 
             //set up some months
-            KSPDateTimeStructure.Months.Add(new KSPMonth("Billtempber", 200));
-            KSPDateTimeStructure.Months.Add(new KSPMonth("Jebuary", 265));
+            KSPDateStructure.Months.Add(new KSPMonth("Billtember", 200));
+            KSPDateStructure.Months.Add(new KSPMonth("Jebuary", 265));
 
             Assert.AreEqual(1, dt.Month);
             Assert.AreEqual(100, dt.Day);
@@ -100,42 +100,6 @@ namespace KSPDateTimeUnitTests
             dt = dt.AddDays(100);
         }
 
-        [TestMethod]
-        public void TestAbstract()
-        {
-
-            Double DateUT = 301.123;
-
-            KSPDateTime20 dt = new KSPDateTime20();
-            dt.UT = DateUT;
-            Assert.AreEqual(5, dt.Minute);
-            Assert.AreEqual(1, dt.Second);
-            Assert.AreEqual(123, dt.Millisecond);
-            Assert.AreEqual(0, dt.Hour);
-            Assert.AreEqual(1, dt.Day);
-            Assert.AreEqual(1, dt.Year);
-
-            dt.Millisecond = 456;
-            Assert.AreEqual(5, dt.Minute);
-            Assert.AreEqual(1, dt.Second);
-            Assert.AreEqual(456, dt.Millisecond);
-
-            dt.Second = 68;
-            Assert.AreEqual(6, dt.Minute);
-            Assert.AreEqual(8, dt.Second);
-            Assert.AreEqual(456, dt.Millisecond);
-
-
-            dt.Year = 2;
-            Assert.AreEqual(2, dt.Year, "Hello");
-            dt.Day = 50;
-            Assert.AreEqual(50, dt.Day);
-
-
-            KSPTimeSpan20 a = new KSPTimeSpan20();
-            a.UT = 300;
-            a.Second = 32;
-
-        }
+       
     }
 }

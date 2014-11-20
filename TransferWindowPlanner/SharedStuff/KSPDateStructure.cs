@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KSPPluginFramework
 {
-    public static class KSPDateTimeStructure
+    public static class KSPDateStructure
     {
         //Define the Epoch
         static public Int32 EpochDayOfYear { get; private set; }
@@ -80,7 +80,7 @@ namespace KSPPluginFramework
         }
 
 
-        static KSPDateTimeStructure()
+        static KSPDateStructure()
         {
             SetKSPStockCalendar();
 

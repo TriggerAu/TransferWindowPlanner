@@ -7,7 +7,7 @@ namespace KSPPluginFramework
 {
     public class KSPDateTime
     {
-        private CalendarTypeEnum CalType { get { return KSPDateTimeStructure.CalendarType; } }
+        private CalendarTypeEnum CalType { get { return KSPDateStructure.CalendarType; } }
 
         
         //Descriptors of DateTime - uses UT as the Root value
@@ -15,14 +15,14 @@ namespace KSPPluginFramework
             get { if (CalType == CalendarTypeEnum.Earth) 
                 return _EarthDateTime.Year;
             else
-                return KSPDateTimeStructure.EpochYear + (Int32)UT / KSPDateTimeStructure.SecondsPerYear; 
+                return KSPDateStructure.EpochYear + (Int32)UT / KSPDateStructure.SecondsPerYear; 
             }
         }
         public int DayOfYear {
             get { if (CalType == CalendarTypeEnum.Earth) 
                 return _EarthDateTime.DayOfYear;
             else
-                return KSPDateTimeStructure.EpochDayOfYear + (Int32)UT / KSPDateTimeStructure.SecondsPerDay % KSPDateTimeStructure.DaysPerYear; 
+                return KSPDateStructure.EpochDayOfYear + (Int32)UT / KSPDateStructure.SecondsPerDay % KSPDateStructure.DaysPerYear; 
             }
         }
         public int Day
@@ -42,35 +42,35 @@ namespace KSPPluginFramework
                     return _EarthDateTime.Month;
                 else
                 {
-                    if (KSPDateTimeStructure.MonthCount < 1)
+                    if (KSPDateStructure.MonthCount < 1)
                         return 0;
                     else
-                        return KSPDateTimeStructure.Months.IndexOf(MonthObj)+1;
+                        return KSPDateStructure.Months.IndexOf(MonthObj)+1;
                 }
             }
         }
 
         private KSPMonth MonthObj {
             get {
-                if (KSPDateTimeStructure.MonthCount < 1)
+                if (KSPDateStructure.MonthCount < 1)
                     return null;
                 Int32 monthMaxDay=0;
-                for (int i = 0; i < KSPDateTimeStructure.MonthCount; i++){
-                    if (DayOfYear <= monthMaxDay + KSPDateTimeStructure.Months[i].Days)
-                        return KSPDateTimeStructure.Months[i];
+                for (int i = 0; i < KSPDateStructure.MonthCount; i++){
+                    if (DayOfYear <= monthMaxDay + KSPDateStructure.Months[i].Days)
+                        return KSPDateStructure.Months[i];
                 }
-                return KSPDateTimeStructure.Months.Last();
+                return KSPDateStructure.Months.Last();
             }
         }
         private Int32 DayOfMonth {
             get {
-                if (KSPDateTimeStructure.MonthCount < 1)
+                if (KSPDateStructure.MonthCount < 1)
                     return DayOfYear;
 
                 Int32 monthMaxDay = 0;
-                for (int i = 0; i < KSPDateTimeStructure.MonthCount; i++)
+                for (int i = 0; i < KSPDateStructure.MonthCount; i++)
                 {
-                    if (DayOfYear <= monthMaxDay + KSPDateTimeStructure.Months[i].Days)
+                    if (DayOfYear <= monthMaxDay + KSPDateStructure.Months[i].Days)
                         return DayOfYear - monthMaxDay;
                 }
                 return DayOfYear;
@@ -89,21 +89,21 @@ namespace KSPPluginFramework
         public Double UT {
             get
             {
-                if (KSPDateTimeStructure.CalendarType== CalendarTypeEnum.Earth)
-                    return _EarthDateTime.Subtract(KSPDateTimeStructure.CustomEpochEarth).TotalSeconds;
+                if (KSPDateStructure.CalendarType== CalendarTypeEnum.Earth)
+                    return _EarthDateTime.Subtract(KSPDateStructure.CustomEpochEarth).TotalSeconds;
                 else
                     return _TimeSpanFromEpoch.UT; 
             }
             set { 
                 _TimeSpanFromEpoch = new KSPTimeSpan(value);
-                if (KSPDateTimeStructure.CalendarType == CalendarTypeEnum.Earth)
-                    _EarthDateTime = KSPDateTimeStructure.CustomEpochEarth.AddSeconds(value);
+                if (KSPDateStructure.CalendarType == CalendarTypeEnum.Earth)
+                    _EarthDateTime = KSPDateStructure.CustomEpochEarth.AddSeconds(value);
             } 
         }
 
         private KSPTimeSpan _TimeSpanFromEpoch;
         private DateTime _EarthDateTime;
-        private DateTime _EarthDateTimeEpoch { get { return new DateTime(KSPDateTimeStructure.EpochYear, 1, KSPDateTimeStructure.EpochDayOfYear); } }
+        private DateTime _EarthDateTimeEpoch { get { return new DateTime(KSPDateStructure.EpochYear, 1, KSPDateStructure.EpochDayOfYear); } }
 
         #region Constructors
         public KSPDateTime()
@@ -123,8 +123,8 @@ namespace KSPPluginFramework
         {
             //Test for entering values outside the norm - eg 25 hours, day 600
 
-            UT = new KSPTimeSpan((year - KSPDateTimeStructure.EpochYear) * KSPDateTimeStructure.DaysPerYear  +
-                                (day - KSPDateTimeStructure.EpochDayOfYear),
+            UT = new KSPTimeSpan((year - KSPDateStructure.EpochYear) * KSPDateStructure.DaysPerYear  +
+                                (day - KSPDateStructure.EpochDayOfYear),
                                 hour,
                                 minute,
                                 second,
@@ -141,7 +141,7 @@ namespace KSPPluginFramework
 
         #region Calculated Properties
         public KSPDateTime Date { get { return new KSPDateTime(Year, DayOfYear); } }
-        public KSPTimeSpan TimeOfDay { get { return new KSPTimeSpan(UT % KSPDateTimeStructure.SecondsPerDay); } }
+        public KSPTimeSpan TimeOfDay { get { return new KSPTimeSpan(UT % KSPDateStructure.SecondsPerDay); } }
 
 
         public static KSPDateTime Now {
@@ -161,19 +161,19 @@ namespace KSPPluginFramework
         }
         public KSPDateTime AddYears(Int32 value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerYear);
+            return new KSPDateTime(UT + value * KSPDateStructure.SecondsPerYear);
         }
         public KSPDateTime AddDays(Double value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerDay);
+            return new KSPDateTime(UT + value * KSPDateStructure.SecondsPerDay);
         }
         public KSPDateTime AddHours(Double value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerHour);
+            return new KSPDateTime(UT + value * KSPDateStructure.SecondsPerHour);
         }
         public KSPDateTime AddMinutes(Double value)
         {
-            return new KSPDateTime(UT + value * KSPDateTimeStructure.SecondsPerMinute);
+            return new KSPDateTime(UT + value * KSPDateStructure.SecondsPerMinute);
         }
         public KSPDateTime AddSeconds(Double value)
         {
