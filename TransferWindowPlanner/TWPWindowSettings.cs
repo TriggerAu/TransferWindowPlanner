@@ -225,7 +225,17 @@ namespace TransferWindowPlanner
             {
                 if (GUILayout.Button(new GUIContent("You need a newer version of KAC", "Click to open your browser and download a newer Kerbal Alarm Clock"), Styles.styleTextCenterGreen))
                     Application.OpenURL("http://forum.kerbalspaceprogram.com/threads/24786");
-                
+
+            }
+            else if (!TWP_KACWrapper.KACWrapper.InstanceExists)
+            {
+                GUILayout.Label("KAC is not loaded in this scene, so we can't configure", Styles.styleTextGreen);
+                GUILayout.Label("the integration options", Styles.styleTextGreen);
+                GUILayout.Space(10);
+                GUILayout.Label("You can access these in scenes where KAC is visible", Styles.styleTextGreen);
+                GUILayout.Space(10);
+                GUILayout.Label("Go on... Move along... Nothing to see...", Styles.styleTextGreen);
+
             }
             else
             {
