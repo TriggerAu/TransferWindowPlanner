@@ -151,6 +151,12 @@ namespace TransferWindowPlanner
                 DrawLabel("Selected:{0}", mbTWP.windowMain.vectSelected);
                 DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected/KSPTime.SecondsPerDay,mbTWP.windowMain.TravelSelected/KSPTime.SecondsPerDay);
 
+
+
+                DrawLabel("Ass:{0}", KACWrapper.AssemblyExists);
+                DrawLabel("Ins:{0}", KACWrapper.InstanceExists);
+                DrawLabel("API:{0}", KACWrapper.APIReady);
+
                 //if (mbTWP.windowMain.TransferSelected != null)
                 //{
                 //    DrawLabel("D:{0:0} T:{0:0}", mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.TravelTime);

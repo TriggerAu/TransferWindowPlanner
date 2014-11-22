@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System.Collections.Generic;
+
 using TransferWindowPlanner;
 using KSPPluginFramework;
 
@@ -100,6 +102,26 @@ namespace KSPDateTimeUnitTests
             dt = dt.AddDays(100);
         }
 
+        [TestMethod]
+        public void TestFormats()
+        {
+            KSPDateTime dt = new KSPDateTime(1, 100);
+
+            KSPDateStructure.Months = new List<KSPMonth>();
+
+            Assert.AreEqual("100/00/0001", dt.ToString("dd/MM/yyyy"));
+
+
+            KSPDateStructure.SetEarthCalendar();
+            Assert.AreEqual("25/01/1951", dt.ToString("dd/MM/yyyy"));
+
+
+            dt = new KSPDateTime(1951,100);
+            Assert.AreEqual("10/04/1951",dt.ToString("dd/MM/yyyy"));
+
+            Assert.AreEqual("Hello there 1951",String.Format("Hello there {0:yyyy}",dt));
+
+        }
        
     }
 }
