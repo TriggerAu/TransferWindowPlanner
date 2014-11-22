@@ -180,7 +180,7 @@ namespace KSPPluginFramework
             if (KSPDateStructure.CalendarType ==CalendarTypeEnum.Earth) {
                 return ToString(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern + " " + System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern);
             } else {
-                return ToString("d M y H:mm:ss", null);
+                return ToString("Year y, Da\\y d, HH:mm:ss", null);
             }
         }
         public String ToString(String format)
@@ -194,20 +194,30 @@ namespace KSPPluginFramework
             for (int i = matches.Count-1; i >=0; i--)
             {
                 Match m = matches[i];
-                //if (format[m.Index - 1] == '\\') continue;
+                Int32 mIndex = m.Index,mLength = m.Length;
+
+                if (mIndex>0 && format[m.Index - 1] == '\\')
+                {
+                    if (m.Length == 1)
+                        continue;
+                    else {
+                        mIndex++;
+                        mLength--;
+                    }
+                }
                 switch (m.Value[0])
                 {
                     case 'y': 
-                        format = format.Substring(0, m.Index) + Year.ToString("D" + m.Length) + format.Substring(m.Index + m.Length);
+                        format = format.Substring(0, mIndex) + Year.ToString("D" + mLength) + format.Substring(mIndex + mLength);
                         break;
                     case 'M':
-                        String input2 = Month.ToString("D" + m.Length);
+                        String input2 = Month.ToString("D" + mLength);
 
                         //test for more than 2 M's
-                        format = format.Substring(0, m.Index) + input2 + format.Substring(m.Index + m.Length);
+                        format = format.Substring(0, mIndex) + input2 + format.Substring(mIndex + mLength);
                         break;
                     case 'd':
-                        format = format.Substring(0, m.Index) + Day.ToString("D" + m.Length) + format.Substring(m.Index + m.Length);
+                        format = format.Substring(0, mIndex) + Day.ToString("D" + mLength) + format.Substring(mIndex + mLength);
                         break;
                     case 'h':
                         //how to do this one AM/PM Hours
@@ -215,41 +225,44 @@ namespace KSPPluginFramework
                         switch (AMPM)
 	                    {
                             case AMPMEnum.AM:
-                                HalfDayTime = Hour.ToString("D" + m.Length.Clamp(1, (KSPDateStructure.HoursPerDay / 2).ToString().Length));
+                                HalfDayTime = Hour.ToString("D" + mLength.Clamp(1, (KSPDateStructure.HoursPerDay / 2).ToString().Length));
                                 break;
                             case AMPMEnum.PM:
-                                HalfDayTime = (Hour - (KSPDateStructure.HoursPerDay / 2)).ToString("D" + m.Length.Clamp(1, (KSPDateStructure.HoursPerDay / 2).ToString().Length));
+                                HalfDayTime = (Hour - (KSPDateStructure.HoursPerDay / 2)).ToString("D" + mLength.Clamp(1, (KSPDateStructure.HoursPerDay / 2).ToString().Length));
                                 break;
                             case AMPMEnum.OddHoursPerDay:
                             default:
-                                HalfDayTime = Hour.ToString("D" + m.Length.Clamp(1, KSPDateStructure.HoursPerDay.ToString().Length));
+                                HalfDayTime = Hour.ToString("D" + mLength.Clamp(1, KSPDateStructure.HoursPerDay.ToString().Length));
                                 break;
 	                    }
 
-                        format = format.Substring(0, m.Index) + HalfDayTime + format.Substring(m.Index + m.Length);
+                        format = format.Substring(0, mIndex) + HalfDayTime + format.Substring(mIndex + mLength);
                         break;
                     case 't':
                         if (AMPM != AMPMEnum.OddHoursPerDay)
-                            format = format.Substring(0, m.Index) + AMPM.ToString().ToLower() + format.Substring(m.Index + m.Length);
+                            format = format.Substring(0, mIndex) + AMPM.ToString().ToLower() + format.Substring(mIndex + mLength);
                         break;
                     case 'T':
                         if (AMPM != AMPMEnum.OddHoursPerDay)
-                            format = format.Substring(0, m.Index) + AMPM.ToString().ToUpper() + format.Substring(m.Index + m.Length);
+                            format = format.Substring(0, mIndex) + AMPM.ToString().ToUpper() + format.Substring(mIndex + mLength);
                         break;
                     case 'H':
-                        format = format.Substring(0, m.Index) + Hour.ToString("D" + m.Length.Clamp(1,KSPDateStructure.HoursPerDay.ToString().Length)) + format.Substring(m.Index + m.Length);
+                        format = format.Substring(0, mIndex) + Hour.ToString("D" + mLength.Clamp(1,KSPDateStructure.HoursPerDay.ToString().Length)) + format.Substring(mIndex + mLength);
                         break;
                     case 'm':
-                        format = format.Substring(0, m.Index) + Minute.ToString("D" + m.Length.Clamp(1,KSPDateStructure.MinutesPerHour.ToString().Length)) + format.Substring(m.Index + m.Length);
+                        format = format.Substring(0, mIndex) + Minute.ToString("D" + mLength.Clamp(1,KSPDateStructure.MinutesPerHour.ToString().Length)) + format.Substring(mIndex + mLength);
                         break;
                     case 's':
-                        format = format.Substring(0, m.Index) + Second.ToString("D" + m.Length.Clamp(1,KSPDateStructure.SecondsPerMinute.ToString().Length)) + format.Substring(m.Index + m.Length);
+                        format = format.Substring(0, mIndex) + Second.ToString("D" + mLength.Clamp(1,KSPDateStructure.SecondsPerMinute.ToString().Length)) + format.Substring(mIndex + mLength);
                         break;
 
                     default:
                         break;
                 }
             }
+
+            //Now strip out the \ , but not multiple \\
+            format = Regex.Replace(format, "\\\\(?=[a-z])", "");
 
             return format;
             //if (KSPDateStructure.CalendarType == CalendarTypeEnum.Earth)

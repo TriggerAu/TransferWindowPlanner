@@ -111,6 +111,8 @@ namespace KSPDateTimeUnitTests
 
             Assert.AreEqual("100/00/0001", dt.ToString("dd/MM/yyyy"));
 
+            Assert.AreEqual("Year 1, Day 100, 0:00:00",dt.ToString());
+
 
             KSPDateStructure.SetEarthCalendar();
             Assert.AreEqual("25/01/1951", dt.ToString("dd/MM/yyyy"));
@@ -120,6 +122,9 @@ namespace KSPDateTimeUnitTests
             Assert.AreEqual("10/04/1951",dt.ToString("dd/MM/yyyy"));
 
             Assert.AreEqual("Hello there 1951",String.Format("Hello there {0:yyyy}",dt));
+
+
+            
 
         }
        
