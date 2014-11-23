@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.Text.RegularExpressions;
+
 namespace KSPPluginFramework
 {
-    public class KSPTimeSpan
+    public class KSPTimeSpan : IFormattable
     {
         //Descriptors of Timespan - uses UT as the Root value
         public Int32 Days {
@@ -65,6 +67,98 @@ namespace KSPPluginFramework
         public Double TotalMinutes { get { return UT / KSPDateStructure.SecondsPerMinute; } }
         public Double TotalHours { get { return UT / KSPDateStructure.SecondsPerHour; } }
         public Double TotalDays { get { return UT / KSPDateStructure.SecondsPerDay; } }
+        #endregion
+
+        #region String Formatter
+
+        public override String ToString()
+        {
+            return ToString(3);
+        }
+
+        public String ToString(Int32 Precision)
+        {
+            Int32 Displayed = 0;
+            String format = "";
+
+            if(Precision > 3 || Days>0 ){
+                format = "d\\d,";
+                Displayed++;
+            }
+            if ((Hours>0 && Displayed<Precision)) {
+                format += (format==""?"":" ") + "h\\h,";
+                Displayed++;
+
+            }
+            if ((Minutes>0 && Displayed<Precision)) {
+                format += (format==""?"":" ") + "m\\m,";
+                Displayed++;
+
+            }
+            if ((Seconds>0 && Displayed<Precision)) {
+                format += (format==""?"":" ") + "s\\s,";
+                Displayed++;
+
+            }
+
+            format = format.TrimEnd(',');
+
+            return ToString(format, null);
+        }
+
+        public String ToString(String format)
+        {
+            return ToString(format, null);
+        }
+        public String ToString(String format, IFormatProvider provider)
+        {
+            //parse and replace the format stuff
+            MatchCollection matches = Regex.Matches(format, "([a-zA-z])\\1{0,}");
+            for (int i = matches.Count - 1; i >= 0; i--)
+            {
+                Match m = matches[i];
+                Int32 mIndex = m.Index, mLength = m.Length;
+
+                if (mIndex > 0 && format[m.Index - 1] == '\\')
+                {
+                    if (m.Length == 1)
+                        continue;
+                    else
+                    {
+                        mIndex++;
+                        mLength--;
+                    }
+                }
+                switch (m.Value[0])
+                {
+                    case 'd':
+                        format = format.Substring(0, mIndex) + Days.ToString("D" + mLength) + format.Substring(mIndex + mLength);
+                        break;
+                    case 'h':
+                        format = format.Substring(0, mIndex) + Hours.ToString("D" + mLength.Clamp(1, KSPDateStructure.HoursPerDay.ToString().Length)) + format.Substring(mIndex + mLength);
+                        break;
+                    case 'm':
+                        format = format.Substring(0, mIndex) + Minutes.ToString("D" + mLength.Clamp(1, KSPDateStructure.MinutesPerHour.ToString().Length)) + format.Substring(mIndex + mLength);
+                        break;
+                    case 's':
+                        format = format.Substring(0, mIndex) + Seconds.ToString("D" + mLength.Clamp(1, KSPDateStructure.SecondsPerMinute.ToString().Length)) + format.Substring(mIndex + mLength);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            //Now strip out the \ , but not multiple \\
+            format = Regex.Replace(format, "\\\\(?=[a-z])", "");
+
+            return format;
+            //if (KSPDateStructure.CalendarType == CalendarTypeEnum.Earth)
+            //    return String.Format(format, _EarthDateTime);
+            //else
+            //    return String.Format(format, this); //"TEST";
+        }
+
         #endregion
 
         #region Instance Methods

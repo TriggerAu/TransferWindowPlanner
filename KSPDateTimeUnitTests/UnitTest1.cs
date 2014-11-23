@@ -111,7 +111,7 @@ namespace KSPDateTimeUnitTests
 
             Assert.AreEqual("100/00/0001", dt.ToString("dd/MM/yyyy"));
 
-            Assert.AreEqual("Year 1, Day 100, 0:00:00",dt.ToString());
+            Assert.AreEqual("Year 1, Day 100 - 0h, 0m",dt.ToString());
 
 
             KSPDateStructure.SetEarthCalendar();

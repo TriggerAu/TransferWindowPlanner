@@ -180,7 +180,7 @@ namespace KSPPluginFramework
             if (KSPDateStructure.CalendarType ==CalendarTypeEnum.Earth) {
                 return ToString(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern + " " + System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern);
             } else {
-                return ToString("Year y, Da\\y d, HH:mm:ss", null);
+                return ToString("Year y, Da\\y d - H\\h, m\\m", null);
             }
         }
         public String ToString(String format)
