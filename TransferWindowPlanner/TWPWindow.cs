@@ -88,11 +88,11 @@ namespace TransferWindowPlanner
         private void SetDepartureMinToYesterday()
         {
             //Set the Departure min to be yesterday
-            KSPTime timeYesterday = new KSPTime(Planetarium.GetUniversalTime() - KSPTime.SecondsPerDay);
-            LogFormatted("Setting to y{0} d{1}", timeYesterday.Year, timeYesterday.Day);
-            strDepartureMinYear = (timeYesterday.Year+1).ToString();
-            strDepartureMinDay = (timeYesterday.Day+1).ToString();
-            DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            KSPDateTime dateYesterday = new KSPDateTime(Planetarium.GetUniversalTime() - KSPDateStructure.SecondsPerDay);
+            LogFormatted("Setting to y{0} d{1}", dateYesterday.Year, dateYesterday.Day);
+            strDepartureMinYear = (dateYesterday.Year+1).ToString();
+            strDepartureMinDay = (dateYesterday.Day+1).ToString();
+            DepartureMin = new KSPDateTime(dateYesterday.Year+1, dateYesterday.Day+1, 0, 0, 0).UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
         }
 
         void ddlOrigin_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
@@ -520,13 +520,13 @@ namespace TransferWindowPlanner
                 GUI.matrix = matrixBackup;
                 //Y Axis
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight - 3)) - 5), 40, 15), String.Format("{0:0}", (TransferSpecs.TravelMin + (1 - i) * TransferSpecs.TravelRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotYText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight - 3)) - 5), 40, 15), String.Format("{0:0}", (TransferSpecs.TravelMin + (1 - i) * TransferSpecs.TravelRange) / (KSPDateStructure.SecondsPerDay)), Styles.stylePlotYText);
                 }
 
                 //XAxis
                 GUI.Label(new Rect((Single)(PlotPosition.x), (Single)(PlotPosition.y + PlotHeight + 20), PlotWidth, 15), "Departure Date", Styles.stylePlotXLabel);
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (TransferSpecs.DepartureMin + i * TransferSpecs.DepartureRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotXText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (TransferSpecs.DepartureMin + i * TransferSpecs.DepartureRange) / (KSPDateStructure.SecondsPerDay)), Styles.stylePlotXText);
                 }
 
                 //Draw the DeltaV Legend

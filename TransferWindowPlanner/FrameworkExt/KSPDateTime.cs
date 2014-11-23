@@ -116,9 +116,12 @@ namespace KSPPluginFramework
         {
             UT = new KSPDateTime(year, dayofyear, 0, 0, 0).UT;
         }
+        public KSPDateTime(String year, String day, String hour, String minute, String second)
+        {
+            UT = new KSPDateTime(Convert.ToInt32(year), Convert.ToInt32(day), Convert.ToInt32(hour), Convert.ToInt32(minute), Convert.ToInt32(second), 0).UT;
+        }
         public KSPDateTime(int year, int day, int hour, int minute, int second)
         {
-
             UT = new KSPDateTime(year, day, hour, minute, second, 0).UT;
         }
         public KSPDateTime(int year, int day, int hour, int minute, int second, int millisecond)

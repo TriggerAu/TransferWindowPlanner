@@ -40,6 +40,10 @@ namespace KSPPluginFramework
         {
             UT = new KSPTimeSpan(0, hours, minutes, seconds, 0).UT;
         }
+        public KSPTimeSpan(String days, String hours, String minutes, String seconds)
+        {
+            UT = new KSPTimeSpan(Convert.ToInt32(days), Convert.ToInt32(hours), Convert.ToInt32(minutes), Convert.ToInt32(seconds), 0).UT;
+        }
         public KSPTimeSpan(int days, int hours, int minutes, int seconds)
         {
             UT = new KSPTimeSpan(days, hours, minutes, seconds, 0).UT;
