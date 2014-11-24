@@ -24,9 +24,7 @@ namespace KSPPluginFramework
         static public DateTime CustomEpochEarth { get; private set; }
 
         static public CalendarTypeEnum CalendarType {get; private set;}
-
-
-
+        
         static public void SetKSPStockCalendar()
         {
             CalendarType = CalendarTypeEnum.KSPStock;
