@@ -314,8 +314,10 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.OriginName, TransferSpecs.InitialOrbitAltitude / 1000), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.DestinationName, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
-            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-            GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(KSPDateTime.DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
+            //GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            GUILayout.Label(new KSPTimeSpan(TransferSelected.DepartureTime).ToString(), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
@@ -348,8 +350,8 @@ namespace TransferWindowPlanner
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-            
+            //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(KSPDateTime.DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
             GUIStyle styleCopyButton = new GUIStyle(SkinsLibrary.CurrentSkin.button);
             styleCopyButton.fixedHeight = 18;
             styleCopyButton.padding.top = styleCopyButton.padding.bottom = 0;
@@ -409,7 +411,8 @@ namespace TransferWindowPlanner
             GUILayout.Label("Insertion Inclination:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
-            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime + TransferSelected.TravelTime).ToStringStandard(KSPDateTime.DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             if (ShowEjectionDetails) {
@@ -428,7 +431,7 @@ namespace TransferWindowPlanner
             GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
-            GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0}", new KSPTimeSpan(TransferSelected.TravelTime).ToString()), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
             GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
@@ -461,11 +464,14 @@ namespace TransferWindowPlanner
         internal string GenerateTransferDetailsText()
         {
             String Message = String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
-            Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+            //Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+            Message = Message.AppendLine("Depart at:      {0}", new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(KSPDateTime.DateStringFormatsEnum.DateTimeFormat));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
-            Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
+            //Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
+            Message = Message.AppendLine("   Travel:      {0}", new KSPTimeSpan(TransferSelected.TravelTime).ToString());
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.TravelTime);
-            Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+            //Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+            Message = Message.AppendLine("Arrive at:      {0}", new KSPDateTime(TransferSelected.DepartureTime + TransferSelected.TravelTime).ToStringStandard(KSPDateTime.DateStringFormatsEnum.DateTimeFormat));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
             Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
             Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);

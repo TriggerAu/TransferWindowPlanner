@@ -26,6 +26,17 @@ namespace KSPPluginFramework
             get { return (Int32)(Math.Round(UT - Math.Floor(UT), 3) * 1000); }
         }
 
+        //public Int32 Years {
+        //    get {
+        //        if (KSPDateStructure.CalendarType != CalendarTypeEnum.Earth) {
+        //            return (Int32)UT / KSPDateStructure.SecondsPerYear;
+        //        } else {
+
+        //        }
+        //    }
+        //}
+
+
         /// <summary>
         /// Replaces the normal "Ticks" function. This is Seconds of UT
         /// </summary>

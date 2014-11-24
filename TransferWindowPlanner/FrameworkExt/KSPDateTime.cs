@@ -177,6 +177,39 @@ namespace KSPPluginFramework
             AM,PM,OddHoursPerDay
         }
 
+        public enum DateStringFormatsEnum{
+            TimeAsUT,
+            DateFormat,
+            DateFormatWithSecs,
+            DateTimeFormat
+        }
+        public String ToStringStandard(DateStringFormatsEnum DateFormat){
+            switch (DateFormat)
+            {
+	            case DateStringFormatsEnum.TimeAsUT:
+                    String strReturn = "";
+                    if (UT < 0) strReturn += "+ ";
+                    strReturn += String.Format("{0:N0}s", Math.Abs(UT));
+                    return strReturn;
+                case DateStringFormatsEnum.DateFormat:
+                    return ToString();
+                case DateStringFormatsEnum.DateFormatWithSecs:
+                    return ToString("Year y, Da\\y d - H\\h, m\\m, s\\s");
+                case DateStringFormatsEnum.DateTimeFormat:
+                    return ToString("Year y,Da\\y d, HH:mm:ss");
+                default:
+                    return ToString();
+            }
+        }
+        public String DateString()
+        {
+            return String.Format("Year {0},Day {1}, {2}h, {3}m, {4}s", Year + 1, Day + 1, Hour, Minute, Second);
+        }
+
+        public String DateTimeString()
+        {
+            return String.Format("Year {0},Day {1}, {2:00}:{3:00}:{4:00}", Year + 1, Day + 1, Hour, Minute, Second);
+        }
 
         public override String ToString()
         {
