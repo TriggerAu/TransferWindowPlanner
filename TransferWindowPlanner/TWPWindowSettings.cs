@@ -21,6 +21,7 @@ namespace TransferWindowPlanner
         internal DropDownList ddlSettingsTab;
         private DropDownList ddlSettingsSkin;
         private DropDownList ddlSettingsButtonStyle;
+        private DropDownList ddlSettingsCalendar;
 
         internal Int32 WindowWidth = 320;
         internal Int32 WindowHeight = 200;
@@ -29,6 +30,7 @@ namespace TransferWindowPlanner
         {
             [Description("General Properties")] General,
             [Description("Alarm Clock Integration")] AlarmIntegration,
+            [Description("Calendar Control")] Calendar,
             //[Description("Styling/Visuals")]    Styling,
             [Description("About...")]   About,
         }
@@ -47,7 +49,9 @@ namespace TransferWindowPlanner
             ddlSettingsSkin.OnSelectionChanged += ddlSettingsSkin_SelectionChanged;
             ddlSettingsButtonStyle = new DropDownList(EnumExtensions.ToEnumDescriptions<Settings.ButtonStyleEnum>(), (Int32)settings.ButtonStyleChosen, this);
             ddlSettingsButtonStyle.OnSelectionChanged += ddlSettingsButtonStyle_OnSelectionChanged;
+            ddlSettingsCalendar = new DropDownList(EnumExtensions.ToEnumDescriptions<CalendarTypeEnum>(), this);
 
+            ddlManager.AddDDL(ddlSettingsCalendar);
             ddlManager.AddDDL(ddlSettingsButtonStyle);
             ddlManager.AddDDL(ddlSettingsSkin);
             ddlManager.AddDDL(ddlSettingsTab);
@@ -136,6 +140,10 @@ namespace TransferWindowPlanner
                 case SettingsTabs.AlarmIntegration:
                     DrawWindow_Alarm();
                     WindowHeight = 206;
+                    break;
+                case SettingsTabs.Calendar:
+                    DrawWindow_Calendar();
+                    WindowHeight = mbTWP.windowDebug.intTest1;
                     break;
                 case SettingsTabs.About:
                     DrawWindow_About();
@@ -259,7 +267,27 @@ namespace TransferWindowPlanner
             }
         }
 
+        private void DrawWindow_Calendar()
+        {
+            //Update Check Area
+            GUILayout.Label("Selected Calendar", Styles.styleTextHeading);
 
+            GUILayout.BeginHorizontal(Styles.styleSettingsArea);
+
+            GUILayout.BeginVertical(GUILayout.Width(60));
+            GUILayout.Space(2); //to even up the text
+            GUILayout.Label("Calendar:", Styles.styleTextHeading);
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical();
+            ddlSettingsCalendar.DrawButton();
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+
+            //if RSS not installed and RSS chosen...
+
+            ///section for custom stuff
+        }
         private void DrawWindow_About()
         {
             //Update Check Area
