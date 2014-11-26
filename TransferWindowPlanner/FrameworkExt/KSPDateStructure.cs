@@ -52,7 +52,7 @@ namespace KSPPluginFramework
             MinutesPerHour = 60;
 
             HoursPerDay = GameSettings.KERBIN_TIME ? 6 : 24;
-            DaysPerYear = GameSettings.KERBIN_TIME ? 425 : 365;
+            DaysPerYear = GameSettings.KERBIN_TIME ? 426 : 365;
         }
 
         /// <summary>Sets the Date Structure to be Earth based - Epoch of 1/1/1951 (RSS default)</summary>

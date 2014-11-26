@@ -180,6 +180,10 @@ namespace KSPPluginFramework
                     return strReturn;
                 case TimeSpanStringFormatsEnum.KSPFormat:
                     return ToString(5);
+                case TimeSpanStringFormatsEnum.IntervalLong:
+                    return ToString("y Year\\s, d Da\\y\\s, hh:mm:ss");
+                case TimeSpanStringFormatsEnum.IntervalLongTrimYears:
+                    return ToString("y Year\\s, d Da\\y\\s, hh:mm:ss").Replace("0 Years, ","");
                 case TimeSpanStringFormatsEnum.DateTimeFormat:
                     String strFormat = "";
                     if (Years > 0) strFormat += "y\\y";
@@ -276,6 +280,9 @@ namespace KSPPluginFramework
                 }
                 switch (m.Value[0])
                 {
+                    case 'y':
+                        format = format.Substring(0, mIndex) + Years.ToString("D" + mLength) + format.Substring(mIndex + mLength);
+                        break;
                     case 'd':
                         format = format.Substring(0, mIndex) + Days.ToString("D" + mLength) + format.Substring(mIndex + mLength);
                         break;
@@ -521,6 +528,8 @@ namespace KSPPluginFramework
     {
         TimeAsUT,
         KSPFormat,
+        IntervalLong,
+        IntervalLongTrimYears,
         DateTimeFormat
     }
 }

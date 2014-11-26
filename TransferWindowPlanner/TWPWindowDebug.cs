@@ -72,7 +72,7 @@ namespace TransferWindowPlanner
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
-        public Int32 intTest1 = 0;
+        public Int32 intTest1 = 200;
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
@@ -96,19 +96,21 @@ namespace TransferWindowPlanner
                 //if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
                 //if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
 
-                if (GUILayout.Button("Make Date"))
-                {
-                    LogFormatted("a");
-                    //KSPDateTimeStructure.CalendarType = CalendarTypeEnum.Earth;
-                    KSPDateTime dt = new KSPDateTime(301.123);
+                DrawLabel("{0}", KSPDateStructure.CalendarType);
 
-                    LogFormatted("1:{0}", dt.Minute);
-                    LogFormatted("2:{0}", dt.UT);
-                    LogFormatted("3:{0}", dt.Year);
-                    //LogFormatted("4:{0}", KSPDateTimeStructure.CalendarType);
-                    //LogFormatted("5:{0}", dt.Day);
+                //if (GUILayout.Button("Make Date"))
+                //{
+                //    LogFormatted("a");
+                //    //KSPDateTimeStructure.CalendarType = CalendarTypeEnum.Earth;
+                //    KSPDateTime dt = new KSPDateTime(301.123);
 
-                }
+                //    LogFormatted("1:{0}", dt.Minute);
+                //    LogFormatted("2:{0}", dt.UT);
+                //    LogFormatted("3:{0}", dt.Year);
+                //    //LogFormatted("4:{0}", KSPDateTimeStructure.CalendarType);
+                //    //LogFormatted("5:{0}", dt.Day);
+
+                //}
                 //if (GUILayout.Button("CreateAlarm"))
                 //{
                 //    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, 

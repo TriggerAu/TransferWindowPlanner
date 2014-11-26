@@ -145,6 +145,13 @@ namespace KSPPluginFramework
 		{
 			UT = new KSPDateTime(year, dayofyear, 0, 0, 0).UT;
 		}
+        /// <summary>Initializes a new instance of the System.DateTime structure to the specified year and day.</summary>
+        /// <param name="year">The year</param>
+        /// <param name="dayofyear">The day of the year</param>
+        public KSPDateTime(String year, String dayofyear)
+        {
+            UT = new KSPDateTime(year, dayofyear, "0", "0", "0").UT;
+        }
 
 		/// <summary>Initializes a new instance of the System.DateTime structure to the specified year, day, hour, minute, and second.</summary>
 		/// <param name="year">The year</param>
@@ -256,7 +263,7 @@ namespace KSPPluginFramework
 				case DateStringFormatsEnum.KSPFormatWithSecs:
 					return ToString("Year y, Da\\y d - H\\h, m\\m, s\\s");
 				case DateStringFormatsEnum.DateTimeFormat:
-					return ToString("Year y,Da\\y d, HH:mm:ss");
+					return ToString("Year y, Da\\y d, HH:mm:ss");
 				default:
 					return ToString();
 			}

@@ -50,7 +50,8 @@ namespace TransferWindowPlanner
             ddlSettingsButtonStyle = new DropDownList(EnumExtensions.ToEnumDescriptions<Settings.ButtonStyleEnum>(), (Int32)settings.ButtonStyleChosen, this);
             ddlSettingsButtonStyle.OnSelectionChanged += ddlSettingsButtonStyle_OnSelectionChanged;
             ddlSettingsCalendar = new DropDownList(EnumExtensions.ToEnumDescriptions<CalendarTypeEnum>(), this);
-
+            ddlSettingsCalendar.OnSelectionChanged += ddlSettingsCalendar_OnSelectionChanged;
+            
             ddlManager.AddDDL(ddlSettingsCalendar);
             ddlManager.AddDDL(ddlSettingsButtonStyle);
             ddlManager.AddDDL(ddlSettingsSkin);
@@ -58,6 +59,7 @@ namespace TransferWindowPlanner
 
             onWindowVisibleChanged += TWPWindowSettings_onWindowVisibleChanged;
         }
+
 
         void TWPWindowSettings_onWindowVisibleChanged(MonoBehaviourWindow sender, bool NewVisibleState)
         {
@@ -85,6 +87,23 @@ namespace TransferWindowPlanner
             SkinsLibrary.SetCurrent(settings.SelectedSkin.ToString());
             settings.Save();
         }
+
+        void ddlSettingsCalendar_OnSelectionChanged(DropDownList sender, int OldIndex, int NewIndex)
+        {
+            settings.SelectedCalendar = (CalendarTypeEnum)NewIndex;
+            switch (settings.SelectedCalendar)
+            {
+                case CalendarTypeEnum.KSPStock: KSPDateStructure.SetKSPStockCalendar(); break;
+                case CalendarTypeEnum.Earth:    
+                    KSPDateStructure.SetEarthCalendar(); 
+                    break;
+                case CalendarTypeEnum.Custom:   
+                    KSPDateStructure.SetCustomCalendar();
+                    break;
+                default: KSPDateStructure.SetKSPStockCalendar(); break;
+            }
+        }
+
 
         void ddlSettingsButtonStyle_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
         {

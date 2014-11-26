@@ -317,7 +317,7 @@ namespace TransferWindowPlanner
             //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
             GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
             //GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
-            GUILayout.Label(new KSPTimeSpan(TransferSelected.DepartureTime).ToString(), Styles.styleTextYellow);
+            GUILayout.Label(new KSPTimeSpan(TransferSelected.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLongTrimYears), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
@@ -431,7 +431,7 @@ namespace TransferWindowPlanner
             GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
-            GUILayout.Label(String.Format("{0:0}", new KSPTimeSpan(TransferSelected.TravelTime).ToString()), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0}", new KSPTimeSpan(TransferSelected.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLongTrimYears)), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
             GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
@@ -468,7 +468,7 @@ namespace TransferWindowPlanner
             Message = Message.AppendLine("Depart at:      {0}", new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
             //Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
-            Message = Message.AppendLine("   Travel:      {0}", new KSPTimeSpan(TransferSelected.TravelTime).ToString());
+            Message = Message.AppendLine("   Travel:      {0}", new KSPTimeSpan(TransferSelected.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLongTrimYears));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.TravelTime);
             //Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
             Message = Message.AppendLine("Arrive at:      {0}", new KSPDateTime(TransferSelected.DepartureTime + TransferSelected.TravelTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
