@@ -154,10 +154,17 @@ namespace TransferWindowPlanner
                 DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected/KSPTime.SecondsPerDay,mbTWP.windowMain.TravelSelected/KSPTime.SecondsPerDay);
 
 
+                if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel!=null)
+                {
+                    Vector3d vecPlanetDirection =  FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(mbTWP.windowMain.TransferSelected.DepartureTime);
+                    Vector3d vecVesselPosition = FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(mbTWP.windowMain.TransferSelected.DepartureTime);
 
-                DrawLabel("Ass:{0}", KACWrapper.AssemblyExists);
-                DrawLabel("Ins:{0}", KACWrapper.InstanceExists);
-                DrawLabel("API:{0}", KACWrapper.APIReady);
+
+
+                }
+                //DrawLabel("Ass:{0}", KACWrapper.AssemblyExists);
+                //DrawLabel("Ins:{0}", KACWrapper.InstanceExists);
+                //DrawLabel("API:{0}", KACWrapper.APIReady);
 
                 //if (mbTWP.windowMain.TransferSelected != null)
                 //{
