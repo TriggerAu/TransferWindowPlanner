@@ -39,9 +39,7 @@ namespace TransferWindowPlanner
             ddlDestination.SelectedIndex = 0;
             ddlDestination.Items = lstDestinations.Select(x => x.Name).ToList();
 
-            LogFormatted("B:Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
             SetupTransferParams();
-            LogFormatted("C:Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
         }
 
         void SetupTransferParams()

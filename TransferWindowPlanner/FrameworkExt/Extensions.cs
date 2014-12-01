@@ -54,5 +54,17 @@ namespace KSPPluginFramework
             else if (val.CompareTo(max) > 0) return max;
             else return val;
         }
+
+        public static Int32 NormalizeAngle360(this Int32 val) {
+            return (Int32)Convert.ToDouble(val).NormalizeAngle360();
+        }
+
+        public static Double NormalizeAngle360(this Double val) 
+        {
+            val %= 360;
+            if (val < 0)
+                val += 360;
+            return val;
+        }
     }
 }

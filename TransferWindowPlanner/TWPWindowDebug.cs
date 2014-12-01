@@ -78,6 +78,9 @@ namespace TransferWindowPlanner
         public Int32 intTest4 = 0;
         public Int32 intTest5 = 300;
 
+
+        public Double dblEjectAt = 0;
+
         internal override void DrawWindow(int id)
         {
             try
@@ -156,9 +159,10 @@ namespace TransferWindowPlanner
 
                 if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel!=null)
                 {
-                    Vector3d vecPlanetDirection =  FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(mbTWP.windowMain.TransferSelected.DepartureTime);
-                    Vector3d vecVesselPosition = FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(mbTWP.windowMain.TransferSelected.DepartureTime);
-
+                    if (GUILayout.Button("FindUT")) {
+                        dblEjectAt = Utilities.timeOfEjectionAngle(FlightGlobals.ActiveVessel.orbit, mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.EjectionAngle, 20);
+                    }
+                    DrawLabel("{0}", dblEjectAt);
 
 
                 }
