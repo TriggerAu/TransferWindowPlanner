@@ -27,7 +27,12 @@ namespace TransferWindowPlanner
             return s;
         }
 
-
+        /// <summary>
+        /// Return the ejection angle of the vessel/body on this orbit for a given UT
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="UT">Te UT at which to calculate the angle</param>
+        /// <returns></returns>
         internal static double getEjectionAngleAtUT(this Orbit o, double UT)
         {
             //What planet is the orbit around
@@ -46,40 +51,45 @@ namespace TransferWindowPlanner
             return returnEjectAngle.NormalizeAngle360();
         }
 
-        internal static double timeOfEjectionAngle(Orbit orbitVessel, double timeStart, double angleEjection, double numDivisions)
+        /// <summary>
+        /// Find the point on the orbit that includes the initial time where the ejection angle is closest to the suplied one
+        /// </summary>
+        /// <param name="oObject">Orbit of the vessel/body</param>
+        /// <param name="timeInitial">The UT you want to search around for the angle - will search 1/2 an orbit back and 1/2 forward</param>
+        /// <param name="numDivisions">Higher thisnumber the more precise the answer - and the longer it will take</param>
+        /// <param name="closestAngle">The output of the closest angle the method could find</param>
+        /// <param name="targetAngle">The ejection angle we are looking for</param>
+        /// <returns></returns>
+        internal static double timeOfEjectionAngle(Orbit oObject, double timeInitial, double targetAngle, double numDivisions, out double closestAngle)
         {
-            //Min and max is back and forward half an orbit
-            double minTime = timeStart - orbitVessel.period / 2;
-            double maxTime = timeStart + orbitVessel.period;
+            double timeStart = timeInitial;
+            double periodtoscan = oObject.period;
+            
+            double closestAngleTime = timeStart;
+            double closestAngleValue = 361;
+            double minTime = timeStart;
+            double maxTime = timeStart + periodtoscan;
 
-            double returnTime = minTime;
+            //work out iterations for precision - we only really need to within a second - so how many iterations do we actually need
+            //Each iteration gets us 1/10th of the period to scan
 
-            //iterate it 8 times
             for (int iter = 0; iter < 8; iter++) {
                 double dt = (maxTime - minTime) / numDivisions;
                 for (int i = 0; i < numDivisions; i++) {
-                    //for each division work out the max and min ejection angles
-                    double t1 = minTime + i * dt;
-                    double t2 = minTime + (i + 1) * dt;
-
-                    double ejectT1 =  orbitVessel.getEjectionAngleAtUT(t1);
-                    double ejectT2 = orbitVessel.getEjectionAngleAtUT(t2);
-
-                    //what to do if the ejection angle wraps the 0 degree line
-                    dasdas
-
-                    if ( (ejectT1 < angleEjection && angleEjection <= ejectT2) ||
-                        (ejectT1 > angleEjection && angleEjection >= ejectT2)) {
-
-                        minTime = t1;
-                        maxTime = t2;
-                        break;
+                    double t = minTime + i * dt;
+                    double angle = oObject.getEjectionAngleAtUT(t);
+                    if (Math.Abs(angle - targetAngle) < closestAngleValue) {
+                        closestAngleValue = Math.Abs(angle - targetAngle);
+                        closestAngleTime = t;
                     }
                 }
-                returnTime = minTime;
+                minTime = (closestAngleTime - dt).Clamp(timeStart, timeStart + periodtoscan);
+                maxTime = (closestAngleTime + dt).Clamp(timeStart, timeStart + periodtoscan); 
             }
 
-            return returnTime;
+            closestAngle = closestAngleValue + targetAngle;
+            return closestAngleTime;
         }
+
     }
 }
