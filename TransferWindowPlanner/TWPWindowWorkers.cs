@@ -11,7 +11,7 @@ using KSPPluginFramework;
 
 namespace TransferWindowPlanner
 {
-    internal partial class TWPWindow
+    public partial class TWPWindow
     {
         List<cbItem> lstPlanets = new List<cbItem>();
         List<cbItem> lstDestinations = new List<cbItem>();
@@ -96,7 +96,7 @@ namespace TransferWindowPlanner
 
         internal BackgroundWorker bw;
 
-        internal class TransferWorkerDetails
+        public class TransferWorkerDetails
         {
             public Double DepartureMin { get; set; }
             public Double DepartureMax { get; set; }

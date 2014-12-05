@@ -62,11 +62,11 @@ namespace TransferWindowPlanner
         /// <returns></returns>
         internal static double timeOfEjectionAngle(Orbit oObject, double timeInitial, double targetAngle, double numDivisions, out double closestAngle)
         {
-            double timeStart = timeInitial;
+            double timeStart = timeInitial - oObject.period/2;
             double periodtoscan = oObject.period;
             
             double closestAngleTime = timeStart;
-            double closestAngleValue = 361;
+            double closestAngleValue = Double.MaxValue;
             double minTime = timeStart;
             double maxTime = timeStart + periodtoscan;
 

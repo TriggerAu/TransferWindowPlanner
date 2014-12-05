@@ -18,7 +18,7 @@ namespace TransferWindowPlanner
         DragEnabled=true,
         TooltipsEnabled=true,
         WindowMoveEventsEnabled=true)]
-    internal partial class TWPWindow:MonoBehaviourWindowPlus
+    public partial class TWPWindow:MonoBehaviourWindowPlus
     {
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
