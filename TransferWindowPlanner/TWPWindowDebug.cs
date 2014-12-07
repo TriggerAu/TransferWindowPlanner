@@ -178,6 +178,9 @@ namespace TransferWindowPlanner
                         LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination, intTest5, mbTWP.windowMain.TransferSelected.TravelTime, FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(intTest5).magnitude - FlightGlobals.ActiveVessel.orbit.referenceBody.Radius, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
                         transTemp.CalcEjectionValues();
                     }
+
+                    DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
+
                     if (transTemp != null)
                     {
                         GUILayout.Label(transTemp.TransferDetailsText);
