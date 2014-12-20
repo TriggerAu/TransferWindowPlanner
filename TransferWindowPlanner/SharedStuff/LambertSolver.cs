@@ -111,7 +111,7 @@ public static class LambertSolver
             double e = r0 * v1 * v1 / mu - 1; // Ejection orbit eccentricity
             double ap = r0 * (1 + e) / (1 - e); // Ejection orbit apoapsis
 
-            if (ap > 0 && ap <= rsoi) {
+            if (ap > 0 && ap <= rsoi) { 
                 oTransfer = null;                                   //Nuke this if we have no result
                 return Double.NaN; // There is no orbit that leaves the SoI with a velocity of ejectionDeltaV
             }
