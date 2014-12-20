@@ -28,7 +28,7 @@ This work is licensed under an MIT license as outlined at the OSI site. Visit th
 
 VERSION HISTORY
 Version 1.1.3.0		-	KSP Version: 0.90
-- Recomiled for 0.90 and checked code stuff
+- Recompiled for 0.90 and checked code stuff
 - Fixed some issues with KAC Integration (Issue #23)
 - Fixed Flyby Transfer adding Insertion Burn value (Issue #22)
 
