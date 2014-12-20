@@ -198,7 +198,7 @@ namespace TransferWindowPlanner
                 settings.Save();
             }
             if (DrawToggle(ref settings.ClickThroughProtect_Editor, "Prevent in Editors", Styles.styleToggle)) {
-                if (!settings.ClickThroughProtect_KSC && (HighLogic.LoadedScene == GameScenes.EDITOR ||HighLogic.LoadedScene == GameScenes.SPH))
+                if (!settings.ClickThroughProtect_KSC && (HighLogic.LoadedScene == GameScenes.EDITOR))
                     mbTWP.RemoveInputLock();
                 settings.Save();
             }

@@ -261,8 +261,7 @@ namespace TransferWindowPlanner
                     Boolean AddLock = false;
                     switch (HighLogic.LoadedScene) {
                         case GameScenes.SPACECENTER: AddLock = settings.ClickThroughProtect_KSC && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
-                        case GameScenes.EDITOR:
-                        case GameScenes.SPH: AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
+                        case GameScenes.EDITOR:AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.FLIGHT: AddLock = settings.ClickThroughProtect_Flight && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.TRACKSTATION:
                             break;
@@ -274,13 +273,8 @@ namespace TransferWindowPlanner
 
                         switch (HighLogic.LoadedScene) {
                             case GameScenes.SPACECENTER: InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, "TWPControlLock"); break;
-                            case GameScenes.EDITOR:
-                            case GameScenes.SPH:
-                                InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK, "TWPControlLock");
-                                break;
-                            case GameScenes.FLIGHT:
-                                InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "TWPControlLock");
-                                break;
+                            case GameScenes.EDITOR: InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK, "TWPControlLock"); break;
+                            case GameScenes.FLIGHT: InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "TWPControlLock"); break;
                             case GameScenes.TRACKSTATION:
                                 break;
                             default:
