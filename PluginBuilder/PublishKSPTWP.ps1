@@ -1,8 +1,8 @@
 $GitHubName="TransferWindowPlanner"
 $PluginName="TransferWindowPlanner"
 $CurseID="224116"
+$CurseName="224116-transfer-window-planner"
 $KerbalStuffModID = 268
-
 $UploadDir = "$($PSScriptRoot)\..\..\_Uploads\$($PluginName)"
 $KerbalStuffWrapper = "D:\Programming\KSP\_Scripts\KerbalStuffWrapper\KerbalStuffWrapper.exe"
 
@@ -112,7 +112,7 @@ function UpdateVersionCheckGHPagesAndPublish() {
 	git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" checkout gh-pages_develop
     #update the version file
 
-    "|LATESTVERSION|$($Version)|LATESTVERSION|" | Out-File "$($GHPagesPath)\versioncheck.txt"
+    "|LATESTVERSION|$($Version)|LATESTVERSION|" | Out-File "$($GHPagesPath)\versioncheck.txt" -Encoding ascii
 
     #Commit these changes
     git --git-dir="$($GHPagesPath)\.git" --work-tree="$($GHPagesPath)" add "$($GHPagesPath)\versioncheck.txt"
@@ -225,6 +225,8 @@ if($ChoiceRtn -eq 0)
 	$reldescr = $reldescr.Replace("`r`n","\r\n")
 	$reldescr = $reldescr.Replace("`"","\`"")
 	
+    $ForumHeader = "[B][SIZE=4][COLOR=`"#FF0000`"]v$($Version) Now Available [/COLOR][/SIZE][/B]- [SIZE=3][B][URL=`"https://github.com/TriggerAu/$($GitHubName)/releases/tag/v$($Version)`"]Download from GitHub[/URL][/B] [/SIZE] or [SIZE=3][B][URL=`"http://kerbal.curseforge.com/ksp-mods/$($CurseName)/files`"]Download from Curse*[/URL][/B][/SIZE] or [SIZE=3][B][URL=`"https://kerbalstuff.com/mod/$($KerbalStuffModID)`"]Download from Kerbal Stuff[/URL][/B] [/SIZE]  [COLOR=`"#A9A9A9`"]* Once it's approved[/COLOR]"
+
     $ForumList = "[LIST]`r`n" + $reldescr + "`r`n[/LIST]"
     $ForumList = $ForumList.Replace("\r\n","`r`n").Replace("`r`n* ","`r`n[*]")
 
@@ -232,6 +234,24 @@ if($ChoiceRtn -eq 0)
 
     $relKStuff = $reldescr.Replace("\r\n","`r`n")
     
+
+    "GitHub Description:"
+    "-------------------"
+    "$($reldescr)`r`n"
+
+    "KStuff Description:"
+    "-------------------"
+    "$($relKStuff)`r`n"
+
+    "Forum Info:"
+    "-------------------"
+    "$($ForumHeader)`r`n"
+    "$($ForumList)`r`n"
+
+    $Choices= [System.Management.Automation.Host.ChoiceDescription[]] @("&Yes","&No")
+    $ChoiceRtn = $host.ui.PromptForChoice("Do you wish to Continue?","Confirm Readme Notes",$Choices,0)
+
+    if($ChoiceRtn -eq 0) {
 
     MergeDevToMaster
 
@@ -257,9 +277,12 @@ if($ChoiceRtn -eq 0)
     "-------------------"
     "$($relKStuff)`r`n"
 
-    "Forum List text:"
+    "Forum Info:"
     "-------------------"
+    "$($ForumHeader)`r`n"
     "$($ForumList)`r`n"
+
+    }
 
 }
 else

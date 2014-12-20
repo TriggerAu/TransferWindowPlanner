@@ -406,7 +406,11 @@ namespace TransferWindowPlanner
             if (ShowEjectionDetails) {
                 GUILayout.Label("Ejection Normal Δv:", Styles.styleTextDetailsLabel);
             }
-            GUILayout.Label("Insertion Inclination:", Styles.styleTextDetailsLabel);
+            if (TransferSpecs.FinalOrbitAltitude > 0) {
+                GUILayout.Label("Insertion Inclination:", Styles.styleTextDetailsLabel);
+            }else {
+                GUILayout.Label("", Styles.styleTextDetailsLabel); //empty label to maintain window height
+            }
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
@@ -415,7 +419,9 @@ namespace TransferWindowPlanner
             if (ShowEjectionDetails) {
                 GUILayout.Label(String.Format("{0:0.0} m/s", TransferSelected.EjectionDVNormal), Styles.styleTextYellow);
             }
-            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            if (TransferSpecs.FinalOrbitAltitude > 0) {
+                GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.InsertionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            }
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
@@ -425,8 +431,13 @@ namespace TransferWindowPlanner
             if (ShowEjectionDetails) {
                 GUILayout.Label("Ejection Prograde Δv:", Styles.styleTextDetailsLabel);
             }
-            GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
+
+            if (TransferSpecs.FinalOrbitAltitude > 0) {
+                GUILayout.Label("Insertion Δv:", Styles.styleTextDetailsLabel);
+            }
             GUILayout.EndVertical();
+            
+            
             GUILayout.BeginVertical();
             GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
@@ -447,7 +458,9 @@ namespace TransferWindowPlanner
             if (ShowEjectionDetails) {
                 GUILayout.Label(String.Format("{0:0.0} m/s", TransferSelected.EjectionDVPrograde), Styles.styleTextYellow);
             }
-            GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
+            if (TransferSpecs.FinalOrbitAltitude > 0) {
+                GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
+            }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
         }
