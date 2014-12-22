@@ -67,16 +67,16 @@ namespace TransferWindowPlanner
 
         private void SetWindowStrings()
         {
-            strOrigin = cbOrigin.bodyName;
-            strDestination = cbDestination.bodyName;
+            //KSPDateTime kTime = new KSPDateTime(DepartureMin);
+            //strDepartureMinYear = (kTime.Year ).ToString();
+            //strDepartureMinDay = (kTime.Day).ToString();
 
-            KSPDateTime kTime = new KSPDateTime(DepartureMin);
-            strDepartureMinYear = (kTime.Year ).ToString();
-            strDepartureMinDay = (kTime.Day).ToString();
+            //kTime.UT = DepartureMax;
+            //strDepartureMaxYear = (kTime.Year).ToString();
+            //strDepartureMaxDay = (kTime.Day).ToString();
 
-            kTime.UT = DepartureMax;
-            strDepartureMaxYear = (kTime.Year).ToString();
-            strDepartureMaxDay = (kTime.Day).ToString();
+            dateMinDeparture = new KSPDateTime(DepartureMin);
+            dateMaxDeparture = new KSPDateTime(DepartureMax);
 
             KSPTimeSpan kSpan = new KSPTimeSpan(0);
             kSpan.UT = TravelMin;
@@ -115,8 +115,8 @@ namespace TransferWindowPlanner
 
         private void SetWorkerVariables()
         {
-            DepartureMin = new KSPDateTime(strDepartureMinYear, strDepartureMinDay).UT; // new KSPDateTime(strDepartureMinYear, strDepartureMinDay, "0", "0", "0").UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
-            DepartureMax = new KSPDateTime(strDepartureMaxYear, strDepartureMaxDay).UT; // new KSPDateTime(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0").UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
+            DepartureMin = dateMinDeparture.UT; // new KSPDateTime(strDepartureMinYear, strDepartureMinDay).UT; // new KSPDateTime(strDepartureMinYear, strDepartureMinDay, "0", "0", "0").UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
+            DepartureMax = dateMaxDeparture.UT; // new KSPDateTime(strDepartureMaxYear, strDepartureMaxDay).UT; // new KSPDateTime(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0").UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
             DepartureRange = DepartureMax - DepartureMin;
             DepartureSelected = -1;
             TravelMin = new KSPTimeSpan(strTravelMinDays, "0", "0", "0").UT;

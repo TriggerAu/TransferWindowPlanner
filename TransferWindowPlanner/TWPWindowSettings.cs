@@ -21,7 +21,7 @@ namespace TransferWindowPlanner
         internal DropDownList ddlSettingsTab;
         private DropDownList ddlSettingsSkin;
         private DropDownList ddlSettingsButtonStyle;
-        private DropDownList ddlSettingsCalendar;
+        internal DropDownList ddlSettingsCalendar;
 
         internal Int32 WindowWidth = 320;
         internal Int32 WindowHeight = 200;
@@ -91,17 +91,21 @@ namespace TransferWindowPlanner
         void ddlSettingsCalendar_OnSelectionChanged(DropDownList sender, int OldIndex, int NewIndex)
         {
             settings.SelectedCalendar = (CalendarTypeEnum)NewIndex;
+            settings.Save();
             switch (settings.SelectedCalendar)
             {
                 case CalendarTypeEnum.KSPStock: KSPDateStructure.SetKSPStockCalendar(); break;
-                case CalendarTypeEnum.Earth:    
-                    KSPDateStructure.SetEarthCalendar(); 
+                case CalendarTypeEnum.Earth:
+                    KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
+                                    settings.EarthEpoch.Split('-')[1].ToInt32(),
+                                    settings.EarthEpoch.Split('-')[2].ToInt32());
                     break;
                 case CalendarTypeEnum.Custom:   
                     KSPDateStructure.SetCustomCalendar();
                     break;
                 default: KSPDateStructure.SetKSPStockCalendar(); break;
             }
+            mbTWP.windowMain.ResetWindow();
         }
 
 
@@ -302,6 +306,42 @@ namespace TransferWindowPlanner
             ddlSettingsCalendar.DrawButton();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+
+            if (settings.SelectedCalendar == CalendarTypeEnum.Earth)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Earth Epoch:");
+
+                String strYear, strMonth, strDay;
+                strYear = KSPDateStructure.CustomEpochEarth.Year.ToString();
+                strMonth = KSPDateStructure.CustomEpochEarth.Month.ToString();
+                strDay = KSPDateStructure.CustomEpochEarth.Day.ToString();
+                if (TWPWindow.DrawYearMonthDay(ref strYear, ref strMonth, ref strDay))
+                {
+                    try
+                    {
+                        KSPDateStructure.SetEarthCalendar(strYear.ToInt32(), strMonth.ToInt32(), strDay.ToInt32());
+                        settings.EarthEpoch = KSPDateStructure.CustomEpochEarth.ToString("yyyy-MM-dd");
+                        settings.Save();
+                        mbTWP.windowMain.ResetWindow();
+                    }
+                    catch (Exception)
+                    {
+                        LogFormatted("Unable to set the Epoch date using the values provided-{0}-{1}-{2}", strYear, strMonth, strDay);
+                    }
+                }
+
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Reset Earth Epoch"))
+                {
+                    KSPDateStructure.SetEarthCalendar();
+                    settings.EarthEpoch = KSPDateStructure.CustomEpochEarth.ToString("1951-01-01");
+                    settings.Save();
+                }
+                GUILayout.EndHorizontal();
+            }
 
             //if RSS not installed and RSS chosen...
 

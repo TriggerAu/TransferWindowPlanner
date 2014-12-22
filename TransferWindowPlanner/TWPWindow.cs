@@ -44,7 +44,7 @@ namespace TransferWindowPlanner
             cbStar = FlightGlobals.Bodies.FirstOrDefault(x => x.referenceBody == x.referenceBody);
             if (cbStar == null)
             {
-                //RuRo
+                //RuRo!!
                 LogFormatted("Error: Couldn't detect a Star (ref body is itself)");
             }
             else
@@ -88,11 +88,8 @@ namespace TransferWindowPlanner
         private void SetDepartureMinToYesterday()
         {
             //Set the Departure min to be yesterday
-            KSPDateTime dateYesterday = new KSPDateTime(Planetarium.GetUniversalTime() - KSPDateStructure.SecondsPerDay);
-            LogFormatted("Setting to y{0} d{1}", dateYesterday.Year, dateYesterday.Day);
-            strDepartureMinYear = (dateYesterday.Year+1).ToString();
-            strDepartureMinDay = (dateYesterday.Day+1).ToString();
-            DepartureMin = new KSPDateTime(dateYesterday.Year+1, dateYesterday.Day+1, 0, 0, 0).UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
+            dateMinDeparture = new KSPDateTime(Planetarium.GetUniversalTime()).Date;
+            DepartureMin = dateMinDeparture.UT;
         }
 
         void ddlOrigin_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
@@ -147,7 +144,7 @@ namespace TransferWindowPlanner
         //    return blnReturn;
         //}
 
-        internal Boolean DrawTextField(ref String Value, String RegexValidator, Boolean RegexFailOnMatch, String LabelText="", Int32 FieldWidth=0, Int32 LabelWidth=0)
+        internal static Boolean DrawTextField(ref String Value, String RegexValidator, Boolean RegexFailOnMatch, String LabelText = "", Int32 FieldWidth = 0, Int32 LabelWidth = 0)
         {
             GUIStyle styleTextBox = Styles.styleTextField;
             if ((RegexFailOnMatch && System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ||
@@ -169,7 +166,32 @@ namespace TransferWindowPlanner
             return blnReturn;
         }
 
-        internal Boolean DrawYearDay(ref String strYear,ref String strDay)
+        internal static Boolean DrawYearDay(ref KSPDateTime dateToDraw)
+        {
+            String strYear = dateToDraw.Year.ToString();
+            String strMonth = dateToDraw.Month.ToString();
+            String strDay = dateToDraw.Day.ToString();
+
+            //If the value changed
+            Boolean blnReturn = false;
+
+            if (KSPDateStructure.CalendarType==CalendarTypeEnum.Earth)
+            {
+                blnReturn = DrawYearMonthDay(ref strYear, ref strMonth, ref strDay);
+                if (blnReturn) {
+                    dateToDraw = KSPDateTime.FromEarthValues(strYear, strMonth, strDay);
+                }
+            }
+            else { 
+                blnReturn =  DrawYearDay(ref strYear, ref strDay);
+                if (blnReturn) {
+                    dateToDraw = new KSPDateTime(strYear, strDay);
+                }
+            }
+            return blnReturn;
+        }
+
+        internal static Boolean DrawYearDay(ref String strYear, ref String strDay)
         {
             Boolean blnReturn = false;
             GUILayout.BeginHorizontal();
@@ -179,9 +201,22 @@ namespace TransferWindowPlanner
             return blnReturn;
         }
 
-        String strOrigin, strDestination;
-        String strDepartureAltitude,strArrivalAltitude;
-        String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
+        internal static Boolean DrawYearMonthDay(ref String strYear, ref String strMonth, ref String strDay)
+        {
+            Boolean blnReturn = false;
+            GUILayout.BeginHorizontal();
+            blnReturn = blnReturn || DrawTextField(ref strYear, "[^\\d\\.]+", true, "Y:", 40, 20);
+            blnReturn = blnReturn || DrawTextField(ref strMonth, "[^\\d\\.]+", true, "M:", 30, 20);
+            blnReturn = blnReturn || DrawTextField(ref strDay, "[^\\d\\.]+", true, "D:", 30, 20);
+            GUILayout.EndHorizontal();
+            return blnReturn;
+        }
+
+
+
+        //String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
+        internal KSPDateTime dateMinDeparture, dateMaxDeparture;
+        String strDepartureAltitude, strArrivalAltitude;
         String strTravelMinDays, strTravelMaxDays;
 
         internal Vector2 vectMouse;
@@ -633,9 +668,9 @@ namespace TransferWindowPlanner
             GUILayout.Label("km", GUILayout.Width(20));
             GUILayout.EndHorizontal();
 
-            DrawYearDay(ref strDepartureMinYear, ref strDepartureMinDay);
+            DrawYearDay(ref dateMinDeparture);
 
-            DrawYearDay(ref strDepartureMaxYear, ref strDepartureMaxDay);
+            DrawYearDay(ref dateMaxDeparture);
 
             GUILayout.BeginHorizontal();
             DrawTextField(ref strTravelMinDays, "[^\\d\\.]+", true, FieldWidth: 60);
@@ -650,25 +685,30 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(new GUIContent("Reset",Resources.btnReset), "ButtonSettings")) {
-                Done = false;
-                if (bw!=null && bw.IsBusy)
-                    bw.CancelAsync();
-                Running = false;
-                TransferSelected = null;
-                WindowRect.height = 400;
-
-                SetDepartureMinToYesterday();
-                LogFormatted("Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
-                SetupDestinationControls();
-                LogFormatted("Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
+                mbTWP.windowSettings.Visible = false;
+                ResetWindow();
             }
             if (GUILayout.Button("Plot It!"))
             {
+                mbTWP.windowSettings.Visible = false;
                 StartWorker();
                 WindowRect.height = 400;
                 ShowEjectionDetails = false;
             }
             GUILayout.EndHorizontal();
+        }
+
+        internal void ResetWindow()
+        {
+            Done = false;
+            if (bw != null && bw.IsBusy)
+                bw.CancelAsync();
+            Running = false;
+            TransferSelected = null;
+            WindowRect.height = 400;
+
+            SetDepartureMinToYesterday();
+            SetupDestinationControls();
         }
         
         internal override void OnGUIEvery()

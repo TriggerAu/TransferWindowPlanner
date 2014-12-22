@@ -155,8 +155,7 @@ namespace TransferWindowPlanner
                 DrawLabel("Mouse:{0}", mbTWP.windowMain.vectMouse);
                 DrawLabel("Plot:{0}", new Rect(mbTWP.windowMain.PlotPosition.x, mbTWP.windowMain.PlotPosition.y, mbTWP.windowMain.PlotWidth, mbTWP.windowMain.PlotHeight));
                 DrawLabel("Selected:{0}", mbTWP.windowMain.vectSelected);
-                DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected/KSPTime.SecondsPerDay,mbTWP.windowMain.TravelSelected/KSPTime.SecondsPerDay);
-
+                DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected / KSPDateStructure.SecondsPerDay, mbTWP.windowMain.TravelSelected / KSPDateStructure.SecondsPerDay);
 
                 if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel!=null)
                 {
@@ -271,9 +270,10 @@ namespace TransferWindowPlanner
 
                 //DrawLabel("AbsPos at firstUT:{0}", cbD.orbit.getPositionAtUT(intTest1));
 
-                //DrawLabel("DepartureMin:{0}", DepartureMin);
+
+                DrawLabel("DepartureMin:{0}", mbTWP.windowMain.dateMinDeparture.UT);
                 //DrawLabel("DepartureRange:{0}", DepartureRange);
-                //DrawLabel("DepartureMax:{0}", DepartureMax);
+                DrawLabel("DepartureMax:{0}", mbTWP.windowMain.dateMaxDeparture.UT);
                 //DrawLabel("TravelMin:{0}", TravelMin);
                 //DrawLabel("TravelMax:{0}", TravelMax);
 

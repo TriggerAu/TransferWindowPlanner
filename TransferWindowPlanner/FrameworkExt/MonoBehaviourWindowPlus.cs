@@ -14,20 +14,20 @@ namespace KSPPluginFramework
     {
 
         #region Draw Control Wrappers
-        internal Boolean DrawButton(String text, params GUILayoutOption[] options)
+        internal static Boolean DrawButton(String text, params GUILayoutOption[] options)
         {
             return GUILayout.Button(text,options);
         }
-        internal Boolean DrawButton(String text, GUIStyle style, params GUILayoutOption[] options)
+        internal static Boolean DrawButton(String text, GUIStyle style, params GUILayoutOption[] options)
         {
             return GUILayout.Button(text,style,options);
         }
 
-        internal Boolean DrawTextBox(ref String strVar, params GUILayoutOption[] options)
+        internal static Boolean DrawTextBox(ref String strVar, params GUILayoutOption[] options)
         {
             return DrawTextBox(ref strVar,SkinsLibrary.CurrentSkin.textField,options);
         }
-        internal Boolean DrawTextBox(ref String strVar, GUIStyle style, params GUILayoutOption[] options)
+        internal static Boolean DrawTextBox(ref String strVar, GUIStyle style, params GUILayoutOption[] options)
         {
             String strOld = strVar;
             strVar = GUILayout.TextField(strVar, style, options);
@@ -35,11 +35,11 @@ namespace KSPPluginFramework
             return DrawResultChanged(strOld, strVar, "Text String");
         }
 
-        internal Boolean DrawTextBox(ref Int32 intVar, params GUILayoutOption[] options)
+        internal static Boolean DrawTextBox(ref Int32 intVar, params GUILayoutOption[] options)
         {
             return DrawTextBox(ref intVar, SkinsLibrary.CurrentSkin.textField, options);
         }
-        internal Boolean DrawTextBox(ref Int32 intVar, GUIStyle style, params GUILayoutOption[] options)
+        internal static Boolean DrawTextBox(ref Int32 intVar, GUIStyle style, params GUILayoutOption[] options)
         {
             String strRef = intVar.ToString();
             DrawTextBox(ref strRef, style, options);
@@ -48,11 +48,11 @@ namespace KSPPluginFramework
             return DrawResultChanged(intOld, intVar, "Integer Changed");
         }
 
-        internal Boolean DrawTextBox(ref Double dblVar, params GUILayoutOption[] options)
+        internal static Boolean DrawTextBox(ref Double dblVar, params GUILayoutOption[] options)
         {
             return DrawTextBox(ref dblVar, SkinsLibrary.CurrentSkin.textField, options);
         }
-        internal Boolean DrawTextBox(ref Double dblVar, GUIStyle style, params GUILayoutOption[] options)
+        internal static Boolean DrawTextBox(ref Double dblVar, GUIStyle style, params GUILayoutOption[] options)
         {
             String strRef = dblVar.ToString();
             DrawTextBox(ref strRef, style, options);
@@ -62,14 +62,14 @@ namespace KSPPluginFramework
         }
 
 
-        internal Boolean DrawHorizontalSlider(ref Int32 intVar, Int32 leftValue, Int32 rightValue, params GUILayoutOption[] options)
+        internal static Boolean DrawHorizontalSlider(ref Int32 intVar, Int32 leftValue, Int32 rightValue, params GUILayoutOption[] options)
         {
             Int32 intOld = intVar;
 
             intVar = (Int32)GUILayout.HorizontalSlider((Single)intVar, (Single)leftValue, (Single)rightValue, options);
             return DrawResultChanged(intOld, intVar, "Integer HorizSlider");
         }
-        internal Boolean DrawHorizontalSlider(ref Single dblVar, Single leftValue, Single rightValue, params GUILayoutOption[] options)
+        internal static Boolean DrawHorizontalSlider(ref Single dblVar, Single leftValue, Single rightValue, params GUILayoutOption[] options)
         {
             Single intOld = dblVar;
 
@@ -85,7 +85,7 @@ namespace KSPPluginFramework
         /// <param name="style"></param>
         /// <param name="options"></param>
         /// <returns>True when the button state has changed</returns>
-        internal Boolean DrawToggle(ref Boolean blnVar, String ButtonText, GUIStyle style, params GUILayoutOption[] options)
+        internal static Boolean DrawToggle(ref Boolean blnVar, String ButtonText, GUIStyle style, params GUILayoutOption[] options)
         {
             Boolean blnOld = blnVar;
             blnVar = GUILayout.Toggle(blnVar, ButtonText, style, options);
@@ -93,7 +93,7 @@ namespace KSPPluginFramework
             return DrawResultChanged(blnOld, blnVar, "Toggle");
         }
 
-        internal Boolean DrawToggle(ref Boolean blnVar, Texture image, GUIStyle style, params GUILayoutOption[] options)
+        internal static Boolean DrawToggle(ref Boolean blnVar, Texture image, GUIStyle style, params GUILayoutOption[] options)
         {
             Boolean blnOld = blnVar;
             blnVar = GUILayout.Toggle(blnVar, image, style, options);
@@ -101,7 +101,7 @@ namespace KSPPluginFramework
             return DrawResultChanged(blnOld, blnVar, "Toggle");
         }
 
-        internal Boolean DrawToggle(ref Boolean blnVar, GUIContent content, GUIStyle style, params GUILayoutOption[] options)
+        internal static Boolean DrawToggle(ref Boolean blnVar, GUIContent content, GUIStyle style, params GUILayoutOption[] options)
         {
             Boolean blnOld = blnVar;
             blnVar = GUILayout.Toggle(blnVar, content, style, options);
@@ -110,13 +110,13 @@ namespace KSPPluginFramework
         }
 
 
-        internal void DrawLabel(String Message, params object[] args)
+        internal static void DrawLabel(String Message, params object[] args)
         {
             GUILayout.Label(String.Format(Message, args));
         }
 
 
-        private Boolean DrawResultChanged<T>(T Original, T New,String Message) 
+        private static Boolean DrawResultChanged<T>(T Original, T New, String Message) 
         {
             if (Original.Equals(New)) {
                 return false;

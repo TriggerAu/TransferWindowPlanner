@@ -263,7 +263,10 @@ namespace KSPPluginFramework
 				case DateStringFormatsEnum.KSPFormatWithSecs:
 					return ToString("Year y, Da\\y d - H\\h, m\\m, s\\s");
 				case DateStringFormatsEnum.DateTimeFormat:
-					return ToString("Year y, Da\\y d, HH:mm:ss");
+                    if (KSPDateStructure.CalendarType==CalendarTypeEnum.Earth)
+                        return ToString("d MMM yyyy, HH:mm:ss");
+                    else
+					    return ToString("Year y, Da\\y d, HH:mm:ss");
 				default:
 					return ToString();
 			}
@@ -313,10 +316,38 @@ namespace KSPPluginFramework
 						format = format.Substring(0, mIndex) + Year.ToString("D" + mLength) + format.Substring(mIndex + mLength);
 						break;
 					case 'M':
-						String input2 = Month.ToString("D" + mLength);
-
-						//test for more than 2 M's
-						format = format.Substring(0, mIndex) + input2 + format.Substring(mIndex + mLength);
+                        if (mLength < 3)
+                        {
+                            String input2 = Month.ToString("D" + mLength);
+                            format = format.Substring(0, mIndex) + input2 + format.Substring(mIndex + mLength);
+                        }
+                        else if (mLength == 3)
+                        {
+                            if (KSPDateStructure.CalendarType== CalendarTypeEnum.Earth)
+                                format = format.Substring(0, mIndex) + System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(Month) + format.Substring(mIndex + mLength);
+                            else
+                                if (KSPDateStructure.MonthCount < 1)
+                                {
+                                    String input2 = Month.ToString("D" + mLength);
+                                    format = format.Substring(0, mIndex) + input2 + format.Substring(mIndex + mLength);
+                                }
+                                else
+                                {
+                                    format = format.Substring(0, mIndex) + KSPDateStructure.Months[Month].ToString().Substring(0, 3) + format.Substring(mIndex + mLength);
+                                }
+                        }
+                        else
+                        {
+                            if (KSPDateStructure.CalendarType== CalendarTypeEnum.Earth)
+                                format = format.Substring(0, mIndex) + System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month) + format.Substring(mIndex + mLength);
+                            else
+                                if (KSPDateStructure.MonthCount<1){
+                                    String input2 = Month.ToString("D" + mLength);
+                                    format = format.Substring(0, mIndex) + input2 + format.Substring(mIndex + mLength);
+                                } else {
+                                    format = format.Substring(0, mIndex) + KSPDateStructure.Months[Month] + format.Substring(mIndex + mLength);
+                                }
+                        }
 						break;
 					case 'd':
 						format = format.Substring(0, mIndex) + Day.ToString("D" + mLength) + format.Substring(mIndex + mLength);
@@ -525,6 +556,14 @@ namespace KSPPluginFramework
 			return t1.UT == t2.UT;
 		}
 
+        public static KSPDateTime FromEarthValues(Int32 Year, Int32 Month, Int32 Day)
+        {
+            return new KSPDateTime(new DateTime(Year, Month, Day).Subtract(KSPDateStructure.CustomEpochEarth).TotalSeconds);
+        }
+        public static KSPDateTime FromEarthValues(String Year, String Month, String Day)
+        {
+            return FromEarthValues(Convert.ToInt32(Year), Convert.ToInt32(Month), Convert.ToInt32(Day));
+        }
 
 		#endregion
 

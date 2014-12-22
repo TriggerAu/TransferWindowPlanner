@@ -46,6 +46,13 @@ namespace TransferWindowPlanner
 
             InitWindows();
 
+            if(settings.SelectedCalendar==CalendarTypeEnum.Earth) {
+                KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
+                                                    settings.EarthEpoch.Split('-')[1].ToInt32(),
+                                                    settings.EarthEpoch.Split('-')[2].ToInt32());
+                windowSettings.ddlSettingsCalendar.SelectedIndex = (Int32)settings.SelectedCalendar;
+            } 
+
             //plug us in to the draw queue and start the worker
             RenderingManager.AddToPostDrawQueue(1, DrawGUI);
 
@@ -88,17 +95,22 @@ namespace TransferWindowPlanner
 
         internal override void Start()
         {
+            //Init the KAC Integration
             KACWrapper.InitKACWrapper();
-
             if (KACWrapper.APIReady)
             {
                 LogFormatted("Successfully Hooked the KAC");
 
                 KACWrapper.KAC.onAlarmStateChanged += KAC_onAlarmStateChanged;
             }
+
+            //Ensure no lagging locks
+            RemoveInputLock();
         }
+
         private void DestroyAPIHooks()
         {
+            //clean up the integration events
             if (KACWrapper.APIReady)
             {
                 KACWrapper.KAC.onAlarmStateChanged -= KAC_onAlarmStateChanged;

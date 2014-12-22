@@ -40,6 +40,7 @@ namespace TransferWindowPlanner
         [Persistent] internal ButtonStyleEnum ButtonStyleChosen = ButtonStyleEnum.Launcher;
 
         [Persistent] internal CalendarTypeEnum SelectedCalendar = CalendarTypeEnum.KSPStock;
+        [Persistent] internal String EarthEpoch = "1951-01-01";
 
         internal enum ButtonStyleEnum
         {

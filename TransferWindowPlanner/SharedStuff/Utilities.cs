@@ -27,6 +27,11 @@ namespace TransferWindowPlanner
             return s;
         }
 
+        public static Int32 ToInt32(this String s)
+        {
+            return Convert.ToInt32(s);
+        }
+
         /// <summary>
         /// Return the ejection angle of the vessel/body on this orbit for a given UT
         /// </summary>
