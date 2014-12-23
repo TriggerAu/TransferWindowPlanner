@@ -47,7 +47,8 @@ namespace TransferWindowPlanner
 
         internal static GUIStyle stylePlotCrossHair;
 
-        internal static GUIStyle stylePlotTransferMarker, stylePlotTransferMarkerXAxis, stylePlotTransferMarkerYAxis, stylePlotTransferMarkerDV;
+        //internal static GUIStyle stylePlotTransferMarker, stylePlotTransferMarkerXAxis, stylePlotTransferMarkerYAxis, 
+        internal static GUIStyle stylePlotTransferMarkerDV;
 
         internal static GUIStyle styleSettingsArea;
 
@@ -66,6 +67,7 @@ namespace TransferWindowPlanner
         internal static GUIStyle styleTextField;
         internal static GUIStyle styleTextFieldLabel;
         internal static GUIStyle styleTextFieldError;
+        internal static GUIStyle styleTextFieldLocked;
 
         //internal static GUIStyle styleStageText;
         //internal static GUIStyle styleStageTextHead;
@@ -247,7 +249,10 @@ namespace TransferWindowPlanner
             styleTextFieldLabel.padding.top = 4;
 
             styleTextFieldError = new GUIStyle(styleTextField);
-            styleTextFieldError.normal.textColor = Color.red; 
+            styleTextFieldError.normal.textColor = Color.red;
+            styleTextFieldLocked = new GUIStyle(styleTextField);
+            styleTextFieldLocked.normal.textColor = Color.gray;
+            styleTextFieldLocked.fontStyle = FontStyle.Italic;
             #endregion
 
             stylePlotLegendImage = new GUIStyle();

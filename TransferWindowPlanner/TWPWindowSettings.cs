@@ -21,6 +21,7 @@ namespace TransferWindowPlanner
         internal DropDownList ddlSettingsTab;
         private DropDownList ddlSettingsSkin;
         private DropDownList ddlSettingsButtonStyle;
+        internal DropDownList ddlSettingsCalendar;
 
         internal Int32 WindowWidth = 320;
         internal Int32 WindowHeight = 200;
@@ -29,10 +30,11 @@ namespace TransferWindowPlanner
         {
             [Description("General Properties")] General,
             [Description("Alarm Clock Integration")] AlarmIntegration,
+            [Description("Calendar Control")] Calendar,
             //[Description("Styling/Visuals")]    Styling,
             [Description("About...")]   About,
         }
-
+        
         internal override void Awake()
         {
             //WindowRect = new Rect(mbTWP.windowMain.WindowRect.x + mbTWP.windowMain.WindowRect.width, mbTWP.windowMain.WindowRect.y, 300, 200);
@@ -47,13 +49,19 @@ namespace TransferWindowPlanner
             ddlSettingsSkin.OnSelectionChanged += ddlSettingsSkin_SelectionChanged;
             ddlSettingsButtonStyle = new DropDownList(EnumExtensions.ToEnumDescriptions<Settings.ButtonStyleEnum>(), (Int32)settings.ButtonStyleChosen, this);
             ddlSettingsButtonStyle.OnSelectionChanged += ddlSettingsButtonStyle_OnSelectionChanged;
-
+            ddlSettingsCalendar = new DropDownList(EnumExtensions.ToEnumDescriptions<CalendarTypeEnum>(), this);
+            //NOTE:Pull out the custom option for now
+            ddlSettingsCalendar.Items.Remove(CalendarTypeEnum.Custom.ToString());
+            ddlSettingsCalendar.OnSelectionChanged += ddlSettingsCalendar_OnSelectionChanged;
+            
+            ddlManager.AddDDL(ddlSettingsCalendar);
             ddlManager.AddDDL(ddlSettingsButtonStyle);
             ddlManager.AddDDL(ddlSettingsSkin);
             ddlManager.AddDDL(ddlSettingsTab);
 
             onWindowVisibleChanged += TWPWindowSettings_onWindowVisibleChanged;
         }
+
 
         void TWPWindowSettings_onWindowVisibleChanged(MonoBehaviourWindow sender, bool NewVisibleState)
         {
@@ -81,6 +89,27 @@ namespace TransferWindowPlanner
             SkinsLibrary.SetCurrent(settings.SelectedSkin.ToString());
             settings.Save();
         }
+
+        void ddlSettingsCalendar_OnSelectionChanged(DropDownList sender, int OldIndex, int NewIndex)
+        {
+            settings.SelectedCalendar = (CalendarTypeEnum)NewIndex;
+            settings.Save();
+            switch (settings.SelectedCalendar)
+            {
+                case CalendarTypeEnum.KSPStock: KSPDateStructure.SetKSPStockCalendar(); break;
+                case CalendarTypeEnum.Earth:
+                    KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
+                                    settings.EarthEpoch.Split('-')[1].ToInt32(),
+                                    settings.EarthEpoch.Split('-')[2].ToInt32());
+                    break;
+                case CalendarTypeEnum.Custom:   
+                    KSPDateStructure.SetCustomCalendar();
+                    break;
+                default: KSPDateStructure.SetKSPStockCalendar(); break;
+            }
+            mbTWP.windowMain.ResetWindow();
+        }
+
 
         void ddlSettingsButtonStyle_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
         {
@@ -136,6 +165,10 @@ namespace TransferWindowPlanner
                 case SettingsTabs.AlarmIntegration:
                     DrawWindow_Alarm();
                     WindowHeight = 206;
+                    break;
+                case SettingsTabs.Calendar:
+                    DrawWindow_Calendar();
+                    WindowHeight = mbTWP.windowDebug.intTest1;
                     break;
                 case SettingsTabs.About:
                     DrawWindow_About();
@@ -259,7 +292,71 @@ namespace TransferWindowPlanner
             }
         }
 
+        private void DrawWindow_Calendar()
+        {
+            //Update Check Area
+            GUILayout.Label("General Settings", Styles.styleTextHeading);
 
+            GUILayout.BeginHorizontal(Styles.styleSettingsArea);
+
+            GUILayout.BeginVertical(GUILayout.Width(60));
+            GUILayout.Space(2); //to even up the text
+            GUILayout.Label("Calendar:", Styles.styleTextHeading);
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical();
+            ddlSettingsCalendar.DrawButton();
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+            if (DrawToggle(ref settings.ShowCalendarToggle, "Show Calendar Toggle in Main Window", Styles.styleToggle))
+                settings.Save();
+
+
+            if (settings.SelectedCalendar == CalendarTypeEnum.Earth)
+            {
+                GUILayout.Label("Earth Settings", Styles.styleTextHeading);
+                GUILayout.BeginVertical(Styles.styleSettingsArea);
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Earth Epoch:");
+
+                String strYear, strMonth, strDay;
+                strYear = KSPDateStructure.CustomEpochEarth.Year.ToString();
+                strMonth = KSPDateStructure.CustomEpochEarth.Month.ToString();
+                strDay = KSPDateStructure.CustomEpochEarth.Day.ToString();
+                if (TWPWindow.DrawYearMonthDay(ref strYear, ref strMonth, ref strDay))
+                {
+                    try
+                    {
+                        KSPDateStructure.SetEarthCalendar(strYear.ToInt32(), strMonth.ToInt32(), strDay.ToInt32());
+                        settings.EarthEpoch = KSPDateStructure.CustomEpochEarth.ToString("yyyy-MM-dd");
+                        settings.Save();
+                        mbTWP.windowMain.ResetWindow();
+                    }
+                    catch (Exception)
+                    {
+                        LogFormatted("Unable to set the Epoch date using the values provided-{0}-{1}-{2}", strYear, strMonth, strDay);
+                    }
+                }
+
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Reset Earth Epoch"))
+                {
+                    KSPDateStructure.SetEarthCalendar();
+                    settings.EarthEpoch = KSPDateStructure.CustomEpochEarth.ToString("1951-01-01");
+                    settings.Save();
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.EndVertical();
+            }
+
+            //if RSS not installed and RSS chosen...
+
+            ///section for custom stuff
+        }
         private void DrawWindow_About()
         {
             //Update Check Area

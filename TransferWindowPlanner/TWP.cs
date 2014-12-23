@@ -46,6 +46,13 @@ namespace TransferWindowPlanner
 
             InitWindows();
 
+            if(settings.SelectedCalendar==CalendarTypeEnum.Earth) {
+                KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
+                                                    settings.EarthEpoch.Split('-')[1].ToInt32(),
+                                                    settings.EarthEpoch.Split('-')[2].ToInt32());
+                windowSettings.ddlSettingsCalendar.SelectedIndex = (Int32)settings.SelectedCalendar;
+            } 
+
             //plug us in to the draw queue and start the worker
             RenderingManager.AddToPostDrawQueue(1, DrawGUI);
 
@@ -88,17 +95,28 @@ namespace TransferWindowPlanner
 
         internal override void Start()
         {
-            KACWrapper.InitKACWrapper();
+            if (AssemblyLoader.loadedAssemblies
+                        .Select(a => a.assembly.GetExportedTypes())
+                        .SelectMany(t => t)
+                        .Any(t => t.FullName.ToLower().EndsWith(".realsolarsystem")))
+                settings.RSSActive = true;
 
+            //Init the KAC Integration
+            KACWrapper.InitKACWrapper();
             if (KACWrapper.APIReady)
             {
                 LogFormatted("Successfully Hooked the KAC");
 
                 KACWrapper.KAC.onAlarmStateChanged += KAC_onAlarmStateChanged;
             }
+
+            //Ensure no lagging locks
+            RemoveInputLock();
         }
+
         private void DestroyAPIHooks()
         {
+            //clean up the integration events
             if (KACWrapper.APIReady)
             {
                 KACWrapper.KAC.onAlarmStateChanged -= KAC_onAlarmStateChanged;
@@ -261,7 +279,7 @@ namespace TransferWindowPlanner
                     Boolean AddLock = false;
                     switch (HighLogic.LoadedScene) {
                         case GameScenes.SPACECENTER: AddLock = settings.ClickThroughProtect_KSC && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
-                        case GameScenes.EDITOR:AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
+                        case GameScenes.EDITOR: AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.FLIGHT: AddLock = settings.ClickThroughProtect_Flight && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.TRACKSTATION:
                             break;
@@ -274,7 +292,7 @@ namespace TransferWindowPlanner
                         switch (HighLogic.LoadedScene) {
                             case GameScenes.SPACECENTER: InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, "TWPControlLock"); break;
                             case GameScenes.EDITOR: InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK, "TWPControlLock"); break;
-                            case GameScenes.FLIGHT: InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "TWPControlLock"); break;
+                            case GameScenes.FLIGHT: InputLockManager.SetControlLock(ControlTypes.All, "TWPControlLock"); break;
                             case GameScenes.TRACKSTATION:
                                 break;
                             default:
@@ -292,9 +310,7 @@ namespace TransferWindowPlanner
 
         internal void RemoveInputLock()
         {
-            if (InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.KSC_FACILITIES ||
-                InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.EDITOR_LOCK ||
-                InputLockManager.GetControlLock("TWPControlLock") == ControlTypes.All)
+            if (InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None)
             {
                 LogFormatted_DebugOnly("Removing-{0}", "TWPControlLock");
                 InputLockManager.RemoveControlLock("TWPControlLock");
@@ -313,7 +329,7 @@ namespace TransferWindowPlanner
 
 #if DEBUG
     //This will kick us into the save called default and set the first vessel active
-    //[KSPAddon(KSPAddon.Startup.MainMenu, false)]
+    [KSPAddon(KSPAddon.Startup.MainMenu, false)]
     public class Debug_AutoLoadPersistentSaveOnStartup : MonoBehaviour
     {
         //use this variable for first run to avoid the issue with when this is true and multiple addons use it
