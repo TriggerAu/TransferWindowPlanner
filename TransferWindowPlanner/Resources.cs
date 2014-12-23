@@ -13,7 +13,7 @@ namespace TransferWindowPlanner
 {
     internal class Resources
     {
-        internal static String PathPlugin = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        internal static String PathPlugin = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).Replace("\\", "/");
         internal static String PathPluginToolbarIcons = string.Format("{0}/ToolbarIcons", PathPlugin);
         internal static String PathPluginTextures = string.Format("{0}/Textures", PathPlugin);
         //internal static String PathPluginData = string.Format("{0}/Data", PathPlugin);
