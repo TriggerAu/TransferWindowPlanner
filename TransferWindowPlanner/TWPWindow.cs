@@ -144,12 +144,15 @@ namespace TransferWindowPlanner
         //    return blnReturn;
         //}
 
-        internal static Boolean DrawTextField(ref String Value, String RegexValidator, Boolean RegexFailOnMatch, String LabelText = "", Int32 FieldWidth = 0, Int32 LabelWidth = 0)
+        internal static Boolean DrawTextField(ref String Value, String RegexValidator, Boolean RegexFailOnMatch, String LabelText = "", Int32 FieldWidth = 0, Int32 LabelWidth = 0, Boolean Locked = false)
         {
             GUIStyle styleTextBox = Styles.styleTextField;
-            if ((RegexFailOnMatch && System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ||
+            if (Locked)
+                styleTextBox = Styles.styleTextFieldLocked;
+            else if ((RegexFailOnMatch && System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ||
                 (!RegexFailOnMatch && !System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)))
                 styleTextBox = Styles.styleTextFieldError;
+
 
             if(LabelText!="") {
                 if (LabelWidth==0)
@@ -158,11 +161,15 @@ namespace TransferWindowPlanner
                     GUILayout.Label(LabelText, Styles.styleTextFieldLabel, GUILayout.Width(LabelWidth));
             }
 
+
+            String textValue = Value;
             Boolean blnReturn = false;
             if (FieldWidth == 0)
-                blnReturn = DrawTextBox(ref Value, styleTextBox);
+                blnReturn = DrawTextBox(ref textValue, styleTextBox);
             else
-                blnReturn = DrawTextBox(ref Value, styleTextBox, GUILayout.Width(FieldWidth));
+                blnReturn = DrawTextBox(ref textValue, styleTextBox, GUILayout.Width(FieldWidth));
+
+            if (!Locked) Value = textValue;
             return blnReturn;
         }
 
@@ -230,6 +237,27 @@ namespace TransferWindowPlanner
 
         internal override void DrawWindow(int id)
         {
+            //Calendar toggle
+            if (settings.ShowCalendarToggle || settings.RSSActive)
+            {
+                if (GUI.Button(new Rect(WindowRect.width - 122, 2, 30, 20), new GUIContent(Resources.btnCalendar, "Toggle Calendar"), "ButtonSettings"))
+                {
+                    if (settings.SelectedCalendar == CalendarTypeEnum.Earth)
+                    {
+                        settings.SelectedCalendar = CalendarTypeEnum.KSPStock;
+                        KSPDateStructure.SetKSPStockCalendar();
+                    }
+                    else
+                    {
+                        settings.SelectedCalendar = CalendarTypeEnum.Earth;
+                        KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
+                                        settings.EarthEpoch.Split('-')[1].ToInt32(),
+                                        settings.EarthEpoch.Split('-')[2].ToInt32());
+                    }
+                    settings.Save();
+                }
+            }
+
             //Settings toggle
             GUIContent contSettings = new GUIContent(Resources.GetSettingsButtonIcon(TransferWindowPlanner.settings.VersionAttentionFlag), "Settings...");
             if (TransferWindowPlanner.settings.VersionAvailable) contSettings.tooltip = "Updated Version Available - Settings...";
@@ -634,6 +662,7 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
         }
 
+        Boolean blnFlyby = false;
         private void DrawTransferEntry()
         {
             GUILayout.Label("Enter Parameters", Styles.styleTextYellowBold);
@@ -644,6 +673,7 @@ namespace TransferWindowPlanner
             GUILayout.Label("Initial Orbit:", Styles.styleTextFieldLabel);
             GUILayout.Label("Destination:", Styles.styleTextFieldLabel);
             GUILayout.Label("Final Orbit:", Styles.styleTextFieldLabel);
+            GUILayout.Label("", Styles.styleTextFieldLabel);
 
             //Checkbox re insertion burn
             GUILayout.Label("Earliest Departure:", Styles.styleTextFieldLabel);
@@ -664,9 +694,11 @@ namespace TransferWindowPlanner
             ddlDestination.DrawButton();
 
             GUILayout.BeginHorizontal();
-            DrawTextField(ref strArrivalAltitude, "[^\\d\\.]+", true, FieldWidth: 172);
+            DrawTextField(ref strArrivalAltitude, "[^\\d\\.]+", true, FieldWidth: 172, Locked:blnFlyby);
             GUILayout.Label("km", GUILayout.Width(20));
             GUILayout.EndHorizontal();
+
+            DrawToggle(ref blnFlyby, new GUIContent("No Insertion Burn (eg. fly-by)"), Styles.styleToggle);
 
             DrawYearDay(ref dateMinDeparture);
 

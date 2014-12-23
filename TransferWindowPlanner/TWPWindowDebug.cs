@@ -174,7 +174,8 @@ namespace TransferWindowPlanner
                     if (GUILayout.Button("NewTransfer"))
                     {
                         transTemp = new TransferDetails();
-                        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination, intTest5, mbTWP.windowMain.TransferSelected.TravelTime, FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(intTest5).magnitude - FlightGlobals.ActiveVessel.orbit.referenceBody.Radius, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
+                        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
+                            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(intTest5).magnitude - FlightGlobals.ActiveVessel.orbit.referenceBody.Radius, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
                         transTemp.CalcEjectionValues();
                     }
 
@@ -271,9 +272,9 @@ namespace TransferWindowPlanner
                 //DrawLabel("AbsPos at firstUT:{0}", cbD.orbit.getPositionAtUT(intTest1));
 
 
-                DrawLabel("DepartureMin:{0}", mbTWP.windowMain.dateMinDeparture.UT);
+                //DrawLabel("DepartureMin:{0}", mbTWP.windowMain.dateMinDeparture.UT);
                 //DrawLabel("DepartureRange:{0}", DepartureRange);
-                DrawLabel("DepartureMax:{0}", mbTWP.windowMain.dateMaxDeparture.UT);
+                //DrawLabel("DepartureMax:{0}", mbTWP.windowMain.dateMaxDeparture.UT);
                 //DrawLabel("TravelMin:{0}", TravelMin);
                 //DrawLabel("TravelMax:{0}", TravelMax);
 

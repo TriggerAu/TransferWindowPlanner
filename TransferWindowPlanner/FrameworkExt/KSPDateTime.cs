@@ -529,7 +529,6 @@ namespace KSPPluginFramework
 		{
 			return UT.GetHashCode();
 		}
-
 		#endregion
 
 

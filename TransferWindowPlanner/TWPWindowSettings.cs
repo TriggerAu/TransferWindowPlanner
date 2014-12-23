@@ -34,7 +34,7 @@ namespace TransferWindowPlanner
             //[Description("Styling/Visuals")]    Styling,
             [Description("About...")]   About,
         }
-
+        
         internal override void Awake()
         {
             //WindowRect = new Rect(mbTWP.windowMain.WindowRect.x + mbTWP.windowMain.WindowRect.width, mbTWP.windowMain.WindowRect.y, 300, 200);
@@ -50,6 +50,8 @@ namespace TransferWindowPlanner
             ddlSettingsButtonStyle = new DropDownList(EnumExtensions.ToEnumDescriptions<Settings.ButtonStyleEnum>(), (Int32)settings.ButtonStyleChosen, this);
             ddlSettingsButtonStyle.OnSelectionChanged += ddlSettingsButtonStyle_OnSelectionChanged;
             ddlSettingsCalendar = new DropDownList(EnumExtensions.ToEnumDescriptions<CalendarTypeEnum>(), this);
+            //NOTE:Pull out the custom option for now
+            ddlSettingsCalendar.Items.Remove(CalendarTypeEnum.Custom.ToString());
             ddlSettingsCalendar.OnSelectionChanged += ddlSettingsCalendar_OnSelectionChanged;
             
             ddlManager.AddDDL(ddlSettingsCalendar);
@@ -293,7 +295,7 @@ namespace TransferWindowPlanner
         private void DrawWindow_Calendar()
         {
             //Update Check Area
-            GUILayout.Label("Selected Calendar", Styles.styleTextHeading);
+            GUILayout.Label("General Settings", Styles.styleTextHeading);
 
             GUILayout.BeginHorizontal(Styles.styleSettingsArea);
 
@@ -306,9 +308,15 @@ namespace TransferWindowPlanner
             ddlSettingsCalendar.DrawButton();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+            if (DrawToggle(ref settings.ShowCalendarToggle, "Show Calendar Toggle in Main Window", Styles.styleToggle))
+                settings.Save();
+
 
             if (settings.SelectedCalendar == CalendarTypeEnum.Earth)
             {
+                GUILayout.Label("Earth Settings", Styles.styleTextHeading);
+                GUILayout.BeginVertical(Styles.styleSettingsArea);
+
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Earth Epoch:");
 
@@ -341,6 +349,8 @@ namespace TransferWindowPlanner
                     settings.Save();
                 }
                 GUILayout.EndHorizontal();
+
+                GUILayout.EndVertical();
             }
 
             //if RSS not installed and RSS chosen...

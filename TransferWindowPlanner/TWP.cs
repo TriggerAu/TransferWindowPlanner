@@ -95,6 +95,12 @@ namespace TransferWindowPlanner
 
         internal override void Start()
         {
+            if (AssemblyLoader.loadedAssemblies
+                        .Select(a => a.assembly.GetExportedTypes())
+                        .SelectMany(t => t)
+                        .Any(t => t.FullName.ToLower().EndsWith(".realsolarsystem")))
+                settings.RSSActive = true;
+
             //Init the KAC Integration
             KACWrapper.InitKACWrapper();
             if (KACWrapper.APIReady)

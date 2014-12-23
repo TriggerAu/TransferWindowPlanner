@@ -42,6 +42,9 @@ namespace TransferWindowPlanner
         [Persistent] internal CalendarTypeEnum SelectedCalendar = CalendarTypeEnum.KSPStock;
         [Persistent] internal String EarthEpoch = "1951-01-01";
 
+        [Persistent] internal Boolean ShowCalendarToggle = false;
+        internal Boolean RSSActive = false;
+
         internal enum ButtonStyleEnum
         {
             //[Description("Basic button")]                       Basic,
