@@ -713,6 +713,8 @@ namespace TransferWindowPlanner
 
             DrawToggle(ref blnFlyby, new GUIContent("No Insertion Burn (eg. fly-by)"), Styles.styleToggle);
 
+            GUILayout.Space(8);
+
             DrawYearDay(ref dateMinDeparture);
 
             DrawYearDay(ref dateMaxDeparture);

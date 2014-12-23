@@ -123,8 +123,11 @@ namespace TransferWindowPlanner
             TravelMax = new KSPTimeSpan(strTravelMaxDays, "0", "0", "0").UT;
             TravelRange = TravelMax - TravelMin;
             TravelSelected = -1;
-            FinalOrbitAltitude = Convert.ToDouble(strArrivalAltitude) * 1000;
             InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude) * 1000;
+            if (blnFlyby)
+                FinalOrbitAltitude = 0;
+            else
+                FinalOrbitAltitude = Convert.ToDouble(strArrivalAltitude) * 1000;
 
             //Store the transfer Specs for display purposes
             TransferSpecs = new TransferWorkerDetails();

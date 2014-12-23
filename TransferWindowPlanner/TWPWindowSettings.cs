@@ -168,7 +168,7 @@ namespace TransferWindowPlanner
                     break;
                 case SettingsTabs.Calendar:
                     DrawWindow_Calendar();
-                    WindowHeight = mbTWP.windowDebug.intTest1;
+                    WindowHeight = 206;
                     break;
                 case SettingsTabs.About:
                     DrawWindow_About();
