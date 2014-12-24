@@ -27,6 +27,9 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.2.2.0		-	KSP Version: 0.90
+- Added AVC version files (Issue #25)
+
 Version 1.2.1.0		-	KSP Version: 0.90
 - Reworked the storage of input values to remove issues (Issue #25)
 - Redid Input Locks to resolve interface lockups (Issue #27)

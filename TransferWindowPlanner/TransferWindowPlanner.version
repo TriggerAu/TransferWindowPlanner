@@ -1,0 +1,16 @@
+{
+  "NAME": "Transfer Window Planner",
+  "URL": "https://raw.githubusercontent.com/TriggerAu/TransferWindowPlanner/master/TransferWindowPlanner.version",
+  "DOWNLOAD" : "https://github.com/TriggerAu/TransferWindowPlanner/releases",
+  "VERSION": {
+    "MAJOR": 1,
+    "MINOR": 2,
+    "PATCH": 2,
+	"BUILD": 0
+  },
+  "KSP_VERSION": {
+    "MAJOR": 0,
+    "MINOR": 90,
+    "PATCH": 0
+  }
+}
