@@ -63,7 +63,7 @@ if($ChoiceRtn -eq 0)
     (Get-Content "$($DestFullPath)\$($PluginName)_$($VersionString)\ReadMe-$($PluginName).txt") |
         ForEach-Object {$_ -replace "%VERSIONSTRING%",$VersionString} |
             Set-Content "$($DestFullPath)\$($PluginName)_$($VersionString)\ReadMe-$($PluginName).txt"
-	Move-Item "$($DestFullPath)\$($PluginName)_$($VersionString)\ReadMe-$($PluginName).txt" "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData\TriggerTech\$($PluginName)\"
+	Move-Item "$($DestFullPath)\$($PluginName)_$($VersionString)\ReadMe-$($PluginName).txt" "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData\TriggerTech\"
 
     #Copy the source files
     "Copying Source..."
@@ -75,9 +75,9 @@ if($ChoiceRtn -eq 0)
 
     # Now Zip it up
 
-    & "$($7ZipPath)" a "$($DestFullPath)\$($PluginName)_$($VersionString).zip" "$($DestFullPath)\$($PluginName)_$($VersionString)" -xr!"info.txt"
+    & "$($7ZipPath)" a "$($DestFullPath)\$($PluginName)_$($VersionString).zip" "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData" -xr!"info.txt"
 	& "$($7ZipPath)" a "$($DestFullPath)\$($PluginName)_$($VersionString).zip" "$($DestFullPath)\$($PluginName)_$($VersionString)\info.txt"
-	& "$($7ZipPath)" a "$($DestFullPath)\$($PluginName)_$($VersionString).zip" "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData\TriggerTech\ReadMe-$($PluginName).txt"
+	#& "$($7ZipPath)" a "$($DestFullPath)\$($PluginName)_$($VersionString).zip" "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData\TriggerTech\ReadMe-$($PluginName).txt"
     & "$($7ZipPath)" a "$($DestFullPath)\$($PluginName)Source_$($VersionString).zip" "$($DestFullPath)\$($PluginName)Source_$($VersionString)" 
 }
 
