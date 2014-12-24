@@ -68,7 +68,6 @@ if($ChoiceRtn -eq 0)
     New-Item $DestRootPath -name "v$($VersionString)" -ItemType Directory
 
     #Dont create this or it will copy the files into a subfolder
-    #New-Item $DestFullPath -name "KSPAlternateResourcePanel_$($VersionString)" -ItemType Directory
     New-Item $DestFullPath -name "$($PluginName)Source_$($VersionString)" -ItemType Directory
 
     #Copy the items 
