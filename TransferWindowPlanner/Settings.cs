@@ -39,6 +39,12 @@ namespace TransferWindowPlanner
         }
         [Persistent] internal ButtonStyleEnum ButtonStyleChosen = ButtonStyleEnum.Launcher;
 
+        [Persistent] internal CalendarTypeEnum SelectedCalendar = CalendarTypeEnum.KSPStock;
+        [Persistent] internal String EarthEpoch = "1951-01-01";
+
+        [Persistent] internal Boolean ShowCalendarToggle = false;
+        internal Boolean RSSActive = false;
+
         internal enum ButtonStyleEnum
         {
             //[Description("Basic button")]                       Basic,
@@ -53,6 +59,7 @@ namespace TransferWindowPlanner
             [Description("Unity Style")]        Unity,
             [Description("Unity/KSP Buttons")]  UnityWKSPButtons
         }
+
 
         [Persistent] internal TWP_KACWrapper.KACWrapper.KACAPI.AlarmActionEnum KACAlarmAction = TWP_KACWrapper.KACWrapper.KACAPI.AlarmActionEnum.KillWarp;
         [Persistent] internal Double KACMargin = 24;

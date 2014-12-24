@@ -11,7 +11,7 @@ using KSPPluginFramework;
 
 namespace TransferWindowPlanner
 {
-    internal partial class TWPWindow
+    public partial class TWPWindow
     {
         List<cbItem> lstPlanets = new List<cbItem>();
         List<cbItem> lstDestinations = new List<cbItem>();
@@ -39,9 +39,7 @@ namespace TransferWindowPlanner
             ddlDestination.SelectedIndex = 0;
             ddlDestination.Items = lstDestinations.Select(x => x.Name).ToList();
 
-            LogFormatted("B:Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
             SetupTransferParams();
-            LogFormatted("C:Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
         }
 
         void SetupTransferParams()
@@ -69,22 +67,23 @@ namespace TransferWindowPlanner
 
         private void SetWindowStrings()
         {
-            strOrigin = cbOrigin.bodyName;
-            strDestination = cbDestination.bodyName;
+            //KSPDateTime kTime = new KSPDateTime(DepartureMin);
+            //strDepartureMinYear = (kTime.Year ).ToString();
+            //strDepartureMinDay = (kTime.Day).ToString();
 
-            KSPTime kTime = new KSPTime(DepartureMin);
-            strDepartureMinYear = (kTime.Year + 1).ToString();
-            strDepartureMinDay = (kTime.Day + 1).ToString();
+            //kTime.UT = DepartureMax;
+            //strDepartureMaxYear = (kTime.Year).ToString();
+            //strDepartureMaxDay = (kTime.Day).ToString();
 
-            kTime.UT = DepartureMax;
-            strDepartureMaxYear = (kTime.Year + 1).ToString();
-            strDepartureMaxDay = (kTime.Day + 1).ToString();
+            dateMinDeparture = new KSPDateTime(DepartureMin);
+            dateMaxDeparture = new KSPDateTime(DepartureMax);
 
-            kTime.UT = TravelMin;
-            strTravelMinDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
+            KSPTimeSpan kSpan = new KSPTimeSpan(0);
+            kSpan.UT = TravelMin;
+            strTravelMinDays = ((Int32)kSpan.TotalDays).ToString();
 
-            kTime.UT = TravelMax;
-            strTravelMaxDays = (kTime.Year * KSPTime.DaysPerYear + kTime.Day).ToString();
+            kSpan.UT = TravelMax;
+            strTravelMaxDays = ((Int32)kSpan.TotalDays).ToString();
 
             strArrivalAltitude = (InitialOrbitAltitude / 1000).ToString();
             strDepartureAltitude = (FinalOrbitAltitude / 1000).ToString();
@@ -97,7 +96,7 @@ namespace TransferWindowPlanner
 
         internal BackgroundWorker bw;
 
-        internal class TransferWorkerDetails
+        public class TransferWorkerDetails
         {
             public Double DepartureMin { get; set; }
             public Double DepartureMax { get; set; }
@@ -116,16 +115,19 @@ namespace TransferWindowPlanner
 
         private void SetWorkerVariables()
         {
-            DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
-            DepartureMax = KSPTime.BuildUTFromRaw(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            DepartureMin = dateMinDeparture.UT; // new KSPDateTime(strDepartureMinYear, strDepartureMinDay).UT; // new KSPDateTime(strDepartureMinYear, strDepartureMinDay, "0", "0", "0").UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
+            DepartureMax = dateMaxDeparture.UT; // new KSPDateTime(strDepartureMaxYear, strDepartureMaxDay).UT; // new KSPDateTime(strDepartureMaxYear, strDepartureMaxDay, "0", "0", "0").UT - KSPDateStructure.SecondsPerYear - KSPDateStructure.SecondsPerDay;
             DepartureRange = DepartureMax - DepartureMin;
             DepartureSelected = -1;
-            TravelMin = KSPTime.BuildUTFromRaw("0", strTravelMinDays, "0", "0", "0");
-            TravelMax = KSPTime.BuildUTFromRaw("0", strTravelMaxDays, "0", "0", "0");
+            TravelMin = new KSPTimeSpan(strTravelMinDays, "0", "0", "0").UT;
+            TravelMax = new KSPTimeSpan(strTravelMaxDays, "0", "0", "0").UT;
             TravelRange = TravelMax - TravelMin;
             TravelSelected = -1;
-            FinalOrbitAltitude = Convert.ToDouble(strArrivalAltitude) * 1000;
             InitialOrbitAltitude = Convert.ToDouble(strDepartureAltitude) * 1000;
+            if (blnFlyby)
+                FinalOrbitAltitude = 0;
+            else
+                FinalOrbitAltitude = Convert.ToDouble(strArrivalAltitude) * 1000;
 
             //Store the transfer Specs for display purposes
             TransferSpecs = new TransferWorkerDetails();

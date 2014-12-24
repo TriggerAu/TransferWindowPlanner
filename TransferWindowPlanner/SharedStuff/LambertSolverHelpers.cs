@@ -6,6 +6,8 @@ using System.Text;
 using KSP;
 using UnityEngine;
 
+using KSPPluginFramework;
+
 namespace TransferWindowPlanner
 {
     public class TransferDetails
@@ -203,6 +205,37 @@ namespace TransferWindowPlanner
             }
 
             return LambertSolver.Deg2Rad * ((phaseAngle + 360) % 360);
+        }
+
+
+
+        internal string TransferDetailsText
+        {
+            get
+            {
+
+                String Message = ""; //String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", this.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
+                //Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(this.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+                Message = Message.AppendLine("Depart at:      {0}", new KSPDateTime(this.DepartureTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
+                Message = Message.AppendLine("       UT:      {0:0}", this.DepartureTime);
+                //Message = Message.AppendLine("   Travel:      {0}", new KSPTime(this.TravelTime).IntervalStringLongTrimYears());
+                Message = Message.AppendLine("   Travel:      {0}", new KSPTimeSpan(this.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLongTrimYears));
+                Message = Message.AppendLine("       UT:      {0:0}", this.TravelTime);
+                //Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(this.DepartureTime + this.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+                Message = Message.AppendLine("Arrive at:      {0}", new KSPDateTime(this.DepartureTime + this.TravelTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
+                Message = Message.AppendLine("       UT:      {0:0}", this.DepartureTime + this.TravelTime);
+                Message = Message.AppendLine("Phase Angle:    {0:0.00}°", this.PhaseAngle * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Angle: {0:0.00}°", this.EjectionAngle * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Inc.:  {0:0.00}°", this.EjectionInclination * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Δv:    {0:0} m/s", this.DVEjection);
+                Message = Message.AppendLine("Prograde Δv:    {0:0.0} m/s", this.EjectionDVPrograde);
+                Message = Message.AppendLine("Normal Δv:      {0:0.0} m/s", this.EjectionDVNormal);
+                Message = Message.AppendLine("Heading:        {0:0.00}°", this.EjectionHeading * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Insertion Inc.: {0:0.00}°", this.InsertionInclination * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Insertion Δv:   {0:0} m/s", this.DVInjection);
+                Message = Message.AppendLine("Total Δv:       {0:0} m/s", this.DVTotal);
+                return Message;
+            }
         }
 
     }

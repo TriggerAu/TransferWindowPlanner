@@ -18,7 +18,7 @@ namespace TransferWindowPlanner
         DragEnabled=true,
         TooltipsEnabled=true,
         WindowMoveEventsEnabled=true)]
-    internal partial class TWPWindow:MonoBehaviourWindowPlus
+    public partial class TWPWindow:MonoBehaviourWindowPlus
     {
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
@@ -44,7 +44,7 @@ namespace TransferWindowPlanner
             cbStar = FlightGlobals.Bodies.FirstOrDefault(x => x.referenceBody == x.referenceBody);
             if (cbStar == null)
             {
-                //RuRo
+                //RuRo!!
                 LogFormatted("Error: Couldn't detect a Star (ref body is itself)");
             }
             else
@@ -88,11 +88,8 @@ namespace TransferWindowPlanner
         private void SetDepartureMinToYesterday()
         {
             //Set the Departure min to be yesterday
-            KSPTime timeYesterday = new KSPTime(Planetarium.GetUniversalTime() - KSPTime.SecondsPerDay);
-            LogFormatted("Setting to y{0} d{1}", timeYesterday.Year, timeYesterday.Day);
-            strDepartureMinYear = (timeYesterday.Year+1).ToString();
-            strDepartureMinDay = (timeYesterday.Day+1).ToString();
-            DepartureMin = KSPTime.BuildUTFromRaw(strDepartureMinYear, strDepartureMinDay, "0", "0", "0") - KSPTime.SecondsPerYear - KSPTime.SecondsPerDay;
+            dateMinDeparture = new KSPDateTime(Planetarium.GetUniversalTime()).Date;
+            DepartureMin = dateMinDeparture.UT;
         }
 
         void ddlOrigin_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
@@ -147,12 +144,15 @@ namespace TransferWindowPlanner
         //    return blnReturn;
         //}
 
-        internal Boolean DrawTextField(ref String Value, String RegexValidator, Boolean RegexFailOnMatch, String LabelText="", Int32 FieldWidth=0, Int32 LabelWidth=0)
+        internal static Boolean DrawTextField(ref String Value, String RegexValidator, Boolean RegexFailOnMatch, String LabelText = "", Int32 FieldWidth = 0, Int32 LabelWidth = 0, Boolean Locked = false)
         {
             GUIStyle styleTextBox = Styles.styleTextField;
-            if ((RegexFailOnMatch && System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ||
+            if (Locked)
+                styleTextBox = Styles.styleTextFieldLocked;
+            else if ((RegexFailOnMatch && System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)) ||
                 (!RegexFailOnMatch && !System.Text.RegularExpressions.Regex.IsMatch(Value, RegexValidator, System.Text.RegularExpressions.RegexOptions.IgnoreCase)))
                 styleTextBox = Styles.styleTextFieldError;
+
 
             if(LabelText!="") {
                 if (LabelWidth==0)
@@ -161,15 +161,44 @@ namespace TransferWindowPlanner
                     GUILayout.Label(LabelText, Styles.styleTextFieldLabel, GUILayout.Width(LabelWidth));
             }
 
+
+            String textValue = Value;
             Boolean blnReturn = false;
             if (FieldWidth == 0)
-                blnReturn = DrawTextBox(ref Value, styleTextBox);
+                blnReturn = DrawTextBox(ref textValue, styleTextBox);
             else
-                blnReturn = DrawTextBox(ref Value, styleTextBox, GUILayout.Width(FieldWidth));
+                blnReturn = DrawTextBox(ref textValue, styleTextBox, GUILayout.Width(FieldWidth));
+
+            if (!Locked) Value = textValue;
             return blnReturn;
         }
 
-        internal Boolean DrawYearDay(ref String strYear,ref String strDay)
+        internal static Boolean DrawYearDay(ref KSPDateTime dateToDraw)
+        {
+            String strYear = dateToDraw.Year.ToString();
+            String strMonth = dateToDraw.Month.ToString();
+            String strDay = dateToDraw.Day.ToString();
+
+            //If the value changed
+            Boolean blnReturn = false;
+
+            if (KSPDateStructure.CalendarType==CalendarTypeEnum.Earth)
+            {
+                blnReturn = DrawYearMonthDay(ref strYear, ref strMonth, ref strDay);
+                if (blnReturn) {
+                    dateToDraw = KSPDateTime.FromEarthValues(strYear, strMonth, strDay);
+                }
+            }
+            else { 
+                blnReturn =  DrawYearDay(ref strYear, ref strDay);
+                if (blnReturn) {
+                    dateToDraw = new KSPDateTime(strYear, strDay);
+                }
+            }
+            return blnReturn;
+        }
+
+        internal static Boolean DrawYearDay(ref String strYear, ref String strDay)
         {
             Boolean blnReturn = false;
             GUILayout.BeginHorizontal();
@@ -179,9 +208,22 @@ namespace TransferWindowPlanner
             return blnReturn;
         }
 
-        String strOrigin, strDestination;
-        String strDepartureAltitude,strArrivalAltitude;
-        String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
+        internal static Boolean DrawYearMonthDay(ref String strYear, ref String strMonth, ref String strDay)
+        {
+            Boolean blnReturn = false;
+            GUILayout.BeginHorizontal();
+            blnReturn = blnReturn || DrawTextField(ref strYear, "[^\\d\\.]+", true, "Y:", 40, 20);
+            blnReturn = blnReturn || DrawTextField(ref strMonth, "[^\\d\\.]+", true, "M:", 30, 20);
+            blnReturn = blnReturn || DrawTextField(ref strDay, "[^\\d\\.]+", true, "D:", 30, 20);
+            GUILayout.EndHorizontal();
+            return blnReturn;
+        }
+
+
+
+        //String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
+        internal KSPDateTime dateMinDeparture, dateMaxDeparture;
+        String strDepartureAltitude, strArrivalAltitude;
         String strTravelMinDays, strTravelMaxDays;
 
         internal Vector2 vectMouse;
@@ -195,6 +237,27 @@ namespace TransferWindowPlanner
 
         internal override void DrawWindow(int id)
         {
+            //Calendar toggle
+            if (settings.ShowCalendarToggle || settings.RSSActive)
+            {
+                if (GUI.Button(new Rect(WindowRect.width - 122, 2, 30, 20), new GUIContent(Resources.btnCalendar, "Toggle Calendar"), "ButtonSettings"))
+                {
+                    if (settings.SelectedCalendar == CalendarTypeEnum.Earth)
+                    {
+                        settings.SelectedCalendar = CalendarTypeEnum.KSPStock;
+                        KSPDateStructure.SetKSPStockCalendar();
+                    }
+                    else
+                    {
+                        settings.SelectedCalendar = CalendarTypeEnum.Earth;
+                        KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
+                                        settings.EarthEpoch.Split('-')[1].ToInt32(),
+                                        settings.EarthEpoch.Split('-')[2].ToInt32());
+                    }
+                    settings.Save();
+                }
+            }
+
             //Settings toggle
             GUIContent contSettings = new GUIContent(Resources.GetSettingsButtonIcon(TransferWindowPlanner.settings.VersionAttentionFlag), "Settings...");
             if (TransferWindowPlanner.settings.VersionAvailable) contSettings.tooltip = "Updated Version Available - Settings...";
@@ -314,8 +377,10 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.OriginName, TransferSpecs.InitialOrbitAltitude / 1000), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0} (@{1:0}km)", TransferSpecs.DestinationName, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellow);
-            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-            GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
+            //GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            GUILayout.Label(new KSPTimeSpan(TransferSelected.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLongTrimYears), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVInjection), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
@@ -348,8 +413,8 @@ namespace TransferWindowPlanner
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
-            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
-            
+            //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
             GUIStyle styleCopyButton = new GUIStyle(SkinsLibrary.CurrentSkin.button);
             styleCopyButton.fixedHeight = 18;
             styleCopyButton.padding.top = styleCopyButton.padding.bottom = 0;
@@ -413,7 +478,8 @@ namespace TransferWindowPlanner
             }
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
-            GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
+            GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime + TransferSelected.TravelTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             if (ShowEjectionDetails) {
@@ -439,7 +505,7 @@ namespace TransferWindowPlanner
             
             
             GUILayout.BeginVertical();
-            GUILayout.Label(String.Format("{0:0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears()), Styles.styleTextYellow);
+            GUILayout.Label(String.Format("{0:0}", new KSPTimeSpan(TransferSelected.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLongTrimYears)), Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVTotal), Styles.styleTextYellow);
             GUILayout.BeginHorizontal();
             GUILayout.Label(String.Format("{0:0} m/s", TransferSelected.DVEjection), Styles.styleTextYellow);
@@ -474,11 +540,14 @@ namespace TransferWindowPlanner
         internal string GenerateTransferDetailsText()
         {
             String Message = String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000);
-            Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+            //Message = Message.AppendLine("Depart at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime), KSPTime.PrintTimeFormat.DateTimeString));
+            Message = Message.AppendLine("Depart at:      {0}", new KSPDateTime(TransferSelected.DepartureTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime);
-            Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
+            //Message = Message.AppendLine("   Travel:      {0}", new KSPTime(TransferSelected.TravelTime).IntervalStringLongTrimYears());
+            Message = Message.AppendLine("   Travel:      {0}", new KSPTimeSpan(TransferSelected.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLongTrimYears));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.TravelTime);
-            Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+            //Message = Message.AppendLine("Arrive at:      {0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString));
+            Message = Message.AppendLine("Arrive at:      {0}", new KSPDateTime(TransferSelected.DepartureTime + TransferSelected.TravelTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
             Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
             Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
@@ -533,13 +602,13 @@ namespace TransferWindowPlanner
                 GUI.matrix = matrixBackup;
                 //Y Axis
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight - 3)) - 5), 40, 15), String.Format("{0:0}", (TransferSpecs.TravelMin + (1 - i) * TransferSpecs.TravelRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotYText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x - 50), (Single)(PlotPosition.y + (i * (PlotHeight - 3)) - 5), 40, 15), String.Format("{0:0}", (TransferSpecs.TravelMin + (1 - i) * TransferSpecs.TravelRange) / (KSPDateStructure.SecondsPerDay)), Styles.stylePlotYText);
                 }
 
                 //XAxis
                 GUI.Label(new Rect((Single)(PlotPosition.x), (Single)(PlotPosition.y + PlotHeight + 20), PlotWidth, 15), "Departure Date", Styles.stylePlotXLabel);
                 for (Double i = 0; i <= 1; i += 0.25) {
-                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (TransferSpecs.DepartureMin + i * TransferSpecs.DepartureRange) / (KSPTime.SecondsPerDay)), Styles.stylePlotXText);
+                    GUI.Label(new Rect((Single)(PlotPosition.x + (i * PlotWidth) - 22), (Single)(PlotPosition.y + PlotHeight + 5), 40, 15), String.Format("{0:0}", (TransferSpecs.DepartureMin + i * TransferSpecs.DepartureRange) / (KSPDateStructure.SecondsPerDay)), Styles.stylePlotXText);
                 }
 
                 //Draw the DeltaV Legend
@@ -606,6 +675,7 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
         }
 
+        Boolean blnFlyby = false;
         private void DrawTransferEntry()
         {
             GUILayout.Label("Enter Parameters", Styles.styleTextYellowBold);
@@ -616,6 +686,7 @@ namespace TransferWindowPlanner
             GUILayout.Label("Initial Orbit:", Styles.styleTextFieldLabel);
             GUILayout.Label("Destination:", Styles.styleTextFieldLabel);
             GUILayout.Label("Final Orbit:", Styles.styleTextFieldLabel);
+            GUILayout.Label("", Styles.styleTextFieldLabel);
 
             //Checkbox re insertion burn
             GUILayout.Label("Earliest Departure:", Styles.styleTextFieldLabel);
@@ -636,13 +707,17 @@ namespace TransferWindowPlanner
             ddlDestination.DrawButton();
 
             GUILayout.BeginHorizontal();
-            DrawTextField(ref strArrivalAltitude, "[^\\d\\.]+", true, FieldWidth: 172);
+            DrawTextField(ref strArrivalAltitude, "[^\\d\\.]+", true, FieldWidth: 172, Locked:blnFlyby);
             GUILayout.Label("km", GUILayout.Width(20));
             GUILayout.EndHorizontal();
 
-            DrawYearDay(ref strDepartureMinYear, ref strDepartureMinDay);
+            DrawToggle(ref blnFlyby, new GUIContent("No Insertion Burn (eg. fly-by)"), Styles.styleToggle);
 
-            DrawYearDay(ref strDepartureMaxYear, ref strDepartureMaxDay);
+            GUILayout.Space(8);
+
+            DrawYearDay(ref dateMinDeparture);
+
+            DrawYearDay(ref dateMaxDeparture);
 
             GUILayout.BeginHorizontal();
             DrawTextField(ref strTravelMinDays, "[^\\d\\.]+", true, FieldWidth: 60);
@@ -657,25 +732,30 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(new GUIContent("Reset",Resources.btnReset), "ButtonSettings")) {
-                Done = false;
-                if (bw!=null && bw.IsBusy)
-                    bw.CancelAsync();
-                Running = false;
-                TransferSelected = null;
-                WindowRect.height = 400;
-
-                SetDepartureMinToYesterday();
-                LogFormatted("Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
-                SetupDestinationControls();
-                LogFormatted("Setting to y{0} d{1}", strDepartureMinYear, strDepartureMinDay);
+                mbTWP.windowSettings.Visible = false;
+                ResetWindow();
             }
             if (GUILayout.Button("Plot It!"))
             {
+                mbTWP.windowSettings.Visible = false;
                 StartWorker();
                 WindowRect.height = 400;
                 ShowEjectionDetails = false;
             }
             GUILayout.EndHorizontal();
+        }
+
+        internal void ResetWindow()
+        {
+            Done = false;
+            if (bw != null && bw.IsBusy)
+                bw.CancelAsync();
+            Running = false;
+            TransferSelected = null;
+            WindowRect.height = 400;
+
+            SetDepartureMinToYesterday();
+            SetupDestinationControls();
         }
         
         internal override void OnGUIEvery()

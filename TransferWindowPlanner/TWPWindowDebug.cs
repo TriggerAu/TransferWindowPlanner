@@ -66,16 +66,21 @@ namespace TransferWindowPlanner
     //    }
     //}
 
+#if DEBUG
     class TWPWindowDebug : MonoBehaviourWindowPlus
     {
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
-        public Int32 intTest1 = 0;
+        public Int32 intTest1 = 200;
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
         public Int32 intTest5 = 300;
+
+
+        public Double dblEjectAt = 0, dblOutAngle=0;
+        TransferDetails transTemp;
 
         internal override void DrawWindow(int id)
         {
@@ -95,28 +100,42 @@ namespace TransferWindowPlanner
                 //if (GUILayout.Button("Unity")) SkinsLibrary.SetCurrent("Unity");
                 //if (GUILayout.Button("UnityWKSPButtons")) SkinsLibrary.SetCurrent("UnityWKSPButtons");
 
+                DrawLabel("{0}", KSPDateStructure.CalendarType);
 
-                if (GUILayout.Button("CreateAlarm"))
-                {
-                    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, 
-                        String.Format("{0} -> {1}",mbTWP.windowMain.TransferSelected.Origin.bodyName,mbTWP.windowMain.TransferSelected.Destination.bodyName), 
-                        mbTWP.windowMain.TransferSelected.DepartureTime);
+                //if (GUILayout.Button("Make Date"))
+                //{
+                //    LogFormatted("a");
+                //    //KSPDateTimeStructure.CalendarType = CalendarTypeEnum.Earth;
+                //    KSPDateTime dt = new KSPDateTime(301.123);
+
+                //    LogFormatted("1:{0}", dt.Minute);
+                //    LogFormatted("2:{0}", dt.UT);
+                //    LogFormatted("3:{0}", dt.Year);
+                //    //LogFormatted("4:{0}", KSPDateTimeStructure.CalendarType);
+                //    //LogFormatted("5:{0}", dt.Day);
+
+                //}
+                //if (GUILayout.Button("CreateAlarm"))
+                //{
+                //    String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled, 
+                //        String.Format("{0} -> {1}",mbTWP.windowMain.TransferSelected.Origin.bodyName,mbTWP.windowMain.TransferSelected.Destination.bodyName), 
+                //        mbTWP.windowMain.TransferSelected.DepartureTime);
 
 
-                    KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
-                    LogFormatted("{0}==11=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
-                    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
-                    alarmNew.AlarmAction = settings.KACAlarmAction;
-                    LogFormatted("{0}==22=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
-                    LogFormatted("{0}==33=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
+                //    KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
+                //    LogFormatted("{0}==11=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                //    alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
+                //    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
+                //    alarmNew.AlarmAction = settings.KACAlarmAction;
+                //    LogFormatted("{0}==22=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                //    alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
+                //    LogFormatted("{0}==33=={1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                //    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
 
-                    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
+                //    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
                     
-                }
-                DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
+                //}
+                //DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
 
                 //DrawLabel("{0}", KACWrapper.KAC.Alarms.Count);
                 //foreach ( KACWrapper.KACAPI.KACAlarm a in KACWrapper.KAC.Alarms)
@@ -136,7 +155,52 @@ namespace TransferWindowPlanner
                 DrawLabel("Mouse:{0}", mbTWP.windowMain.vectMouse);
                 DrawLabel("Plot:{0}", new Rect(mbTWP.windowMain.PlotPosition.x, mbTWP.windowMain.PlotPosition.y, mbTWP.windowMain.PlotWidth, mbTWP.windowMain.PlotHeight));
                 DrawLabel("Selected:{0}", mbTWP.windowMain.vectSelected);
-                DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected/KSPTime.SecondsPerDay,mbTWP.windowMain.TravelSelected/KSPTime.SecondsPerDay);
+                DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected / KSPDateStructure.SecondsPerDay, mbTWP.windowMain.TravelSelected / KSPDateStructure.SecondsPerDay);
+
+                if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel!=null)
+                {
+                    if (GUILayout.Button("FindUT")) {
+                        dblEjectAt = Utilities.timeOfEjectionAngle(FlightGlobals.ActiveVessel.orbit, mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.EjectionAngle * LambertSolver.Rad2Deg, 20, out dblOutAngle);
+                        intTest5 = (Int32)dblEjectAt;
+                    }
+                    DrawLabel("UT: {0:0}", dblEjectAt);
+                    DrawLabel("Angle: {0:0.000}", dblOutAngle);
+
+                    DrawLabel("UTSelect: {0:0}", mbTWP.windowMain.TransferSelected.DepartureTime);
+                    DrawLabel("OrbitPeriod: {0:0}", FlightGlobals.ActiveVessel.orbit.period);
+                    DrawLabel("Scan: {0:0}->{1:0}", mbTWP.windowMain.TransferSelected.DepartureTime - FlightGlobals.ActiveVessel.orbit.period / 2, mbTWP.windowMain.TransferSelected.DepartureTime + FlightGlobals.ActiveVessel.orbit.period / 2);
+
+
+                    if (GUILayout.Button("NewTransfer"))
+                    {
+                        transTemp = new TransferDetails();
+                        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
+                            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(intTest5).magnitude - FlightGlobals.ActiveVessel.orbit.referenceBody.Radius, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
+                        transTemp.CalcEjectionValues();
+                    }
+
+                    DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
+
+                    if (transTemp != null)
+                    {
+                        GUILayout.Label(transTemp.TransferDetailsText);
+                        if (GUILayout.Button("Newnode"))
+                        {
+                            FlightGlobals.ActiveVessel.patchedConicSolver.maneuverNodes.Clear();
+                            ManeuverNode mNode = FlightGlobals.ActiveVessel.patchedConicSolver.AddManeuverNode(transTemp.DepartureTime);
+                            mNode.DeltaV = new Vector3d(0, transTemp.EjectionDVNormal, transTemp.EjectionDVPrograde);
+                            FlightGlobals.ActiveVessel.patchedConicSolver.UpdateFlightPlan();
+
+                        }
+
+                    }
+
+                }
+
+
+                //DrawLabel("Ass:{0}", KACWrapper.AssemblyExists);
+                //DrawLabel("Ins:{0}", KACWrapper.InstanceExists);
+                //DrawLabel("API:{0}", KACWrapper.APIReady);
 
                 //if (mbTWP.windowMain.TransferSelected != null)
                 //{
@@ -207,9 +271,10 @@ namespace TransferWindowPlanner
 
                 //DrawLabel("AbsPos at firstUT:{0}", cbD.orbit.getPositionAtUT(intTest1));
 
-                //DrawLabel("DepartureMin:{0}", DepartureMin);
+
+                //DrawLabel("DepartureMin:{0}", mbTWP.windowMain.dateMinDeparture.UT);
                 //DrawLabel("DepartureRange:{0}", DepartureRange);
-                //DrawLabel("DepartureMax:{0}", DepartureMax);
+                //DrawLabel("DepartureMax:{0}", mbTWP.windowMain.dateMaxDeparture.UT);
                 //DrawLabel("TravelMin:{0}", TravelMin);
                 //DrawLabel("TravelMax:{0}", TravelMax);
 
@@ -318,4 +383,5 @@ namespace TransferWindowPlanner
 
 
     }
+#endif
 }

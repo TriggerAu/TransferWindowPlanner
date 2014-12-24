@@ -62,6 +62,9 @@ public static class LambertSolver
         return TransferDeltaV(origin, destination, ut, dt, initialOrbitAltitude, finalOrbitAltitude, out tmp);
     }
 
+
+    public static Double v1out, vedvout;
+
     /// <summary>
     /// Find the delta-v required for a ballistic transfer from <paramref name="origin"/> to <paramref name="destination"/>,
     /// departing at <paramref name="ut"/> UT, with a time of flight of <paramref name="dt"/> seconds, starting from a circular
@@ -101,12 +104,14 @@ public static class LambertSolver
             double v0 = Math.Sqrt(origin.gravParameter / r0); // Initial circular orbit velocity
             double v1 = Math.Sqrt(ejectionDeltaV * ejectionDeltaV + 2 * v0 * v0 - 2 * mu / rsoi); // Velocity at periapsis
 
+            v1out = v1; vedvout = ejectionDeltaV;
+
             vesselOriginOrbitalSpeed = v0;                                //Store this for later
 
             double e = r0 * v1 * v1 / mu - 1; // Ejection orbit eccentricity
             double ap = r0 * (1 + e) / (1 - e); // Ejection orbit apoapsis
 
-            if (ap > 0 && ap <= rsoi) {
+            if (ap > 0 && ap <= rsoi) { 
                 oTransfer = null;                                   //Nuke this if we have no result
                 return Double.NaN; // There is no orbit that leaves the SoI with a velocity of ejectionDeltaV
             }

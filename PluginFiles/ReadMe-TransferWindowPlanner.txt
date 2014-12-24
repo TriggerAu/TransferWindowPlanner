@@ -27,6 +27,16 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.2.1.0		-	KSP Version: 0.90
+- Reworked the storage of input values to remove issues (Issue #25)
+- Redid Input Locks to resolve interface lockups (Issue #27)
+- Added Calendar options so RSS can show Earth Dates for things
+- Added Fly-By checkbox
+- Restructured Zip File
+- Made ToolbarIcon relative (Issue #28)
+- Bunch of other small stuff
+- Built and included KSPDateTime Library (Issue #24)
+
 Version 1.1.3.0		-	KSP Version: 0.90
 - Recompiled for 0.90 and checked code stuff
 - Fixed some issues with KAC Integration (Issue #23)
