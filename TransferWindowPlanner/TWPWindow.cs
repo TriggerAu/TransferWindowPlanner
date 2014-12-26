@@ -250,9 +250,7 @@ namespace TransferWindowPlanner
                     else
                     {
                         settings.SelectedCalendar = CalendarTypeEnum.Earth;
-                        KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
-                                        settings.EarthEpoch.Split('-')[1].ToInt32(),
-                                        settings.EarthEpoch.Split('-')[2].ToInt32());
+                        KSPDateStructure.SetEarthCalendar(settings.EarthEpoch);
                     }
                     settings.Save();
                 }

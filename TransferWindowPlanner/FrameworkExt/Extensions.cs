@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-
 namespace KSPPluginFramework
 {
     public static class EnumExtensions
@@ -53,6 +52,11 @@ namespace KSPPluginFramework
             if (val.CompareTo(min) < 0) return min;
             else if (val.CompareTo(max) > 0) return max;
             else return val;
+        }
+
+        public static Int32 ToInt32(this String s)
+        {
+            return Convert.ToInt32(s);
         }
 
         public static Int32 NormalizeAngle360(this Int32 val) {

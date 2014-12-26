@@ -18,6 +18,14 @@ namespace KSPPluginFramework
         /// <summary>What Year does UT 0 represent</summary>
         static public Int32 EpochYear { get; private set; }
 
+
+        static public KSPDateTime EpochAsKSPDateTime { 
+            get {
+                return new KSPDateTime(EpochYear, EpochDayOfYear);
+            }
+        }
+
+
         //Define the Calendar
         /// <summary>How many seconds (game UT) make up a minute</summary>
         static public Int32 SecondsPerMinute { get; private set; }
@@ -35,6 +43,10 @@ namespace KSPPluginFramework
         /// <summary>How many seconds (game UT) make up a year - not relevant for Earth time</summary>
         static public Int32 SecondsPerYear { get { return SecondsPerDay * DaysPerYear; } }
 
+        /// <summary>How many seconds (game UT) make up a year - not relevant for Earth time</summary>
+        static public Int32 HoursPerYear { get { return HoursPerDay * DaysPerYear; } }
+
+        
         /// <summary>What Earth date does UT 0 represent</summary>
         static public DateTime CustomEpochEarth { get; private set; }
 
@@ -55,6 +67,14 @@ namespace KSPPluginFramework
             DaysPerYear = GameSettings.KERBIN_TIME ? 426 : 365;
         }
 
+        /// <summary>Sets the Date Structure to be Earth based - Accepts Epoch date as string</summary>
+        /// <param name="EpochString">Date in form of yyyy-MM-dd - eg 1951-02-20</param>
+        static public void SetEarthCalendar(String EpochString)
+        {
+            KSPDateStructure.SetEarthCalendar(EpochString.Split('-')[0].ToInt32(),
+                                                    EpochString.Split('-')[1].ToInt32(),
+                                                    EpochString.Split('-')[2].ToInt32());
+        }
         /// <summary>Sets the Date Structure to be Earth based - Epoch of 1/1/1951 (RSS default)</summary>
         static public void SetEarthCalendar()
         {
