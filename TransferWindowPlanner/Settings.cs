@@ -44,6 +44,7 @@ namespace TransferWindowPlanner
 
         [Persistent] internal Boolean ShowCalendarToggle = false;
         internal Boolean RSSActive = false;
+        [Persistent] internal Boolean RSSShowCalendarToggled=false;
 
         internal enum ButtonStyleEnum
         {

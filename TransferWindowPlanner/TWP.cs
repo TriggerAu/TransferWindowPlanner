@@ -47,9 +47,7 @@ namespace TransferWindowPlanner
             InitWindows();
 
             if(settings.SelectedCalendar==CalendarTypeEnum.Earth) {
-                KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
-                                                    settings.EarthEpoch.Split('-')[1].ToInt32(),
-                                                    settings.EarthEpoch.Split('-')[2].ToInt32());
+                KSPDateStructure.SetEarthCalendar(settings.EarthEpoch);
                 windowSettings.ddlSettingsCalendar.SelectedIndex = (Int32)settings.SelectedCalendar;
             } 
 
@@ -99,7 +97,14 @@ namespace TransferWindowPlanner
                         .Select(a => a.assembly.GetExportedTypes())
                         .SelectMany(t => t)
                         .Any(t => t.FullName.ToLower().EndsWith(".realsolarsystem")))
+            {
                 settings.RSSActive = true;
+                if (!settings.RSSShowCalendarToggled)
+                {
+                    settings.ShowCalendarToggle = true;
+                    settings.RSSShowCalendarToggled = true;
+                }
+            }
 
             //Init the KAC Integration
             KACWrapper.InitKACWrapper();

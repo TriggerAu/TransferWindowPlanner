@@ -24,10 +24,29 @@ if ($VersionString -eq "")
 
 }
 
+"Getting the readme content`r`n"
+$readme = (Get-Content -Raw "$($PSScriptRoot)\..\PluginFiles\ReadMe-$($PluginName).txt")
+#If couldn't load it then bork out
+if (!$?) {
+    "Couldn't load the readme file. Quitting...`r`n"
+    return
+}
+$reldescr = [regex]::match($readme,"Version\s$($VersionString).+?(?=[\r\n]*Version\s\d+|$)","singleline,ignorecase").Value
+if ($reldescr -eq ""){
+    "Couldn't find readme section for v$($VersionString)`r`n"
+    return
+}
+
+#Now get the KSPVersion from the first line
+$KSPVersion = [regex]::match($reldescr,"KSP\sVersion\:.+?(?=[\r\n]|$)","singleline,ignorecase").Value.Split(":")[1].Trim(" ")
+if ($KSPVersion.Split(".").Length -lt 3){$KSPVersion += ".0"}
+if ($KSPVersion.Split(".").Length -lt 3){$KSPVersion += ".0"}
+
 $DestFullPath= "$($DestRootPath)\v$($VersionString)"
 
 
 "`r`nThis will build v$($VersionString) of the $($PluginName)"
+"`tKSPVersion:`t$($KSPVersion)"
 "`tFrom:`t$($SourcePath)"
 "`tTo:`t$($DestFullPath)"
 $Choices= [System.Management.Automation.Host.ChoiceDescription[]] @("&Yes","&No")
@@ -49,7 +68,6 @@ if($ChoiceRtn -eq 0)
     New-Item $DestRootPath -name "v$($VersionString)" -ItemType Directory
 
     #Dont create this or it will copy the files into a subfolder
-    #New-Item $DestFullPath -name "KSPAlternateResourcePanel_$($VersionString)" -ItemType Directory
     New-Item $DestFullPath -name "$($PluginName)Source_$($VersionString)" -ItemType Directory
 
     #Copy the items 
@@ -64,6 +82,24 @@ if($ChoiceRtn -eq 0)
         ForEach-Object {$_ -replace "%VERSIONSTRING%",$VersionString} |
             Set-Content "$($DestFullPath)\$($PluginName)_$($VersionString)\ReadMe-$($PluginName).txt"
 	Move-Item "$($DestFullPath)\$($PluginName)_$($VersionString)\ReadMe-$($PluginName).txt" "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData\TriggerTech\"
+
+
+
+    #Build the Version File
+    "Building Version file..."
+    $VersionTemplate = Get-Content "$($PSScriptRoot)\$($PluginName).version"
+    $VersionTemplate = $VersionTemplate.Replace("%PLUGIN_MAJOR%",$VersionString.Split(".")[0])
+    $VersionTemplate = $VersionTemplate.Replace("%PLUGIN_MINOR%",$VersionString.Split(".")[1])
+    $VersionTemplate = $VersionTemplate.Replace("%PLUGIN_PATCH%",$VersionString.Split(".")[2])
+    $VersionTemplate = $VersionTemplate.Replace("%PLUGIN_BUILD%",$VersionString.Split(".")[3])
+    
+    $VersionTemplate = $VersionTemplate.Replace("%KSP_MAJOR%",$KSPVersion.Split(".")[0])
+    $VersionTemplate = $VersionTemplate.Replace("%KSP_MINOR%",$KSPVersion.Split(".")[1])
+    $VersionTemplate = $VersionTemplate.Replace("%KSP_PATCH%",$KSPVersion.Split(".")[2])
+
+    $VersionTemplate | Set-Content "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData\TriggerTech\$($PluginName)\$($PluginName).version"
+
+    Copy-Item "$($DestFullPath)\$($PluginName)_$($VersionString)\GameData\TriggerTech\$($PluginName)\$($PluginName).version" "$($SourcePath)\$($GitHubName)\$($PluginName).version"
 
     #Copy the source files
     "Copying Source..."

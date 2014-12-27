@@ -238,7 +238,7 @@ namespace TransferWindowPlanner
         internal override void DrawWindow(int id)
         {
             //Calendar toggle
-            if (settings.ShowCalendarToggle || settings.RSSActive)
+            if (settings.ShowCalendarToggle)
             {
                 if (GUI.Button(new Rect(WindowRect.width - 122, 2, 30, 20), new GUIContent(Resources.btnCalendar, "Toggle Calendar"), "ButtonSettings"))
                 {
@@ -250,9 +250,7 @@ namespace TransferWindowPlanner
                     else
                     {
                         settings.SelectedCalendar = CalendarTypeEnum.Earth;
-                        KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
-                                        settings.EarthEpoch.Split('-')[1].ToInt32(),
-                                        settings.EarthEpoch.Split('-')[2].ToInt32());
+                        KSPDateStructure.SetEarthCalendar(settings.EarthEpoch);
                     }
                     settings.Save();
                 }

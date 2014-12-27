@@ -51,7 +51,7 @@ namespace TransferWindowPlanner
             ddlSettingsButtonStyle.OnSelectionChanged += ddlSettingsButtonStyle_OnSelectionChanged;
             ddlSettingsCalendar = new DropDownList(EnumExtensions.ToEnumDescriptions<CalendarTypeEnum>(), this);
             //NOTE:Pull out the custom option for now
-            ddlSettingsCalendar.Items.Remove(CalendarTypeEnum.Custom.ToString());
+            ddlSettingsCalendar.Items.Remove(CalendarTypeEnum.Custom.Description());
             ddlSettingsCalendar.OnSelectionChanged += ddlSettingsCalendar_OnSelectionChanged;
             
             ddlManager.AddDDL(ddlSettingsCalendar);
@@ -98,9 +98,7 @@ namespace TransferWindowPlanner
             {
                 case CalendarTypeEnum.KSPStock: KSPDateStructure.SetKSPStockCalendar(); break;
                 case CalendarTypeEnum.Earth:
-                    KSPDateStructure.SetEarthCalendar(settings.EarthEpoch.Split('-')[0].ToInt32(),
-                                    settings.EarthEpoch.Split('-')[1].ToInt32(),
-                                    settings.EarthEpoch.Split('-')[2].ToInt32());
+                    KSPDateStructure.SetEarthCalendar(settings.EarthEpoch);
                     break;
                 case CalendarTypeEnum.Custom:   
                     KSPDateStructure.SetCustomCalendar();
@@ -297,8 +295,9 @@ namespace TransferWindowPlanner
             //Update Check Area
             GUILayout.Label("General Settings", Styles.styleTextHeading);
 
-            GUILayout.BeginHorizontal(Styles.styleSettingsArea);
-
+            GUILayout.BeginVertical(Styles.styleSettingsArea);
+            
+            GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.Width(60));
             GUILayout.Space(2); //to even up the text
             GUILayout.Label("Calendar:", Styles.styleTextHeading);
@@ -310,7 +309,7 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
             if (DrawToggle(ref settings.ShowCalendarToggle, "Show Calendar Toggle in Main Window", Styles.styleToggle))
                 settings.Save();
-
+            GUILayout.EndVertical();
 
             if (settings.SelectedCalendar == CalendarTypeEnum.Earth)
             {
