@@ -28,7 +28,10 @@ This work is licensed under an MIT license as outlined at the OSI site. Visit th
 
 VERSION HISTORY
 Version 1.2.2.0		-	KSP Version: 0.90
+- All backend stuff...
 - Added AVC version files (Issue #25)
+- Updated Toolbar wrapper
+- Updated DateTime Library
 
 Version 1.2.1.0		-	KSP Version: 0.90
 - Reworked the storage of input values to remove issues (Issue #25)
