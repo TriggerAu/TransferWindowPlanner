@@ -102,6 +102,12 @@ namespace TransferWindowPlanner
 
                 DrawLabel("{0}", KSPDateStructure.CalendarType);
 
+                //if (mbTWP.btnAppLauncher != null)
+                //{
+                //    DrawLabel(Camera.current.WorldToScreenPoint(mbTWP.btnAppLauncher.GetAnchor()).ToString());
+
+                //    DrawLabel(Camera.current.WorldToScreenPoint(mbTWP.btnAppLauncher.transform.localPosition).ToString());
+                //}
                 //if (GUILayout.Button("Make Date"))
                 //{
                 //    LogFormatted("a");

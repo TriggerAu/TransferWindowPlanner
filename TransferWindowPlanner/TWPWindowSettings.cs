@@ -23,7 +23,7 @@ namespace TransferWindowPlanner
         private DropDownList ddlSettingsButtonStyle;
         internal DropDownList ddlSettingsCalendar;
 
-        internal Int32 WindowWidth = 320;
+        internal Int32 WindowWidth = 360;
         internal Int32 WindowHeight = 200;
 
         internal enum SettingsTabs
@@ -273,7 +273,7 @@ namespace TransferWindowPlanner
                 //Alarm Area
                 GUILayout.BeginVertical(Styles.styleSettingsArea);
                 //if (KACWrapper.KAC.DrawAlarmActionChoice(ref KACAlarmAction, "On Alarm:", 108, 61))
-                if (KACWrapper.KAC.DrawAlarmActionChoice(ref settings.KACAlarmAction, "Action:", 90 , 50))
+                if (KACWrapper.KAC.DrawAlarmActionChoice(ref settings.KACAlarmAction, "Action:", 90 , 38))
                     {
                     settings.Save();
                 }
@@ -378,7 +378,7 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.BeginVertical(GUILayout.Width(160));
+            GUILayout.BeginVertical(GUILayout.Width(200));
             GUILayout.Space(4);
             GUILayout.Label("Last Check Attempt:");
             GUILayout.Label("Current Version:");
