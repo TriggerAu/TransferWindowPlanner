@@ -27,6 +27,10 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.2.3.0		-	KSP Version: 0.90
+- Fixed missing icon (Issue #29)
+- Changed input lock in flight mode (Issue #30)
+
 Version 1.2.2.0		-	KSP Version: 0.90
 - All backend stuff...
 - Added AVC version files (Issue #25)
