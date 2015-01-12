@@ -296,6 +296,10 @@ namespace TransferWindowPlanner
                     texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
                 }
             }
+#if DEBUG
+            Byte[] PNG = texPlotArea.EncodeToPNG();
+            System.IO.File.WriteAllBytes(String.Format("{0}/DeltaVWorkingPlot.png", Resources.PathPlugin), PNG);
+#endif
             texPlotArea.Apply();
         }
 
