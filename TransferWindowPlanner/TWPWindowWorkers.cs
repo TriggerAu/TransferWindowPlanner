@@ -201,12 +201,15 @@ namespace TransferWindowPlanner
                 //LogFormatted("{0:0.000}-{1}", workingpercent, iCurrent);
                 for (int x = 0; x < PlotWidth; x++)
                 {
-                    iCurrent = (int)(y * PlotHeight + x);
+                    iCurrent = (int)(y * PlotWidth + x);
 
                     //Set the Value for this position to be the DeltaV of this Transfer
                     DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, 
                         DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution), 
                         InitialOrbitAltitude, FinalOrbitAltitude);
+
+                    /////////////// Long Running ////////////////////////////
+                    //LogFormatted("{0}x{1} ({3}) = {2:0}", x, y, DeltaVs[iCurrent],iCurrent);
 
                     if (DeltaVs[iCurrent] > maxDeltaV)
                         maxDeltaV = DeltaVs[iCurrent];
@@ -223,6 +226,11 @@ namespace TransferWindowPlanner
                 }
             }
 
+            /////////////// Long Running ////////////////////////////
+            //for (int i = 0; i < DeltaVs.Length; i++)
+            //{
+            //    LogFormatted("{0}-{1}", i, DeltaVs[i]);
+            //}
 #if DEBUG
             String File = "";
             for (int y = 0; y < PlotHeight; y++)
@@ -230,7 +238,7 @@ namespace TransferWindowPlanner
                 String strline = "";
                 for (int x = 0; x < PlotWidth; x++)
                 {
-                    iCurrent = (int)(y * PlotHeight + x);
+                    iCurrent = (int)(y * PlotWidth + x);
                     strline += String.Format("{0:0},", DeltaVs[iCurrent]);
                 }
                 File += strline + "\r\n";
@@ -243,10 +251,18 @@ namespace TransferWindowPlanner
             Double mean, stddev;
             //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
             LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
+
+            /////////////// Long Running ////////////////////////////
+            //LogFormatted("DVMin: {0} - DVLength:{1}", DeltaVs.Min(), DeltaVs.Length);
+            //LogFormatted(String.Join(",", DeltaVs.Select(v=>v.ToString()).ToArray()));
+
             logMinDeltaV = Math.Log(DeltaVs.Min());
             mean = sumlogDeltaV / DeltaVs.Length;
             stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
             logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
+
+            /////////////// Long Running ////////////////////////////
+            //LogFormatted("logmin:{0}, LogMax:{1}", logMinDeltaV, logMaxDeltaV);
 
             if (DeltaVColorPalette == null)
                 GenerateDeltaVPalette();
@@ -256,7 +272,7 @@ namespace TransferWindowPlanner
             {
                 for (int x = 0; x < PlotWidth; x++)
                 {
-                    iCurrent = (Int32)(y * PlotHeight + x);
+                    iCurrent = (Int32)(y * PlotWidth + x);
                     logDeltaV = Math.Log(DeltaVs[iCurrent]);
                     double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
                     Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
@@ -286,16 +302,35 @@ namespace TransferWindowPlanner
                 GenerateDeltaVTexture();
 
             //Now Draw the texture
-            LogFormatted("Placing Colors on texture");
+            LogFormatted("Placing Colors on texture-{0}x{1}", PlotWidth, PlotHeight);
+            Int32 iCurrent = 0;
+            Int32 ColorIndex = 0;
+            /////////////// Long Running ////////////////////////////
+            //String Line = "A";
+            try
+            {
+
             texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
             for (int y = 0; y < PlotHeight; y++) {
                 for (int x = 0; x < PlotWidth; x++) {
-                    Int32 iCurrent = (Int32)(y * PlotHeight + x);
-                    Int32 ColorIndex = DeltaVsColorIndex[iCurrent];
+                    //Line = x.ToString() + "-" + y.ToString() + "-A";
+                    iCurrent = (Int32)(y * PlotWidth + x);
+                    //Line += "A";
+                    ColorIndex = DeltaVsColorIndex[iCurrent];
+                    //Line += "A";
                     //Data flows from left->right and top->bottom so need to reverse y (and cater to 0 based) when drawing the texture
                     texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
+                    //Line += "A";
                 }
             }
+            }
+            catch (Exception ex)
+            {
+                //LogFormatted("Value:{0} - ColIndex:{1} - Length:{2} - Line:{3}", iCurrent, ColorIndex, DeltaVsColorIndex.Length, Line);
+                LogFormatted(ex.Message);
+                //LogFormatted("DVColPalLength:{0}", DeltaVColorPalette.Count);
+            }
+
 #if DEBUG
             Byte[] PNG = texPlotArea.EncodeToPNG();
             System.IO.File.WriteAllBytes(String.Format("{0}/DeltaVWorkingPlot.png", Resources.PathPlugin), PNG);
