@@ -94,7 +94,7 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest4);
                 DrawTextBox(ref intTest5);
 
-                Double TravelRange = (new KSPTimeSpan(mbTWP.windowMain.strTravelMinDays, "0", "0", "0") - new KSPTimeSpan(mbTWP.windowMain.strTravelMaxDays, "0", "0", "0")).UT;
+                Double TravelRange = (new KSPTimeSpan(mbTWP.windowMain.strTravelMaxDays, "0", "0", "0") - new KSPTimeSpan(mbTWP.windowMain.strTravelMinDays, "0", "0", "0")).UT;
                 Double DepartureRange = (mbTWP.windowMain.dateMaxDeparture - mbTWP.windowMain.dateMinDeparture).UT;
 
                 DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(DepartureRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), DepartureRange);

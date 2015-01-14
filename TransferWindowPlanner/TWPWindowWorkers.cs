@@ -155,7 +155,7 @@ namespace TransferWindowPlanner
         {
             SetWorkerVariables();
 
-            dVDataOnly = !NoTextureGen;
+            dVDataOnly = NoTextureGen;
 
             workingpercent = 0;
             Running = true;
@@ -202,6 +202,7 @@ namespace TransferWindowPlanner
             Int32 iCurrent = 0;
 
 #if DEBUG
+            ////////n eed to make sure this bombing out cause file is locked doesnt stop process :)
             String strCSVLine = "";
             if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin)))
                 System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin));
@@ -243,7 +244,7 @@ namespace TransferWindowPlanner
                 }
 
 #if DEBUG
-                System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin),strCSVLine.TrimEnd(','));
+                System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin),strCSVLine.TrimEnd(',') + "\r\n");
 #endif
             }
 
