@@ -82,6 +82,8 @@ namespace TransferWindowPlanner
         public Double dblEjectAt = 0, dblOutAngle=0;
         TransferDetails transTemp;
 
+        double width, height;
+
         internal override void DrawWindow(int id)
         {
             try
@@ -92,6 +94,17 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest4);
                 DrawTextBox(ref intTest5);
 
+                Double TravelRange = (new KSPTimeSpan(mbTWP.windowMain.strTravelMinDays, "0", "0", "0") - new KSPTimeSpan(mbTWP.windowMain.strTravelMaxDays, "0", "0", "0")).UT;
+                Double DepartureRange = (mbTWP.windowMain.dateMaxDeparture - mbTWP.windowMain.dateMinDeparture).UT;
+
+                DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(DepartureRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), DepartureRange);
+                DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(TravelRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), TravelRange);
+
+                width = ( DepartureRange / KSPDateStructure.SecondsPerDay * intTest5) + 1;
+                height = (TravelRange / KSPDateStructure.SecondsPerDay * intTest5) + 1;
+
+                DrawLabel("{0}x{1}", width, height);
+
 
                 DrawLabel("Default Scale: {0}",(mbTWP.windowMain.PlotWidth == 292 && mbTWP.windowMain.PlotHeight == 292));
                 if (GUILayout.Button("Reset Scale")) {
@@ -99,9 +112,16 @@ namespace TransferWindowPlanner
                     mbTWP.windowMain.PlotHeight = 292;
                 }
 
-                if (GUILayout.Button("Apply Scale")) {
+                if (GUILayout.Button("Apply manual Scale (value 1 and 2)")) {
                     mbTWP.windowMain.PlotWidth = intTest1;
                     mbTWP.windowMain.PlotHeight = intTest2;
+                }
+
+                if (GUILayout.Button("Apply calculates Scale and Run (value 5 - points per day)")) {
+                    mbTWP.windowMain.PlotWidth = (Int32)width;
+                    mbTWP.windowMain.PlotHeight = (Int32)height;
+
+                    mbTWP.windowMain.RunPlot();
                 }
 
 

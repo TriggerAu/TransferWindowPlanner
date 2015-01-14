@@ -224,7 +224,7 @@ namespace TransferWindowPlanner
         //String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
         internal KSPDateTime dateMinDeparture, dateMaxDeparture;
         String strDepartureAltitude, strArrivalAltitude;
-        String strTravelMinDays, strTravelMaxDays;
+        internal String strTravelMinDays, strTravelMaxDays;
 
         internal Vector2 vectMouse;
         internal Vector2 vectSelected;
@@ -743,6 +743,17 @@ namespace TransferWindowPlanner
             }
             GUILayout.EndHorizontal();
         }
+
+#if DEBUG
+        internal void RunPlot()
+        {
+            mbTWP.windowSettings.Visible = false;
+            StartWorker(true);
+            WindowRect.height = 400;
+            ShowEjectionDetails = false;
+
+        }
+#endif
 
         internal void ResetWindow()
         {

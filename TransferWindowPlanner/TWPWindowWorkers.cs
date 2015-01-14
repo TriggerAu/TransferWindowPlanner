@@ -150,9 +150,12 @@ namespace TransferWindowPlanner
             DeltaVsColorIndex = new Int32[PlotWidth * PlotHeight];
         }
 
-        private void StartWorker()
+        internal Boolean dVDataOnly = false;
+        private void StartWorker(Boolean NoTextureGen = false)
         {
             SetWorkerVariables();
+
+            dVDataOnly = !NoTextureGen;
 
             workingpercent = 0;
             Running = true;
@@ -169,7 +172,9 @@ namespace TransferWindowPlanner
         {
             Running = false;
             Done = true;
-            TextureReadyToDraw = true;
+
+            if (!dVDataOnly)
+                TextureReadyToDraw = true;
         }
 
         internal Int32 PlotWidth = 292, PlotHeight = 292;
@@ -195,9 +200,18 @@ namespace TransferWindowPlanner
 
             //Loop through getting the DeltaV's and assigning em all to an array
             Int32 iCurrent = 0;
+
+#if DEBUG
+            String strCSVLine = "";
+            if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin)))
+                System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin));
+#endif
             LogFormatted("Generating DeltaV Values");
             for (int y = 0; y < PlotHeight; y++)
             {
+#if DEBUG
+                strCSVLine = "";
+#endif
                 //LogFormatted("{0:0.000}-{1}", workingpercent, iCurrent);
                 for (int x = 0; x < PlotWidth; x++)
                 {
@@ -208,6 +222,9 @@ namespace TransferWindowPlanner
                         DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution), 
                         InitialOrbitAltitude, FinalOrbitAltitude);
 
+#if DEBUG
+                    strCSVLine += String.Format("{0:0},", DeltaVs[iCurrent]);
+#endif
                     /////////////// Long Running ////////////////////////////
                     //LogFormatted("{0}x{1} ({3}) = {2:0}", x, y, DeltaVs[iCurrent],iCurrent);
 
@@ -224,29 +241,15 @@ namespace TransferWindowPlanner
 
                     workingpercent = (Double)iCurrent / (Double)(PlotHeight * PlotWidth);
                 }
-            }
 
-            /////////////// Long Running ////////////////////////////
-            //for (int i = 0; i < DeltaVs.Length; i++)
-            //{
-            //    LogFormatted("{0}-{1}", i, DeltaVs[i]);
-            //}
 #if DEBUG
-            String File = "";
-            for (int y = 0; y < PlotHeight; y++)
-            {
-                String strline = "";
-                for (int x = 0; x < PlotWidth; x++)
-                {
-                    iCurrent = (int)(y * PlotWidth + x);
-                    strline += String.Format("{0:0},", DeltaVs[iCurrent]);
-                }
-                File += strline + "\r\n";
+                System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin),strCSVLine.TrimEnd(','));
+#endif
             }
 
-
-            System.IO.File.WriteAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin), File);
-#endif
+            if (dVDataOnly){
+                return;
+            }
 
             Double mean, stddev;
             //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
