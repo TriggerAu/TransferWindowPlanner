@@ -204,27 +204,38 @@ namespace TransferWindowPlanner
 #if DEBUG
             ////////n eed to make sure this bombing out cause file is locked doesnt stop process :)
             String strCSVLine = "";
-            if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin)))
-                System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin));
+            if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin)))
+                System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin));
+            if (System.IO.File.Exists(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName,cbDestination.bodyName)))
+                System.IO.File.Delete(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
 #endif
             LogFormatted("Generating DeltaV Values");
-            for (int y = 0; y < PlotHeight; y++)
+            for (int x = 0; x < PlotWidth; x++)
             {
 #if DEBUG
                 strCSVLine = "";
 #endif
+                TransferDetails transferDailyBest = new TransferDetails();
+                Double transferDailyBestDV = Double.MaxValue;
                 //LogFormatted("{0:0.000}-{1}", workingpercent, iCurrent);
-                for (int x = 0; x < PlotWidth; x++)
+                for (int y = 0; y < PlotHeight; y++)
                 {
+                    //have to keep this this way so the texture draws the right way around
                     iCurrent = (int)(y * PlotWidth + x);
 
+                    TransferDetails transferTemp;
+                    
                     //Set the Value for this position to be the DeltaV of this Transfer
                     DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, 
-                        DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution), 
-                        InitialOrbitAltitude, FinalOrbitAltitude);
+                        DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution),
+                        InitialOrbitAltitude, FinalOrbitAltitude, out transferTemp);
 
 #if DEBUG
                     strCSVLine += String.Format("{0:0},", DeltaVs[iCurrent]);
+                    if (transferTemp.DVTotal < transferDailyBestDV) {
+                        transferDailyBest = transferTemp;
+                        transferDailyBestDV = transferTemp.DVTotal;
+                    }
 #endif
                     /////////////// Long Running ////////////////////////////
                     //LogFormatted("{0}x{1} ({3}) = {2:0}", x, y, DeltaVs[iCurrent],iCurrent);
@@ -240,11 +251,14 @@ namespace TransferWindowPlanner
                     sumlogDeltaV += logDeltaV;
                     sumSqLogDeltaV += logDeltaV * logDeltaV;
 
-                    workingpercent = (Double)iCurrent / (Double)(PlotHeight * PlotWidth);
+                    workingpercent = (x * PlotHeight + y) / (Double)(PlotHeight * PlotWidth);
                 }
 
 #if DEBUG
                 System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin),strCSVLine.TrimEnd(',') + "\r\n");
+
+                System.IO.File.AppendAllText(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName),
+                    String.Format("{0:0},{1:0},{2:0}\r\n",transferDailyBest.DepartureTime,transferDailyBest.DVTotal,transferDailyBest.TravelTime));
 #endif
             }
 

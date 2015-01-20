@@ -76,7 +76,7 @@ namespace TransferWindowPlanner
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
-        public Int32 intTest5 = 300;
+        public Int32 intTest5 = 1;
 
 
         public Double dblEjectAt = 0, dblOutAngle=0;
