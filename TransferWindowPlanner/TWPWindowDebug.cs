@@ -124,7 +124,6 @@ namespace TransferWindowPlanner
                     mbTWP.windowMain.RunPlot();
                 }
 
-
                 //Styles.styleTextFieldLabel.padding.top = intTest1;
 
                 //if (GUILayout.Button("KSP")) SkinsLibrary.SetCurrent(SkinsLibrary.DefSkinType.KSP);

@@ -202,12 +202,18 @@ namespace TransferWindowPlanner
             Int32 iCurrent = 0;
 
 #if DEBUG
-            ////////n eed to make sure this bombing out cause file is locked doesnt stop process :)
+            ////////need to make sure this bombing out cause file is locked doesnt stop process :)
             String strCSVLine = "";
-            if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin)))
-                System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin));
-            if (System.IO.File.Exists(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName,cbDestination.bodyName)))
-                System.IO.File.Delete(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
+            try {
+                if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin)))
+                    System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin));
+            }
+            catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
+            try {
+                if (System.IO.File.Exists(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName)))
+                    System.IO.File.Delete(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
+            }
+            catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
 #endif
             LogFormatted("Generating DeltaV Values");
             for (int x = 0; x < PlotWidth; x++)
@@ -255,10 +261,15 @@ namespace TransferWindowPlanner
                 }
 
 #if DEBUG
-                System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin),strCSVLine.TrimEnd(',') + "\r\n");
+                try {
+                    System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin), strCSVLine.TrimEnd(',') + "\r\n");
+                } catch (Exception) { }
 
-                System.IO.File.AppendAllText(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName),
-                    String.Format("{0:0},{1:0},{2:0}\r\n",transferDailyBest.DepartureTime,transferDailyBest.DVTotal,transferDailyBest.TravelTime));
+                try {
+                    System.IO.File.AppendAllText(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName),
+                        String.Format("{0:0},{1:0},{2:0},\"{3}\",\"{4}\"\r\n", transferDailyBest.DepartureTime, transferDailyBest.DVTotal, transferDailyBest.TravelTime,new KSPDateTime(transferDailyBest.DepartureTime).ToStringStandard(DateStringFormatsEnum.KSPFormat),new KSPTimeSpan(transferDailyBest.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong)));
+                }
+                catch (Exception) { }
 #endif
             }
 
