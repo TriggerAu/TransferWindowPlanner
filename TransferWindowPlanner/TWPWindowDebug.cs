@@ -76,7 +76,8 @@ namespace TransferWindowPlanner
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 0;
-        public Int32 intTest5 = 1;
+        public Int32 intPlotDeparturePerDay = 1;
+        public Int32 intPlotTravelPointsPerDay = 1;
 
 
         public Double dblEjectAt = 0, dblOutAngle=0;
@@ -92,7 +93,8 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest2);
                 DrawTextBox(ref intTest3);
                 DrawTextBox(ref intTest4);
-                DrawTextBox(ref intTest5);
+                DrawTextBox(ref intPlotDeparturePerDay);
+                DrawTextBox(ref intPlotTravelPointsPerDay);
 
                 Double TravelRange = (new KSPTimeSpan(mbTWP.windowMain.strTravelMaxDays, "0", "0", "0") - new KSPTimeSpan(mbTWP.windowMain.strTravelMinDays, "0", "0", "0")).UT;
                 Double DepartureRange = (mbTWP.windowMain.dateMaxDeparture - mbTWP.windowMain.dateMinDeparture).UT;
@@ -100,8 +102,8 @@ namespace TransferWindowPlanner
                 DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(DepartureRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), DepartureRange);
                 DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(TravelRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), TravelRange);
 
-                width = ( DepartureRange / KSPDateStructure.SecondsPerDay * intTest5) + 1;
-                height = (TravelRange / KSPDateStructure.SecondsPerDay * intTest5) + 1;
+                width = (DepartureRange / KSPDateStructure.SecondsPerDay * intPlotDeparturePerDay) + 1;
+                height = (TravelRange / KSPDateStructure.SecondsPerDay * intPlotTravelPointsPerDay) + 1;
 
                 DrawLabel("{0}x{1}", width, height);
 

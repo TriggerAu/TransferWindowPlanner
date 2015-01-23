@@ -156,6 +156,11 @@ namespace TransferWindowPlanner
             SetWorkerVariables();
 
             dVDataOnly = NoTextureGen;
+            if (!dVDataOnly)
+            {
+                PlotHeight = 292;
+                PlotWidth = 292;
+            }
 
             workingpercent = 0;
             Running = true;
@@ -195,124 +200,159 @@ namespace TransferWindowPlanner
 
         void bw_GeneratePorkchop(object sender, DoWorkEventArgs e)
         {
-            sumlogDeltaV = 0; sumSqLogDeltaV = 0;
-            maxDeltaV = 0; minDeltaV = Double.MaxValue;
-
-            //Loop through getting the DeltaV's and assigning em all to an array
-            Int32 iCurrent = 0;
-
-#if DEBUG
-            ////////need to make sure this bombing out cause file is locked doesnt stop process :)
-            String strCSVLine = "";
-            try {
-                if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin)))
-                    System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin));
-            }
-            catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
-            try {
-                if (System.IO.File.Exists(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName)))
-                    System.IO.File.Delete(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
-            }
-            catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
-#endif
-            LogFormatted("Generating DeltaV Values");
-            for (int x = 0; x < PlotWidth; x++)
+            try
             {
+                sumlogDeltaV = 0; sumSqLogDeltaV = 0;
+                maxDeltaV = 0; minDeltaV = Double.MaxValue;
+
+                //Loop through getting the DeltaV's and assigning em all to an array
+                Int32 iCurrent = 0;
+
 #if DEBUG
-                strCSVLine = "";
-#endif
-                TransferDetails transferDailyBest = new TransferDetails();
-                Double transferDailyBestDV = Double.MaxValue;
-                //LogFormatted("{0:0.000}-{1}", workingpercent, iCurrent);
-                for (int y = 0; y < PlotHeight; y++)
+                ////////need to make sure this bombing out cause file is locked doesnt stop process :)
+                String strCSVLine = "", strCSVLine2 = "";
+                Boolean blnCSVTransferFirst = true;
+                try
                 {
-                    //have to keep this this way so the texture draws the right way around
-                    iCurrent = (int)(y * PlotWidth + x);
-
-                    TransferDetails transferTemp;
-                    
-                    //Set the Value for this position to be the DeltaV of this Transfer
-                    DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, 
-                        DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution),
-                        InitialOrbitAltitude, FinalOrbitAltitude, out transferTemp);
-
-#if DEBUG
-                    strCSVLine += String.Format("{0:0},", DeltaVs[iCurrent]);
-                    if (transferTemp.DVTotal < transferDailyBestDV) {
-                        transferDailyBest = transferTemp;
-                        transferDailyBestDV = transferTemp.DVTotal;
-                    }
-#endif
-                    /////////////// Long Running ////////////////////////////
-                    //LogFormatted("{0}x{1} ({3}) = {2:0}", x, y, DeltaVs[iCurrent],iCurrent);
-
-                    if (DeltaVs[iCurrent] > maxDeltaV)
-                        maxDeltaV = DeltaVs[iCurrent];
-                    if (DeltaVs[iCurrent] < minDeltaV) {
-                        minDeltaV = DeltaVs[iCurrent];
-                        minDeltaVPoint = new Vector2(x, y);
-                    }
-
-                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                    sumlogDeltaV += logDeltaV;
-                    sumSqLogDeltaV += logDeltaV * logDeltaV;
-
-                    workingpercent = (x * PlotHeight + y) / (Double)(PlotHeight * PlotWidth);
+                    if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin)))
+                        System.IO.File.Delete(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin));
                 }
-
-#if DEBUG
-                try {
-                    System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin), strCSVLine.TrimEnd(',') + "\r\n");
-                } catch (Exception) { }
-
-                try {
-                    System.IO.File.AppendAllText(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName),
-                        String.Format("{0:0},{1:0},{2:0},\"{3}\",\"{4}\"\r\n", transferDailyBest.DepartureTime, transferDailyBest.DVTotal, transferDailyBest.TravelTime,new KSPDateTime(transferDailyBest.DepartureTime).ToStringStandard(DateStringFormatsEnum.KSPFormat),new KSPTimeSpan(transferDailyBest.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong)));
+                catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
+                try
+                {
+                    if (System.IO.File.Exists(String.Format("{0}/DeltaVTravelWorking.csv", Resources.PathPlugin)))
+                        System.IO.File.Delete(String.Format("{0}/DeltaVTravelWorking.csv", Resources.PathPlugin));
                 }
-                catch (Exception) { }
+                catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
+                try
+                {
+                    if (System.IO.File.Exists(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName)))
+                        System.IO.File.Delete(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
+                }
+                catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
 #endif
-            }
-
-            if (dVDataOnly){
-                return;
-            }
-
-            Double mean, stddev;
-            //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
-            LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
-
-            /////////////// Long Running ////////////////////////////
-            //LogFormatted("DVMin: {0} - DVLength:{1}", DeltaVs.Min(), DeltaVs.Length);
-            //LogFormatted(String.Join(",", DeltaVs.Select(v=>v.ToString()).ToArray()));
-
-            logMinDeltaV = Math.Log(DeltaVs.Min());
-            mean = sumlogDeltaV / DeltaVs.Length;
-            stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
-            logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
-
-            /////////////// Long Running ////////////////////////////
-            //LogFormatted("logmin:{0}, LogMax:{1}", logMinDeltaV, logMaxDeltaV);
-
-            if (DeltaVColorPalette == null)
-                GenerateDeltaVPalette();
-
-            LogFormatted("Placing ColorIndexes in array");
-            for (int y = 0; y < PlotHeight; y++)
-            {
+                LogFormatted("Generating DeltaV Values");
                 for (int x = 0; x < PlotWidth; x++)
                 {
-                    iCurrent = (Int32)(y * PlotWidth + x);
-                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                    double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
-                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+#if DEBUG
+                    strCSVLine = "";
+#endif
+                    TransferDetails transferDailyBest = new TransferDetails();
+                    Double transferDailyBestDV = Double.MaxValue;
+                    //LogFormatted("{0:0.000}-{1}", workingpercent, iCurrent);
+                    for (int y = 0; y < PlotHeight; y++)
+                    {
+                        //have to keep this this way so the texture draws the right way around
+                        iCurrent = (int)(y * PlotWidth + x);
 
-                    DeltaVsColorIndex[iCurrent] = ColorIndex;
+                        TransferDetails transferTemp;
+
+                        //Set the Value for this position to be the DeltaV of this Transfer
+                        DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination,
+                            DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution),
+                            InitialOrbitAltitude, FinalOrbitAltitude, out transferTemp);
+
+                        //LogFormatted("dt: {0}  TT:{1}", TravelMax - ((Double)y * yResolution), transferTemp.TravelTime);
+#if DEBUG
+                        strCSVLine += String.Format("{0:0.00},", DeltaVs[iCurrent]);
+                        if (blnCSVTransferFirst)
+                            strCSVLine2 += String.Format("{0:0.00},", transferTemp.TravelTime);
+
+                        if (transferTemp.DVTotal < transferDailyBestDV)
+                        {
+                            transferDailyBest = transferTemp;
+                            transferDailyBestDV = transferTemp.DVTotal;
+                        }
+#endif
+                        /////////////// Long Running ////////////////////////////
+                        //LogFormatted("{0}x{1} ({3}) = {2:0}", x, y, DeltaVs[iCurrent],iCurrent);
+
+                        if (DeltaVs[iCurrent] > maxDeltaV)
+                            maxDeltaV = DeltaVs[iCurrent];
+                        if (DeltaVs[iCurrent] < minDeltaV)
+                        {
+                            minDeltaV = DeltaVs[iCurrent];
+                            minDeltaVPoint = new Vector2(x, y);
+                        }
+
+                        logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                        sumlogDeltaV += logDeltaV;
+                        sumSqLogDeltaV += logDeltaV * logDeltaV;
+
+                        workingpercent = (x * PlotHeight + y) / (Double)(PlotHeight * PlotWidth);
+                    }
+
+#if DEBUG
+                    try
+                    {
+                        System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin), strCSVLine.TrimEnd(',') + "\r\n");
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        if (blnCSVTransferFirst)
+                        {
+                            System.IO.File.AppendAllText(String.Format("{0}/DeltaVTravelWorking.csv", Resources.PathPlugin), strCSVLine2.TrimEnd(',') + "\r\n");
+                            blnCSVTransferFirst = false;
+                        }
+                    }
+                    catch (Exception) { }
+
+                    try
+                    {
+                        System.IO.File.AppendAllText(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName),
+                            String.Format("{0:0.00},{1:0.00},{2:0.00},\"{3}\",\"{4}\"\r\n", transferDailyBest.DepartureTime, transferDailyBest.DVTotal, transferDailyBest.TravelTime, new KSPDateTime(transferDailyBest.DepartureTime).ToStringStandard(DateStringFormatsEnum.KSPFormat), new KSPTimeSpan(transferDailyBest.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong)));
+                    }
+                    catch (Exception) { }
+#endif
                 }
-            }
 
-            //Set the Best Transfer
-            vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
-            SetTransferDetails();
+                if (dVDataOnly)
+                {
+                    return;
+                }
+
+                Double mean, stddev;
+                //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
+                LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
+
+                /////////////// Long Running ////////////////////////////
+                //LogFormatted("DVMin: {0} - DVLength:{1}", DeltaVs.Min(), DeltaVs.Length);
+                //LogFormatted(String.Join(",", DeltaVs.Select(v=>v.ToString()).ToArray()));
+
+                logMinDeltaV = Math.Log(DeltaVs.Min());
+                mean = sumlogDeltaV / DeltaVs.Length;
+                stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
+                logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
+
+                /////////////// Long Running ////////////////////////////
+                //LogFormatted("logmin:{0}, LogMax:{1}", logMinDeltaV, logMaxDeltaV);
+
+                if (DeltaVColorPalette == null)
+                    GenerateDeltaVPalette();
+
+                LogFormatted("Placing ColorIndexes in array");
+                for (int y = 0; y < PlotHeight; y++)
+                {
+                    for (int x = 0; x < PlotWidth; x++)
+                    {
+                        iCurrent = (Int32)(y * PlotWidth + x);
+                        logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                        double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
+                        Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+
+                        DeltaVsColorIndex[iCurrent] = ColorIndex;
+                    }
+                }
+
+                //Set the Best Transfer
+                vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
+                SetTransferDetails();
+            }
+            catch (Exception ex)
+            {
+                LogFormatted("ERROR: Background Worker Failed\r\n{0}\r\n{1}", ex.Message, ex.StackTrace);
+            }
         }
 
         private void SetTransferDetails()
