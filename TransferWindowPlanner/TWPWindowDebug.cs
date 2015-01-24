@@ -75,9 +75,9 @@ namespace TransferWindowPlanner
         public Int32 intTest1 = 200;
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
-        public Int32 intTest4 = 0;
-        public Int32 intPlotDeparturePerDay = 1;
-        public Int32 intPlotTravelPointsPerDay = 1;
+        public Int32 intTest4 = 101;
+        public Int32 intPlotDeparturePerDay = 3;
+        public Int32 intPlotTravelPointsPerDay = 6;
 
 
         public Double dblEjectAt = 0, dblOutAngle=0;

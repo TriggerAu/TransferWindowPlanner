@@ -71,6 +71,7 @@
     <Compile Include="TWPWindowSettings.cs" />
     <Compile Include="TWPWindowSettingsBlockout.cs" />
     <Compile Include="TWPWindowWorkers.cs" />
+    <Compile Include="TWPWindowWorkerLongRun.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -744,17 +744,6 @@ namespace TransferWindowPlanner
             GUILayout.EndHorizontal();
         }
 
-#if DEBUG
-        internal void RunPlot()
-        {
-            mbTWP.windowSettings.Visible = false;
-            StartWorker(true);
-            WindowRect.height = 400;
-            ShowEjectionDetails = false;
-
-        }
-#endif
-
         internal void ResetWindow()
         {
             Done = false;
