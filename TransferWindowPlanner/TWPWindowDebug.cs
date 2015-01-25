@@ -108,16 +108,16 @@ namespace TransferWindowPlanner
                 DrawLabel("{0}x{1}", width, height);
 
 
-                DrawLabel("Default Scale: {0}",(mbTWP.windowMain.PlotWidth == 292 && mbTWP.windowMain.PlotHeight == 292));
-                if (GUILayout.Button("Reset Scale")) {
-                    mbTWP.windowMain.PlotWidth = 292;
-                    mbTWP.windowMain.PlotHeight = 292;
-                }
+                //DrawLabel("Default Scale: {0}",(mbTWP.windowMain.PlotWidth == 292 && mbTWP.windowMain.PlotHeight == 292));
+                //if (GUILayout.Button("Reset Scale")) {
+                //    mbTWP.windowMain.PlotWidth = 292;
+                //    mbTWP.windowMain.PlotHeight = 292;
+                //}
 
-                if (GUILayout.Button("Apply manual Scale (value 1 and 2)")) {
-                    mbTWP.windowMain.PlotWidth = intTest1;
-                    mbTWP.windowMain.PlotHeight = intTest2;
-                }
+                //if (GUILayout.Button("Apply manual Scale (value 1 and 2)")) {
+                //    mbTWP.windowMain.PlotWidth = intTest1;
+                //    mbTWP.windowMain.PlotHeight = intTest2;
+                //}
 
                 if (GUILayout.Button("Apply calculates Scale and Run (value 5 - points per day)")) {
                     mbTWP.windowMain.PlotWidth = (Int32)width;

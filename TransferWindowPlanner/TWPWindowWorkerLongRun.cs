@@ -31,6 +31,7 @@ namespace TransferWindowPlanner
             strTravelMinDays = "150";
             strTravelMaxDays = "450";
 
+
             mbTWP.windowSettings.Visible = false;
             StartLongWorker();
             WindowRect.height = 400;
