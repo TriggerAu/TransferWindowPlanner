@@ -76,8 +76,8 @@ namespace TransferWindowPlanner
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 101;
-        public Int32 intPlotDeparturePerDay = 3;
-        public Int32 intPlotTravelPointsPerDay = 6;
+        public Int32 intPlotDeparturePerDay = 1;
+        public Int32 intPlotTravelPointsPerDay = 1;
 
 
         public Double dblEjectAt = 0, dblOutAngle=0;
@@ -123,7 +123,7 @@ namespace TransferWindowPlanner
                     mbTWP.windowMain.PlotWidth = (Int32)width;
                     mbTWP.windowMain.PlotHeight = (Int32)height;
 
-                    mbTWP.windowMain.RunPlot();
+                    mbTWP.windowMain.RunPlots();
                 }
 
                 //Styles.styleTextFieldLabel.padding.top = intTest1;

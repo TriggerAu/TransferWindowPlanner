@@ -15,40 +15,172 @@ namespace TransferWindowPlanner
     {
 #if DEBUG
 
-#if DEBUG
-        internal void RunPlot()
+
+        class PlotAutomate
         {
-            ddlOrigin.SelectedIndex = 2;
+            public Int32 DepMinYear { get; set; }
+            public Int32 DepMaxYear { get; set; }
+            public String TravelMin { get; set; }
+            public String TravelMax { get; set; }
+            public Int32 Source { get; set; }
+            public Int32 Destination { get; set; }
+
+        }
+
+
+        List<PlotAutomate> lstPlots = new List<PlotAutomate>()
+        {
+            new PlotAutomate() {DepMinYear=1,DepMaxYear=21,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=21,DepMaxYear=41,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=41,DepMaxYear=61,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=61,DepMaxYear=81,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=81,DepMaxYear=101,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=101,DepMaxYear=121,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=121,DepMaxYear=141,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=141,DepMaxYear=161,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=161,DepMaxYear=181,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=181,DepMaxYear=201,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=201,DepMaxYear=221,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=221,DepMaxYear=241,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=241,DepMaxYear=261,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=261,DepMaxYear=281,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            new PlotAutomate() {DepMinYear=281,DepMaxYear=301,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+
+            new PlotAutomate() {DepMinYear=1,DepMaxYear=21,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=21,DepMaxYear=41,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=41,DepMaxYear=61,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=61,DepMaxYear=81,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=81,DepMaxYear=101,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=101,DepMaxYear=121,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=121,DepMaxYear=141,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=141,DepMaxYear=161,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=161,DepMaxYear=181,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=181,DepMaxYear=201,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=201,DepMaxYear=221,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=221,DepMaxYear=241,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=241,DepMaxYear=261,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=261,DepMaxYear=281,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=281,DepMaxYear=301,TravelMin="150",TravelMax="600",Source=5,Destination=0},
+
+            new PlotAutomate() {DepMinYear=1,DepMaxYear=21,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=21,DepMaxYear=41,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=41,DepMaxYear=61,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=61,DepMaxYear=81,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=81,DepMaxYear=101,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=101,DepMaxYear=121,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=121,DepMaxYear=141,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=141,DepMaxYear=161,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=161,DepMaxYear=181,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=181,DepMaxYear=201,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=201,DepMaxYear=221,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=221,DepMaxYear=241,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=241,DepMaxYear=261,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=261,DepMaxYear=281,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+            new PlotAutomate() {DepMinYear=281,DepMaxYear=301,TravelMin="50",TravelMax="250",Source=2,Destination=0},
+
+            new PlotAutomate() {DepMinYear=1,DepMaxYear=21,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=21,DepMaxYear=41,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=41,DepMaxYear=61,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=61,DepMaxYear=81,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=81,DepMaxYear=101,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=101,DepMaxYear=121,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=121,DepMaxYear=141,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=141,DepMaxYear=161,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=161,DepMaxYear=181,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=181,DepMaxYear=201,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=201,DepMaxYear=221,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=221,DepMaxYear=241,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=241,DepMaxYear=261,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=261,DepMaxYear=281,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+            new PlotAutomate() {DepMinYear=281,DepMaxYear=301,TravelMin="50",TravelMax="250",Source=0,Destination=0},
+
+            new PlotAutomate() {DepMinYear=1,DepMaxYear=21,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=21,DepMaxYear=41,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=41,DepMaxYear=61,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=61,DepMaxYear=81,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=81,DepMaxYear=101,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=101,DepMaxYear=121,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=121,DepMaxYear=141,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=141,DepMaxYear=161,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=161,DepMaxYear=181,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=181,DepMaxYear=201,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=201,DepMaxYear=221,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=221,DepMaxYear=241,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=241,DepMaxYear=261,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=261,DepMaxYear=281,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+            new PlotAutomate() {DepMinYear=281,DepMaxYear=301,TravelMin="100",TravelMax="400",Source=5,Destination=0},
+
+            new PlotAutomate() {DepMinYear=1,DepMaxYear=21,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=21,DepMaxYear=41,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=41,DepMaxYear=61,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=61,DepMaxYear=81,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=81,DepMaxYear=101,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=101,DepMaxYear=121,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=121,DepMaxYear=141,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=141,DepMaxYear=161,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=161,DepMaxYear=181,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=181,DepMaxYear=201,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=201,DepMaxYear=221,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=221,DepMaxYear=241,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=241,DepMaxYear=261,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=261,DepMaxYear=281,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+            new PlotAutomate() {DepMinYear=281,DepMaxYear=301,TravelMin="100",TravelMax="400",Source=0,Destination=2},
+
+            //new PlotAutomate() {DepMinYear=1,DepMaxYear=2,TravelMin="150",TravelMax="600",Source=2,Destination=2},
+            //new PlotAutomate() {DepMinYear=2,DepMaxYear=3,TravelMin="150",TravelMax="600",Source=3,Destination=2},
+            //new PlotAutomate() {DepMinYear=3,DepMaxYear=4,TravelMin="150",TravelMax="600",Source=2,Destination=2}
+
+        };
+
+
+        Int32 CurrentPlot = 0;
+        internal void RunPlots()
+        {
+            CurrentPlot = 0;
+
+            mbTWP.windowSettings.Visible = false;
+            WindowRect.height = 400;
+            ShowEjectionDetails = false;
+
+            LogFormatted("Starting new Run of {0} Plots", lstPlots.Count);
+
+            StartLongWorker();
+        }
+
+        private void StartLongWorker()
+        {
+            if (CurrentPlot >= lstPlots.Count)
+            {
+                LogFormatted("No more plots to run");
+                Running = false;
+                Done = true;
+                return;
+            }
+
+            LogFormatted("Setting up plot:{0}", CurrentPlot);
+            ddlOrigin.SelectedIndex = lstPlots[CurrentPlot].Source;
             SetupDestinationControls();
 
-            ddlDestination.SelectedIndex = 2;
+            ddlDestination.SelectedIndex = lstPlots[CurrentPlot].Destination;
             SetupTransferParams();
 
             strArrivalAltitude = "0";
             strDepartureAltitude = "0";
-            dateMinDeparture = new KSPDateTime(1, 1);
-            dateMaxDeparture = new KSPDateTime(mbTWP.windowDebug.intTest4, 1);
-            strTravelMinDays = "150";
-            strTravelMaxDays = "450";
+            dateMinDeparture = new KSPDateTime(lstPlots[CurrentPlot].DepMinYear, 1,3,0,0,0);
+            dateMaxDeparture = new KSPDateTime(lstPlots[CurrentPlot].DepMaxYear, 1,3,0,0,0).AddDays(-1);
+            strTravelMinDays = lstPlots[CurrentPlot].TravelMin;
+            strTravelMaxDays = lstPlots[CurrentPlot].TravelMax;
 
-
-            mbTWP.windowSettings.Visible = false;
-            StartLongWorker();
-            WindowRect.height = 400;
-            ShowEjectionDetails = false;
-
-        }
-#endif
-
-        private void StartLongWorker()
-        {
 
             Double TravelRange = (new KSPTimeSpan(strTravelMaxDays, "0", "0", "0") - new KSPTimeSpan(strTravelMinDays, "0", "0", "0")).UT;
             Double DepartureRange = (dateMaxDeparture - dateMinDeparture).UT;
             PlotWidth = (Int32)(DepartureRange / KSPDateStructure.SecondsPerDay * mbTWP.windowDebug.intPlotDeparturePerDay) + 1;
             PlotHeight = (Int32)(TravelRange / KSPDateStructure.SecondsPerDay * mbTWP.windowDebug.intPlotTravelPointsPerDay) + 1;
 
-            LogFormatted("Starting a LongWorker: {0}->{1}: Res={2}x{3}", cbOrigin.bodyName, cbDestination.bodyName, PlotWidth, PlotHeight);
+            LogFormatted("Starting a LongWorker: {0}->{1}, Depart:Year {2}=>Year {3}, Travel:{4}=>{5}", 
+                cbOrigin.bodyName, cbDestination.bodyName, 
+                lstPlots[CurrentPlot].DepMinYear, lstPlots[CurrentPlot].DepMaxYear, 
+                lstPlots[CurrentPlot].TravelMin, lstPlots[CurrentPlot].TravelMax);
             
             SetWorkerVariables();
 
@@ -68,7 +200,11 @@ namespace TransferWindowPlanner
             Running = false;
             Done = true;
 
-            LogFormatted("Completed a LongWorker: {0}->{1}: Res={2}x{3}", cbOrigin.bodyName, cbDestination.bodyName, PlotWidth, PlotHeight);
+            LogFormatted("Completed a LongWorker: {0}->{1}, Depart:Year {2}=>Year {3}, Travel:{4}=>{5}", cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear, lstPlots[CurrentPlot].DepMaxYear, lstPlots[CurrentPlot].TravelMin, lstPlots[CurrentPlot].TravelMax);
+
+            CurrentPlot++;
+            //loop for the next one
+            StartLongWorker();
         }
 
         void bw_GenerateDataPorkchop(object sender, DoWorkEventArgs e)
@@ -79,24 +215,24 @@ namespace TransferWindowPlanner
                 Int32 iCurrent = 0;
 
                 ////////need to make sure this bombing out cause file is locked doesnt stop process :)
-                String strCSVLine = "", strCSVLine2 = "";
+                //String strCSVLine = "", strCSVLine2 = "";
                 Boolean blnCSVTransferFirst = true;
                 try
                 {
-                    if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName)))
-                        System.IO.File.Delete(String.Format("{0}/DeltaVWorking-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
+                    if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking-{1}-{2}-{3}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear)))
+                        System.IO.File.Delete(String.Format("{0}/DeltaVWorking-{1}-{2}-{3}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear));
                 }
                 catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
                 try
                 {
-                    if (System.IO.File.Exists(String.Format("{0}/DeltaVTravelWorking-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName)))
-                        System.IO.File.Delete(String.Format("{0}/DeltaVTravelWorking-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
+                    if (System.IO.File.Exists(String.Format("{0}/DeltaVTravelWorking-{1}-{2}-{3}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear)))
+                        System.IO.File.Delete(String.Format("{0}/DeltaVTravelWorking-{1}-{2}-{3}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear));
                 }
                 catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
                 try
                 {
-                    if (System.IO.File.Exists(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName)))
-                        System.IO.File.Delete(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
+                    if (System.IO.File.Exists(String.Format("{0}/DeltaVDaily-{1}-{2}-{3}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear)))
+                        System.IO.File.Delete(String.Format("{0}/DeltaVDaily-{1}-{2}-{3}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear));
                 }
                 catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
 
@@ -168,7 +304,7 @@ namespace TransferWindowPlanner
 
                     try
                     {
-                        System.IO.File.AppendAllText(String.Format("{0}/DeltaVDaily-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName),
+                        System.IO.File.AppendAllText(String.Format("{0}/DeltaVDaily-{1}-{2}-{3}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName, lstPlots[CurrentPlot].DepMinYear),
                             //String.Format("{0:0.00},{1:0.00},{2:0.00}\r\n", transferDailyBest.DepartureTime, transferDailyBest.DVTotal, transferDailyBest.TravelTime));
                             String.Format("{0:0.00},{1:0.00},{2:0.00},\"{3}\",\"{4}\"\r\n", transferDailyBest.DepartureTime, transferDailyBest.DVTotal, transferDailyBest.TravelTime, new KSPDateTime(transferDailyBest.DepartureTime).ToStringStandard(DateStringFormatsEnum.KSPFormat), new KSPTimeSpan(transferDailyBest.TravelTime).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong)));
                     }
