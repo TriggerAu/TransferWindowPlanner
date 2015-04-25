@@ -76,6 +76,7 @@ namespace TransferWindowPlanner
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 101;
+        public Int32 intTest5 = 0;
         public Int32 intPlotDeparturePerDay = 1;
         public Int32 intPlotTravelPointsPerDay = 1;
 
@@ -93,19 +94,23 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest2);
                 DrawTextBox(ref intTest3);
                 DrawTextBox(ref intTest4);
-                DrawTextBox(ref intPlotDeparturePerDay);
-                DrawTextBox(ref intPlotTravelPointsPerDay);
+                //DrawTextBox(ref intTest5);
 
-                Double TravelRange = (new KSPTimeSpan(mbTWP.windowMain.strTravelMaxDays, "0", "0", "0") - new KSPTimeSpan(mbTWP.windowMain.strTravelMinDays, "0", "0", "0")).UT;
-                Double DepartureRange = (mbTWP.windowMain.dateMaxDeparture - mbTWP.windowMain.dateMinDeparture).UT;
+                /////////////RANGE Work//////////////////////
+                /////////////RANGE Work//////////////////////
+                //DrawTextBox(ref intPlotDeparturePerDay);
+                //DrawTextBox(ref intPlotTravelPointsPerDay);
 
-                DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(DepartureRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), DepartureRange);
-                DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(TravelRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), TravelRange);
+                //Double TravelRange = (new KSPTimeSpan(mbTWP.windowMain.strTravelMaxDays, "0", "0", "0") - new KSPTimeSpan(mbTWP.windowMain.strTravelMinDays, "0", "0", "0")).UT;
+                //Double DepartureRange = (mbTWP.windowMain.dateMaxDeparture - mbTWP.windowMain.dateMinDeparture).UT;
 
-                width = (DepartureRange / KSPDateStructure.SecondsPerDay * intPlotDeparturePerDay) + 1;
-                height = (TravelRange / KSPDateStructure.SecondsPerDay * intPlotTravelPointsPerDay) + 1;
+                //DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(DepartureRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), DepartureRange);
+                //DrawLabel("Dep:{0}  ({1})", new KSPTimeSpan(TravelRange).ToStringStandard(TimeSpanStringFormatsEnum.IntervalLong), TravelRange);
 
-                DrawLabel("{0}x{1}", width, height);
+                //width = (DepartureRange / KSPDateStructure.SecondsPerDay * intPlotDeparturePerDay) + 1;
+                //height = (TravelRange / KSPDateStructure.SecondsPerDay * intPlotTravelPointsPerDay) + 1;
+
+                //DrawLabel("{0}x{1}", width, height);
 
 
                 //DrawLabel("Default Scale: {0}",(mbTWP.windowMain.PlotWidth == 292 && mbTWP.windowMain.PlotHeight == 292));
@@ -119,12 +124,12 @@ namespace TransferWindowPlanner
                 //    mbTWP.windowMain.PlotHeight = intTest2;
                 //}
 
-                if (GUILayout.Button("Apply calculates Scale and Run (value 5 - points per day)")) {
-                    mbTWP.windowMain.PlotWidth = (Int32)width;
-                    mbTWP.windowMain.PlotHeight = (Int32)height;
+                //if (GUILayout.Button("Apply calculates Scale and Run (value 5 - points per day)")) {
+                //    mbTWP.windowMain.PlotWidth = (Int32)width;
+                //    mbTWP.windowMain.PlotHeight = (Int32)height;
 
-                    mbTWP.windowMain.RunPlots();
-                }
+                //    mbTWP.windowMain.RunPlots();
+                //}
 
                 //Styles.styleTextFieldLabel.padding.top = intTest1;
 
@@ -197,9 +202,16 @@ namespace TransferWindowPlanner
                 DrawLabel("Selected:{0}", mbTWP.windowMain.vectSelected);
                 DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected / KSPDateStructure.SecondsPerDay, mbTWP.windowMain.TravelSelected / KSPDateStructure.SecondsPerDay);
 
-                //if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel!=null)
+
+
+
+                /////////////////////////////////Making ManNode/////////////////////////////
+                /////////////////////////////////Making ManNode/////////////////////////////
+                /////////////////////////////////Making ManNode/////////////////////////////
+                //if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel != null)
                 //{
-                //    if (GUILayout.Button("FindUT")) {
+                //    if (GUILayout.Button("FindUT"))
+                //    {
                 //        dblEjectAt = Utilities.timeOfEjectionAngle(FlightGlobals.ActiveVessel.orbit, mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.EjectionAngle * LambertSolver.Rad2Deg, 20, out dblOutAngle);
                 //        intTest5 = (Int32)dblEjectAt;
                 //    }
@@ -217,9 +229,15 @@ namespace TransferWindowPlanner
                 //        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
                 //            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(intTest5).magnitude - FlightGlobals.ActiveVessel.orbit.referenceBody.Radius, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
                 //        transTemp.CalcEjectionValues();
+
+                //        LogFormatted(transTemp.TransferDetailsText);
+
+                        
+                //        LogFormatted("OrbVelocity:{0}",FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
                 //    }
 
                 //    DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
+
 
                 //    if (transTemp != null)
                 //    {
@@ -236,6 +254,10 @@ namespace TransferWindowPlanner
                 //    }
 
                 //}
+                /////////////////////////////////Making ManNode/////////////////////////////
+                /////////////////////////////////Making ManNode/////////////////////////////
+                /////////////////////////////////Making ManNode/////////////////////////////
+                /////////////////////////////////Making ManNode/////////////////////////////
 
 
                 //DrawLabel("Ass:{0}", KACWrapper.AssemblyExists);
