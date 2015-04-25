@@ -65,7 +65,8 @@ namespace TransferWindowPlanner
             }
 
             //Hook the App Launcher
-            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+            OnGUIAppLauncherReady();
+            //GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
             GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
 
             //do the daily version check if required
@@ -82,7 +83,7 @@ namespace TransferWindowPlanner
 
             RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
-            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            //GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
             DestroyAppLauncherButton();
 
             DestroyToolbarButton(btnToolbar);
