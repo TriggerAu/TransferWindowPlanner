@@ -173,8 +173,8 @@ public static class LambertSolver
 
 
         }
-        
-        return ejectionDeltaV + insertionDeltaV;
+
+        return oTransfer.DVTotal; //ejectionDeltaV + insertionDeltaV;
     }
 
 	/// <summary>

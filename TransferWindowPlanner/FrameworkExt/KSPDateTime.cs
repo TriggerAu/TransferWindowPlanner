@@ -21,7 +21,7 @@ namespace KSPPluginFramework
 			get { if (CalType == CalendarTypeEnum.Earth) 
 				return _EarthDateTime.Year;
 			else
-				return KSPDateStructure.EpochYear + (Int32)UT / KSPDateStructure.SecondsPerYear; 
+				return KSPDateStructure.EpochYear + (Int32)(UT / KSPDateStructure.SecondsPerYear); 
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace KSPPluginFramework
 			get { if (CalType == CalendarTypeEnum.Earth) 
 				return _EarthDateTime.DayOfYear;
 			else
-				return KSPDateStructure.EpochDayOfYear + (Int32)UT / KSPDateStructure.SecondsPerDay % KSPDateStructure.DaysPerYear; 
+				return KSPDateStructure.EpochDayOfYear + (Int32)(UT / KSPDateStructure.SecondsPerDay % KSPDateStructure.DaysPerYear); 
 			}
 		}
 

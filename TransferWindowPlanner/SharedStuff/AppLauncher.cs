@@ -11,6 +11,9 @@ namespace TransferWindowPlanner
 {
     public partial class TransferWindowPlanner
     {
+        /// <summary>
+        /// Sets up the App Button - no longer called by the event as that only happens on StartMenu->SpaceCenter now
+        /// </summary>
         void OnGUIAppLauncherReady()
         {
             MonoBehaviourExtended.LogFormatted_DebugOnly("AppLauncherReady");
@@ -35,8 +38,8 @@ namespace TransferWindowPlanner
         {
             ApplicationLauncherButton retButton = null;
 
-            ApplicationLauncherButton[] lstButtons = TransferWindowPlanner.FindObjectsOfType<ApplicationLauncherButton>();
-            LogFormatted("AppLauncher: Creating Button-BEFORE", lstButtons.Length);
+            //ApplicationLauncherButton[] lstButtons = TransferWindowPlanner.FindObjectsOfType<ApplicationLauncherButton>();
+            //LogFormatted("AppLauncher: Creating Button-BEFORE", lstButtons.Length);
             try
             {
                 retButton = ApplicationLauncher.Instance.AddModApplication(
@@ -61,8 +64,8 @@ namespace TransferWindowPlanner
                 MonoBehaviourExtended.LogFormatted("AppLauncher: Failed to set up App Launcher Button\r\n{0}", ex.Message);
                 retButton = null;
             }
-            lstButtons = TransferWindowPlanner.FindObjectsOfType<ApplicationLauncherButton>();
-            LogFormatted("AppLauncher: Creating Button-AFTER", lstButtons.Length);
+            //lstButtons = TransferWindowPlanner.FindObjectsOfType<ApplicationLauncherButton>();
+            //LogFormatted("AppLauncher: Creating Button-AFTER", lstButtons.Length);
 
             return retButton;
         }
@@ -70,15 +73,15 @@ namespace TransferWindowPlanner
 
         internal void DestroyAppLauncherButton()
         {
-            LogFormatted("AppLauncher: Destroying Button-BEFORE NULL CHECK");
+            //LogFormatted("AppLauncher: Destroying Button-BEFORE NULL CHECK");
             if (btnAppLauncher != null)
             {
                 ApplicationLauncherButton[] lstButtons = TransferWindowPlanner.FindObjectsOfType<ApplicationLauncherButton>();
-                LogFormatted("AppLauncher: Destroying Button-Button Count:{0}", lstButtons.Length);
+                //LogFormatted("AppLauncher: Destroying Button-Button Count:{0}", lstButtons.Length);
                 ApplicationLauncher.Instance.RemoveModApplication(btnAppLauncher);
                 btnAppLauncher = null;
             }
-            LogFormatted("AppLauncher: Destroying Button-AFTER NULL CHECK");
+            //LogFormatted("AppLauncher: Destroying Button-AFTER NULL CHECK");
         }
 
         void onAppLaunchToggleOn() {

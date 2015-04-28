@@ -28,7 +28,7 @@ namespace KSPPluginFramework
             {
                 if (CalType != CalendarTypeEnum.Earth)
                 {
-                    return (Int32)UT / KSPDateStructure.SecondsPerYear;
+                    return (Int32)(UT / KSPDateStructure.SecondsPerYear);
                 }
                 else
                 {
@@ -46,9 +46,9 @@ namespace KSPPluginFramework
         public Int32 Days {
             get {
                 if (CalType != CalendarTypeEnum.Earth) {
-                    return (Int32)UT / KSPDateStructure.SecondsPerDay % KSPDateStructure.DaysPerYear;
+                    return (Int32)(UT / KSPDateStructure.SecondsPerDay % KSPDateStructure.DaysPerYear);
                 } else {
-                    return (Int32)UT / KSPDateStructure.SecondsPerDay;
+                    return (Int32)(UT / KSPDateStructure.SecondsPerDay);
                 } 
             }
         }
@@ -56,7 +56,7 @@ namespace KSPPluginFramework
         /// <summary>Gets the hours component of the time interval represented by the current KSPPluginFramework.KSPTimeSpan structure.</summary> 
         /// <returns>The hour component of the current KSPPluginFramework.KSPTimeSpan structure. The return value ranges between +/- <see cref="KSPDateStructure.HoursPerDay"/></returns>
         public int Hours {
-            get { return (Int32)UT / KSPDateStructure.SecondsPerHour % KSPDateStructure.HoursPerDay; }
+            get { return (Int32)(UT / KSPDateStructure.SecondsPerHour % KSPDateStructure.HoursPerDay); }
         }
 
         /// <summary>Gets the minutes component of the time interval represented by the current KSPPluginFramework.KSPTimeSpan structure.</summary> 
@@ -64,7 +64,7 @@ namespace KSPPluginFramework
         /// The minute component of the current KSPPluginFramework.KSPTimeSpan structure. The return value ranges between +/- <see cref="KSPDateStructure.MinutesPerHour"/>
         /// </returns>
         public int Minutes {
-            get { return (Int32)UT / KSPDateStructure.SecondsPerMinute % KSPDateStructure.MinutesPerHour; }
+            get { return (Int32)(UT / KSPDateStructure.SecondsPerMinute % KSPDateStructure.MinutesPerHour); }
         }
 
         /// <summary>Gets the seconds component of the time interval represented by the current KSPPluginFramework.KSPTimeSpan structure.</summary> 
@@ -72,7 +72,7 @@ namespace KSPPluginFramework
         /// The second component of the current KSPPluginFramework.KSPTimeSpan structure. The return value ranges between +/- <see cref="KSPDateStructure.SecondsPerMinute"/>
         /// </returns>
         public int Seconds {
-            get { return (Int32)UT % KSPDateStructure.SecondsPerMinute; }
+            get { return (Int32)(UT % KSPDateStructure.SecondsPerMinute); }
         }
 
         /// <summary>Gets the milliseconds component of the time interval represented by the current KSPPluginFramework.KSPTimeSpan structure.</summary> 
@@ -130,10 +130,10 @@ namespace KSPPluginFramework
         /// <param name="milliseconds">Number of milliseconds.</param>
         public KSPTimeSpan(int days, int hours, int minutes, int seconds, int milliseconds)
         {
-            UT = days * KSPDateStructure.SecondsPerDay +
-                 hours * KSPDateStructure.SecondsPerHour +
-                 minutes * KSPDateStructure.SecondsPerMinute +
-                 seconds +
+            UT = (Double)days * KSPDateStructure.SecondsPerDay +
+                 (Double)hours * KSPDateStructure.SecondsPerHour +
+                 (Double)minutes * KSPDateStructure.SecondsPerMinute +
+                 (Double)seconds +
                 (Double)milliseconds / 1000;
         }
 

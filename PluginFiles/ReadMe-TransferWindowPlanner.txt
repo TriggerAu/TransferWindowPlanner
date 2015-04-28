@@ -27,6 +27,12 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.3.0.0		-	KSP Version: 1.0
+- Recompiled for 1.0
+- Code changes for launcher
+- Updated KAC Wrapper
+- Adjusted Editor Lock type
+
 Version 1.2.3.0		-	KSP Version: 0.90
 - Fixed missing icon (Issue #29)
 - Changed input lock in flight mode (Issue #30)

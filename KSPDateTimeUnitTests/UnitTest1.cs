@@ -14,6 +14,8 @@ namespace KSPDateTimeUnitTests
         [TestMethod]
         public void TestDateTime()
         {
+            KSPDateTime dt2 = new KSPDateTime(235, 1);
+
             Double DateUT = 301.123;
 
             KSPDateTime dt = new KSPDateTime(DateUT);

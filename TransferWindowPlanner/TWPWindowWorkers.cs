@@ -152,6 +152,8 @@ namespace TransferWindowPlanner
 
         private void StartWorker()
         {
+            PlotHeight = 292; PlotWidth = 292;
+
             SetWorkerVariables();
 
             workingpercent = 0;
@@ -190,84 +192,107 @@ namespace TransferWindowPlanner
 
         void bw_GeneratePorkchop(object sender, DoWorkEventArgs e)
         {
-            sumlogDeltaV = 0; sumSqLogDeltaV = 0;
-            maxDeltaV = 0; minDeltaV = Double.MaxValue;
-
-            //Loop through getting the DeltaV's and assigning em all to an array
-            Int32 iCurrent = 0;
-            LogFormatted("Generating DeltaV Values");
-            for (int y = 0; y < PlotHeight; y++)
+            try
             {
-                //LogFormatted("{0:0.000}-{1}", workingpercent, iCurrent);
-                for (int x = 0; x < PlotWidth; x++)
-                {
-                    iCurrent = (int)(y * PlotHeight + x);
+                sumlogDeltaV = 0; sumSqLogDeltaV = 0;
+                maxDeltaV = 0; minDeltaV = Double.MaxValue;
 
-                    //Set the Value for this position to be the DeltaV of this Transfer
-                    DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination, 
-                        DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution), 
-                        InitialOrbitAltitude, FinalOrbitAltitude);
-
-                    if (DeltaVs[iCurrent] > maxDeltaV)
-                        maxDeltaV = DeltaVs[iCurrent];
-                    if (DeltaVs[iCurrent] < minDeltaV) {
-                        minDeltaV = DeltaVs[iCurrent];
-                        minDeltaVPoint = new Vector2(x, y);
-                    }
-
-                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                    sumlogDeltaV += logDeltaV;
-                    sumSqLogDeltaV += logDeltaV * logDeltaV;
-
-                    workingpercent = (Double)iCurrent / (Double)(PlotHeight * PlotWidth);
-                }
-            }
+                //Loop through getting the DeltaV's and assigning em all to an array
+                Int32 iCurrent = 0;
 
 #if DEBUG
-            String File = "";
-            for (int y = 0; y < PlotHeight; y++)
-            {
-                String strline = "";
-                for (int x = 0; x < PlotWidth; x++)
+                ////////need to make sure this bombing out cause file is locked doesnt stop process :)
+                String strCSVLine = "";
+                try
                 {
-                    iCurrent = (int)(y * PlotHeight + x);
-                    strline += String.Format("{0:0},", DeltaVs[iCurrent]);
+                    if (System.IO.File.Exists(String.Format("{0}/DeltaVWorking-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName)))
+                        System.IO.File.Delete(String.Format("{0}/DeltaVWorking-{1}-{2}.csv", Resources.PathPlugin, cbOrigin.bodyName, cbDestination.bodyName));
                 }
-                File += strline + "\r\n";
-            }
-
-
-            System.IO.File.WriteAllText(String.Format("{0}/DeltaVWorking.csv",Resources.PathPlugin), File);
+                catch (Exception ex) { LogFormatted("Unable to delete file:{0}", ex.Message); }
 #endif
-
-            Double mean, stddev;
-            //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
-            LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
-            logMinDeltaV = Math.Log(DeltaVs.Min());
-            mean = sumlogDeltaV / DeltaVs.Length;
-            stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
-            logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
-
-            if (DeltaVColorPalette == null)
-                GenerateDeltaVPalette();
-
-            LogFormatted("Placing ColorIndexes in array");
-            for (int y = 0; y < PlotHeight; y++)
-            {
+                LogFormatted("Generating DeltaV Values");
                 for (int x = 0; x < PlotWidth; x++)
                 {
-                    iCurrent = (Int32)(y * PlotHeight + x);
-                    logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                    double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
-                    Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+#if DEBUG
+                    strCSVLine = "";
+#endif
+                    //LogFormatted("{0:0.000}-{1}", workingpercent, iCurrent);
+                    for (int y = 0; y < PlotHeight; y++)
+                    {
+                        //have to keep this this way so the texture draws the right way around
+                        iCurrent = (int)(y * PlotWidth + x);
 
-                    DeltaVsColorIndex[iCurrent] = ColorIndex;
+                        //Set the Value for this position to be the DeltaV of this Transfer
+                        DeltaVs[iCurrent] = LambertSolver.TransferDeltaV(cbOrigin, cbDestination,
+                            DepartureMin + ((Double)x * xResolution), TravelMax - ((Double)y * yResolution),
+                            InitialOrbitAltitude, FinalOrbitAltitude);
+
+                        //LogFormatted("dt: {0}  TT:{1}", TravelMax - ((Double)y * yResolution), transferTemp.TravelTime);
+#if DEBUG
+                        strCSVLine += String.Format("{0:0.00},", DeltaVs[iCurrent]);
+#endif
+                        /////////////// Long Running ////////////////////////////
+                        //LogFormatted("{0}x{1} ({3}) = {2:0}", x, y, DeltaVs[iCurrent],iCurrent);
+
+                        if (DeltaVs[iCurrent] > maxDeltaV)
+                            maxDeltaV = DeltaVs[iCurrent];
+                        if (DeltaVs[iCurrent] < minDeltaV)
+                        {
+                            minDeltaV = DeltaVs[iCurrent];
+                            minDeltaVPoint = new Vector2(x, y);
+                        }
+
+                        logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                        sumlogDeltaV += logDeltaV;
+                        sumSqLogDeltaV += logDeltaV * logDeltaV;
+
+                        workingpercent = (x * PlotHeight + y) / (Double)(PlotHeight * PlotWidth);
+                    }
+
+#if DEBUG
+                    try
+                    {
+                        System.IO.File.AppendAllText(String.Format("{0}/DeltaVWorking.csv", Resources.PathPlugin), strCSVLine.TrimEnd(',') + "\r\n");
+                    }
+                    catch (Exception) { }
+#endif
                 }
-            }
 
-            //Set the Best Transfer
-            vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
-            SetTransferDetails();
+                Double mean, stddev;
+
+                //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
+                LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
+
+                logMinDeltaV = Math.Log(DeltaVs.Min());
+                mean = sumlogDeltaV / DeltaVs.Length;
+                stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
+                logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
+
+                if (DeltaVColorPalette == null)
+                    GenerateDeltaVPalette();
+
+                LogFormatted("Placing ColorIndexes in array");
+                for (int y = 0; y < PlotHeight; y++)
+                {
+                    for (int x = 0; x < PlotWidth; x++)
+                    {
+                        iCurrent = (Int32)(y * PlotWidth + x);
+                        logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                        double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
+                        Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+
+                        DeltaVsColorIndex[iCurrent] = ColorIndex;
+                    }
+                }
+
+                //Set the Best Transfer
+                vectSelected = new Vector2(PlotPosition.x + minDeltaVPoint.x, PlotPosition.y + minDeltaVPoint.y);
+                SetTransferDetails();
+            }
+            catch (Exception ex)
+            {
+                LogFormatted("ERROR: Background Worker Failed\r\n{0}\r\n{1}", ex.Message, ex.StackTrace);
+            }
         }
 
         private void SetTransferDetails()
@@ -286,16 +311,34 @@ namespace TransferWindowPlanner
                 GenerateDeltaVTexture();
 
             //Now Draw the texture
-            LogFormatted("Placing Colors on texture");
-            texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
-            for (int y = 0; y < PlotHeight; y++) {
-                for (int x = 0; x < PlotWidth; x++) {
-                    Int32 iCurrent = (Int32)(y * PlotHeight + x);
-                    Int32 ColorIndex = DeltaVsColorIndex[iCurrent];
-                    //Data flows from left->right and top->bottom so need to reverse y (and cater to 0 based) when drawing the texture
-                    texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
+            LogFormatted("Placing Colors on texture-{0}x{1}", PlotWidth, PlotHeight);
+            Int32 iCurrent = 0;
+            Int32 ColorIndex = 0;
+
+            try
+            {
+                texPlotArea = new Texture2D(PlotWidth, PlotHeight, TextureFormat.ARGB32, false);
+                for (int y = 0; y < PlotHeight; y++) {
+                    for (int x = 0; x < PlotWidth; x++) {
+                        iCurrent = (Int32)(y * PlotWidth + x);
+                        ColorIndex = DeltaVsColorIndex[iCurrent];
+
+                        //Data flows from left->right and top->bottom so need to reverse y (and cater to 0 based) when drawing the texture
+                        texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                //LogFormatted("Value:{0} - ColIndex:{1} - Length:{2} - Line:{3}", iCurrent, ColorIndex, DeltaVsColorIndex.Length, Line);
+                LogFormatted(ex.Message);
+                //LogFormatted("DVColPalLength:{0}", DeltaVColorPalette.Count);
+            }
+
+#if DEBUG
+            Byte[] PNG = texPlotArea.EncodeToPNG();
+            System.IO.File.WriteAllBytes(String.Format("{0}/DeltaVWorkingPlot.png", Resources.PathPlugin), PNG);
+#endif
             texPlotArea.Apply();
         }
 

@@ -224,7 +224,7 @@ namespace TransferWindowPlanner
         //String strDepartureMinYear, strDepartureMinDay, strDepartureMaxYear, strDepartureMaxDay;
         internal KSPDateTime dateMinDeparture, dateMaxDeparture;
         String strDepartureAltitude, strArrivalAltitude;
-        String strTravelMinDays, strTravelMaxDays;
+        internal String strTravelMinDays, strTravelMaxDays;
 
         internal Vector2 vectMouse;
         internal Vector2 vectSelected;
@@ -570,7 +570,8 @@ namespace TransferWindowPlanner
                 GUI.Label(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 30, PlotWidth + 45, 20),
                     String.Format("Calculating: {0} (@{2:0}km) -> {1} (@{3:0}km)...", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000),
                     Styles.styleTextYellowBold);
-                DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 10, PlotWidth + 45, 20), (Single)workingpercent);
+                //DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + PlotHeight / 2 - 10, PlotWidth + 45, 20), (Single)workingpercent);
+                DrawResourceBar(new Rect(PlotPosition.x, PlotPosition.y + 292 / 2 - 10, 292 + 45, 20), (Single)workingpercent);
             }
             if (Done) {
                 GUILayout.Label(String.Format("{0} (@{2:0}km) -> {1} (@{3:0}km)", TransferSpecs.OriginName, TransferSpecs.DestinationName, TransferSpecs.InitialOrbitAltitude / 1000, TransferSpecs.FinalOrbitAltitude / 1000), Styles.styleTextYellowBold);

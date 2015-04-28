@@ -65,7 +65,8 @@ namespace TransferWindowPlanner
             }
 
             //Hook the App Launcher
-            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+            OnGUIAppLauncherReady();
+            //GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
             GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
 
             //do the daily version check if required
@@ -82,7 +83,7 @@ namespace TransferWindowPlanner
 
             RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
-            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            //GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
             DestroyAppLauncherButton();
 
             DestroyToolbarButton(btnToolbar);
@@ -297,7 +298,7 @@ namespace TransferWindowPlanner
 
                         switch (HighLogic.LoadedScene) {
                             case GameScenes.SPACECENTER: InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, "TWPControlLock"); break;
-                            case GameScenes.EDITOR: InputLockManager.SetControlLock(ControlTypes.EDITOR_LOCK, "TWPControlLock"); break;
+                            case GameScenes.EDITOR: InputLockManager.SetControlLock((ControlTypes.EDITOR_LOCK | ControlTypes.EDITOR_GIZMO_TOOLS), "TWPControlLock"); break;
                             case GameScenes.FLIGHT: InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "TWPControlLock"); break;
                             case GameScenes.TRACKSTATION:
                                 break;
