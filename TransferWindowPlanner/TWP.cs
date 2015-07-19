@@ -294,7 +294,7 @@ namespace TransferWindowPlanner
                             break;
                     }
                     if (AddLock) {
-                        LogFormatted_DebugOnly("AddingLock-{0}", "TWPControlLock");
+                        //LogFormatted_DebugOnly("AddingLock-{0}", "TWPControlLock");
 
                         switch (HighLogic.LoadedScene) {
                             case GameScenes.SPACECENTER: InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, "TWPControlLock"); break;
@@ -319,7 +319,7 @@ namespace TransferWindowPlanner
         {
             if (InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None)
             {
-                LogFormatted_DebugOnly("Removing-{0}", "TWPControlLock");
+                //LogFormatted_DebugOnly("Removing-{0}", "TWPControlLock");
                 InputLockManager.RemoveControlLock("TWPControlLock");
             }
             InputLockExists = false;

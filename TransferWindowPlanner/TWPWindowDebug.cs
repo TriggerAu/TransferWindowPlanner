@@ -72,7 +72,7 @@ namespace TransferWindowPlanner
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
-        public Int32 intTest1 = 200;
+        public Int32 intTest1 = 10000;
         public Int32 intTest2 = 0;
         public Int32 intTest3 = 0;
         public Int32 intTest4 = 101;
@@ -96,8 +96,7 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest4);
                 //DrawTextBox(ref intTest5);
 
-                /////////////RANGE Work//////////////////////
-                /////////////RANGE Work//////////////////////
+                ///////////////RANGE Work//////////////////////
                 //DrawTextBox(ref intPlotDeparturePerDay);
                 //DrawTextBox(ref intPlotTravelPointsPerDay);
 
@@ -113,23 +112,30 @@ namespace TransferWindowPlanner
                 //DrawLabel("{0}x{1}", width, height);
 
 
-                //DrawLabel("Default Scale: {0}",(mbTWP.windowMain.PlotWidth == 292 && mbTWP.windowMain.PlotHeight == 292));
-                //if (GUILayout.Button("Reset Scale")) {
+                //DrawLabel("Default Scale: {0}", (mbTWP.windowMain.PlotWidth == 292 && mbTWP.windowMain.PlotHeight == 292));
+                //if (GUILayout.Button("Reset Scale"))
+                //{
                 //    mbTWP.windowMain.PlotWidth = 292;
                 //    mbTWP.windowMain.PlotHeight = 292;
                 //}
 
-                //if (GUILayout.Button("Apply manual Scale (value 1 and 2)")) {
+                //if (GUILayout.Button("Apply manual Scale (value 1 and 2)"))
+                //{
                 //    mbTWP.windowMain.PlotWidth = intTest1;
                 //    mbTWP.windowMain.PlotHeight = intTest2;
                 //}
 
-                //if (GUILayout.Button("Apply calculates Scale and Run (value 5 - points per day)")) {
+                //if (GUILayout.Button("Apply calculates Scale and Run (value 5 - points per day)"))
+                //{
                 //    mbTWP.windowMain.PlotWidth = (Int32)width;
                 //    mbTWP.windowMain.PlotHeight = (Int32)height;
 
                 //    mbTWP.windowMain.RunPlots();
                 //}
+                ///////////////RANGE Work//////////////////////
+
+
+
 
                 //Styles.styleTextFieldLabel.padding.top = intTest1;
 
@@ -208,52 +214,79 @@ namespace TransferWindowPlanner
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
-                //if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel != null)
-                //{
-                //    if (GUILayout.Button("FindUT"))
-                //    {
-                //        dblEjectAt = Utilities.timeOfEjectionAngle(FlightGlobals.ActiveVessel.orbit, mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.EjectionAngle * LambertSolver.Rad2Deg, 20, out dblOutAngle);
-                //        intTest5 = (Int32)dblEjectAt;
-                //    }
-                //    DrawLabel("UT: {0:0}", dblEjectAt);
-                //    DrawLabel("Angle: {0:0.000}", dblOutAngle);
+                if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel != null)
+                {
+                    if (GUILayout.Button("FindUT"))
+                    {
+                        dblEjectAt = Utilities.timeOfEjectionAngle(FlightGlobals.ActiveVessel.orbit, mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.EjectionAngle * LambertSolver.Rad2Deg,intTest1 , out dblOutAngle);
+                        intTest5 = (Int32)dblEjectAt;
+                    }
+                    DrawLabel("UT: {0:0}", dblEjectAt);
+                    DrawLabel("Angle: {0:0.000}", dblOutAngle);
 
-                //    DrawLabel("UTSelect: {0:0}", mbTWP.windowMain.TransferSelected.DepartureTime);
-                //    DrawLabel("OrbitPeriod: {0:0}", FlightGlobals.ActiveVessel.orbit.period);
-                //    DrawLabel("Scan: {0:0}->{1:0}", mbTWP.windowMain.TransferSelected.DepartureTime - FlightGlobals.ActiveVessel.orbit.period / 2, mbTWP.windowMain.TransferSelected.DepartureTime + FlightGlobals.ActiveVessel.orbit.period / 2);
+                    DrawLabel("UTSelect: {0:0}", mbTWP.windowMain.TransferSelected.DepartureTime);
+                    DrawLabel("OrbitPeriod: {0:0}", FlightGlobals.ActiveVessel.orbit.period);
+                    DrawLabel("Scan: {0:0}->{1:0}", mbTWP.windowMain.TransferSelected.DepartureTime - FlightGlobals.ActiveVessel.orbit.period / 2, mbTWP.windowMain.TransferSelected.DepartureTime + FlightGlobals.ActiveVessel.orbit.period / 2);
+
+                    Double dblEjectAt2;
+                    Vector3d vectEject = new Vector3d();
+
+                    if (GUILayout.Button("NewTransfer"))
+                    {
+                        
+                        transTemp = new TransferDetails();
+                        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
+                            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, mbTWP.windowMain.TransferSpecs.InitialOrbitAltitude, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
+
+                        try
+                        {
+                            transTemp.CalcEjectionValues();
+                        }
+                        catch (Exception ex)
+                        {
+                            LogFormatted("Wouldnt Create EjectionValues :(\r\n{0}\r\n{1}", ex.Message, ex.StackTrace);
+                        }
+
+                        LogFormatted("XFer: {0}", transTemp.TransferInitalVelocity);
+                        LogFormatted("Origin: {0}", transTemp.OriginVelocity);
+                        LogFormatted("Diff: {0}", (Vector3d)(transTemp.OriginVelocity - transTemp.TransferInitalVelocity));
+                        LogFormatted("Eject: {0}", transTemp.EjectionDeltaVector);
+                        LogFormatted("VesselOrbit: {0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
+                        LogFormatted("VesselOrbit(m/s): {0}", transTemp.OriginVesselOrbitalSpeed);
+                        //LogFormatted("oVel: {0}", LambertSolver.oVel);
+
+                        LogFormatted("A");
 
 
-                //    if (GUILayout.Button("NewTransfer"))
-                //    {
-                //        transTemp = new TransferDetails();
-                //        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
-                //            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(intTest5).magnitude - FlightGlobals.ActiveVessel.orbit.referenceBody.Radius, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
-                //        transTemp.CalcEjectionValues();
-
-                //        LogFormatted(transTemp.TransferDetailsText);
+                        dblEjectAt2 = timeOfLeastDVBurn(FlightGlobals.ActiveVessel.orbit, dblEjectAt, mbTWP.windowMain.TransferSelected.TransferInitalVelocity, 8, out vectEject);
 
                         
-                //        LogFormatted("OrbVelocity:{0}",FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
-                //    }
-
-                //    DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
+                        //now massage that with the vessels vector at that UT!
 
 
-                //    if (transTemp != null)
-                //    {
-                //        GUILayout.Label(transTemp.TransferDetailsText);
-                //        if (GUILayout.Button("Newnode"))
-                //        {
-                //            FlightGlobals.ActiveVessel.patchedConicSolver.maneuverNodes.Clear();
-                //            ManeuverNode mNode = FlightGlobals.ActiveVessel.patchedConicSolver.AddManeuverNode(transTemp.DepartureTime);
-                //            mNode.DeltaV = new Vector3d(0, transTemp.EjectionDVNormal, transTemp.EjectionDVPrograde);
-                //            FlightGlobals.ActiveVessel.patchedConicSolver.UpdateFlightPlan();
+                        //LogFormatted("OrbVelocity:{0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
+                    }
 
-                //        }
+                    if (transTemp != null)
+                    {
+                        //DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
+                        DrawLabel("TransferInit:{0} - {1}", transTemp.TransferInitalVelocity.magnitude, transTemp.TransferInitalVelocity);
+                        DrawLabel("Transtemp:{0} - {1}", transTemp.EjectionDeltaVector.magnitude, transTemp.EjectionDeltaVector);
+                        DrawLabel("Eject:{0} - {1}", vectEject.magnitude, vectEject);
 
-                //    }
+                        GUILayout.Label(transTemp.TransferDetailsText);
+                        if (GUILayout.Button("Newnode"))
+                        {
+                            FlightGlobals.ActiveVessel.patchedConicSolver.maneuverNodes.Clear();
+                            ManeuverNode mNode = FlightGlobals.ActiveVessel.patchedConicSolver.AddManeuverNode(transTemp.DepartureTime);
+                            mNode.DeltaV = new Vector3d(0, transTemp.EjectionDVNormal, transTemp.EjectionDVPrograde);
+                            FlightGlobals.ActiveVessel.patchedConicSolver.UpdateFlightPlan();
 
-                //}
+                        }
+
+                    }
+
+                }
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
@@ -436,13 +469,84 @@ namespace TransferWindowPlanner
 
                 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                LogFormatted("{0}\r\n{1}", ex.Message, ex.StackTrace);
             }
 
         }
 
+        /// <summary>
+        /// Find the point on the orbit that includes the initial time where the ejection angle is closest to the suplied one
+        /// </summary>
+        /// <param name="oObject">Orbit of the vessel/body</param>
+        /// <param name="timeInitial">The UT you want to search around for the angle - will search 1/2 an orbit back and 1/2 forward</param>
+        /// <param name="numDivisions">Higher thisnumber the more precise the answer - and the longer it will take</param>
+        /// <param name="closestAngle">The output of the closest angle the method could find</param>
+        /// <param name="targetAngle">The ejection angle we are looking for</param>
+        /// <returns></returns>
+        internal static double timeOfLeastDVBurn(Orbit oObject, double timeInitial, Vector3d vectTransferInitial, double numDivisions, out Vector3d bestBurnEject)
+        {
+            double timeStart = timeInitial - oObject.period;// / 2;
+            double periodtoscan = oObject.period * 2;
+
+            double bestBurnTime = timeStart;
+            double bestBurnDV = Double.MaxValue;
+            bestBurnEject = new Vector3d();
+
+            double minTime = timeStart;
+            double maxTime = timeStart + periodtoscan;
+
+            //work out iterations for precision - we only really need to within a second - so how many iterations do we actually need
+            //Each iteration gets us 1/10th of the period to scan
+
+            LogFormatted("B");
+            try
+            {
+                System.IO.File.Delete(Resources.PathPlugin + "/DVTest.csv");
+
+            }
+            catch (Exception)
+            {
+                
+                
+            } 
+            
+            System.IO.File.AppendAllText(Resources.PathPlugin + "/DVTest.csv", "T,DV,Vect\r\n");
+
+            for (int iter = 0; iter < 10; iter++)
+            {
+                LogFormatted("Start:{0} - Stop:{1}", minTime, maxTime);
+
+                double dt = (maxTime - minTime) / numDivisions;
+                for (int i = 0; i < numDivisions; i++)
+                {
+                    double t = minTime + i * dt;
+
+                    //get the vessels velocity at the right time
+                    Vector3d vel = oObject.getOrbitalVelocityAtUT(t);
+                    Vector3d velPlanet = oObject.referenceBody.orbit.getOrbitalVelocityAtUT(t);
+
+                    Vector3d velall = vel+velPlanet;
+
+                    Vector3d Eject = vectTransferInitial - velall;
+
+                    System.IO.File.AppendAllText(Resources.PathPlugin + "/DVTest.csv", String.Format("{0},{1},{2}\r\n",t,Eject.magnitude,Eject));
+
+                    if (Math.Abs(Eject.magnitude) < bestBurnDV)
+                    {
+                        bestBurnDV = Math.Abs(Eject.magnitude);
+                        bestBurnTime = t;
+                        bestBurnEject = Eject;
+                        LogFormatted("{0}-{1}-{2}", velall.magnitude, bestBurnEject.magnitude, t);
+                    }
+                }
+                minTime = (bestBurnTime - dt).Clamp(timeStart, timeStart + periodtoscan);
+                maxTime = (bestBurnTime + dt).Clamp(timeStart, timeStart + periodtoscan);
+            }
+
+            return bestBurnTime;
+        }
 
     }
 #endif

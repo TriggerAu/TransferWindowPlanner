@@ -63,7 +63,8 @@ public static class LambertSolver
     }
 
 
-    public static Double v1out, vedvout;
+    //public static Double v1out, vedvout;
+    //public static Vector3d oVel;
 
     /// <summary>
     /// Find the delta-v required for a ballistic transfer from <paramref name="origin"/> to <paramref name="destination"/>,
@@ -85,6 +86,7 @@ public static class LambertSolver
         double tA = origin.orbit.TrueAnomalyAtUT(ut);
         Vector3d originPositionAtDeparture = OrbitPositionFromTrueAnomaly(origin.orbit, tA);
         Vector3d originVelocity = OrbitVelocityFromTrueAnomaly(origin.orbit, tA);
+        //oVel = originVelocity;
 
         tA = destination.orbit.TrueAnomalyAtUT(ut + dt);
         Vector3d destinationPositionAtArrival = OrbitPositionFromTrueAnomaly(destination.orbit, tA);
@@ -104,7 +106,7 @@ public static class LambertSolver
             double v0 = Math.Sqrt(origin.gravParameter / r0); // Initial circular orbit velocity
             double v1 = Math.Sqrt(ejectionDeltaV * ejectionDeltaV + 2 * v0 * v0 - 2 * mu / rsoi); // Velocity at periapsis
 
-            v1out = v1; vedvout = ejectionDeltaV;
+            //v1out = v1; vedvout = ejectionDeltaV;
 
             vesselOriginOrbitalSpeed = v0;                                //Store this for later
 
