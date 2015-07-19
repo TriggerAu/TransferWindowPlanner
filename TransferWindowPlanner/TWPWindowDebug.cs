@@ -228,29 +228,52 @@ namespace TransferWindowPlanner
                     DrawLabel("OrbitPeriod: {0:0}", FlightGlobals.ActiveVessel.orbit.period);
                     DrawLabel("Scan: {0:0}->{1:0}", mbTWP.windowMain.TransferSelected.DepartureTime - FlightGlobals.ActiveVessel.orbit.period / 2, mbTWP.windowMain.TransferSelected.DepartureTime + FlightGlobals.ActiveVessel.orbit.period / 2);
 
+                    Double dblEjectAt2;
+                    Vector3d vectEject = new Vector3d();
 
                     if (GUILayout.Button("NewTransfer"))
                     {
+                        
                         transTemp = new TransferDetails();
                         LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
-                            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, 0, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
-                        transTemp.CalcEjectionValues();
+                            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, mbTWP.windowMain.TransferSpecs.InitialOrbitAltitude, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
 
+                        try
+                        {
+                            transTemp.CalcEjectionValues();
+                        }
+                        catch (Exception ex)
+                        {
+                            LogFormatted("Wouldnt Create EjectionValues :(\r\n{0}\r\n{1}", ex.Message, ex.StackTrace);
+                        }
+
+                        LogFormatted("XFer: {0}", transTemp.TransferInitalVelocity);
+                        LogFormatted("Origin: {0}", transTemp.OriginVelocity);
+                        LogFormatted("Diff: {0}", (Vector3d)(transTemp.OriginVelocity - transTemp.TransferInitalVelocity));
+                        LogFormatted("Eject: {0}", transTemp.EjectionDeltaVector);
+                        LogFormatted("VesselOrbit: {0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
+                        LogFormatted("VesselOrbit(m/s): {0}", transTemp.OriginVesselOrbitalSpeed);
+                        //LogFormatted("oVel: {0}", LambertSolver.oVel);
+
+                        LogFormatted("A");
+
+
+                        dblEjectAt2 = timeOfLeastDVBurn(FlightGlobals.ActiveVessel.orbit, dblEjectAt, mbTWP.windowMain.TransferSelected.TransferInitalVelocity, 8, out vectEject);
+
+                        
                         //now massage that with the vessels vector at that UT!
-                        hghjgjhghghjgjh
 
 
-                        LogFormatted(transTemp.TransferDetailsText);
-
-
-                        LogFormatted("OrbVelocity:{0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
+                        //LogFormatted("OrbVelocity:{0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
                     }
-
-                    DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
-
 
                     if (transTemp != null)
                     {
+                        //DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
+                        DrawLabel("TransferInit:{0} - {1}", transTemp.TransferInitalVelocity.magnitude, transTemp.TransferInitalVelocity);
+                        DrawLabel("Transtemp:{0} - {1}", transTemp.EjectionDeltaVector.magnitude, transTemp.EjectionDeltaVector);
+                        DrawLabel("Eject:{0} - {1}", vectEject.magnitude, vectEject);
+
                         GUILayout.Label(transTemp.TransferDetailsText);
                         if (GUILayout.Button("Newnode"))
                         {
@@ -446,13 +469,84 @@ namespace TransferWindowPlanner
 
                 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                LogFormatted("{0}\r\n{1}", ex.Message, ex.StackTrace);
             }
 
         }
 
+        /// <summary>
+        /// Find the point on the orbit that includes the initial time where the ejection angle is closest to the suplied one
+        /// </summary>
+        /// <param name="oObject">Orbit of the vessel/body</param>
+        /// <param name="timeInitial">The UT you want to search around for the angle - will search 1/2 an orbit back and 1/2 forward</param>
+        /// <param name="numDivisions">Higher thisnumber the more precise the answer - and the longer it will take</param>
+        /// <param name="closestAngle">The output of the closest angle the method could find</param>
+        /// <param name="targetAngle">The ejection angle we are looking for</param>
+        /// <returns></returns>
+        internal static double timeOfLeastDVBurn(Orbit oObject, double timeInitial, Vector3d vectTransferInitial, double numDivisions, out Vector3d bestBurnEject)
+        {
+            double timeStart = timeInitial - oObject.period;// / 2;
+            double periodtoscan = oObject.period * 2;
+
+            double bestBurnTime = timeStart;
+            double bestBurnDV = Double.MaxValue;
+            bestBurnEject = new Vector3d();
+
+            double minTime = timeStart;
+            double maxTime = timeStart + periodtoscan;
+
+            //work out iterations for precision - we only really need to within a second - so how many iterations do we actually need
+            //Each iteration gets us 1/10th of the period to scan
+
+            LogFormatted("B");
+            try
+            {
+                System.IO.File.Delete(Resources.PathPlugin + "/DVTest.csv");
+
+            }
+            catch (Exception)
+            {
+                
+                
+            } 
+            
+            System.IO.File.AppendAllText(Resources.PathPlugin + "/DVTest.csv", "T,DV,Vect\r\n");
+
+            for (int iter = 0; iter < 10; iter++)
+            {
+                LogFormatted("Start:{0} - Stop:{1}", minTime, maxTime);
+
+                double dt = (maxTime - minTime) / numDivisions;
+                for (int i = 0; i < numDivisions; i++)
+                {
+                    double t = minTime + i * dt;
+
+                    //get the vessels velocity at the right time
+                    Vector3d vel = oObject.getOrbitalVelocityAtUT(t);
+                    Vector3d velPlanet = oObject.referenceBody.orbit.getOrbitalVelocityAtUT(t);
+
+                    Vector3d velall = vel+velPlanet;
+
+                    Vector3d Eject = vectTransferInitial - velall;
+
+                    System.IO.File.AppendAllText(Resources.PathPlugin + "/DVTest.csv", String.Format("{0},{1},{2}\r\n",t,Eject.magnitude,Eject));
+
+                    if (Math.Abs(Eject.magnitude) < bestBurnDV)
+                    {
+                        bestBurnDV = Math.Abs(Eject.magnitude);
+                        bestBurnTime = t;
+                        bestBurnEject = Eject;
+                        LogFormatted("{0}-{1}-{2}", velall.magnitude, bestBurnEject.magnitude, t);
+                    }
+                }
+                minTime = (bestBurnTime - dt).Clamp(timeStart, timeStart + periodtoscan);
+                maxTime = (bestBurnTime + dt).Clamp(timeStart, timeStart + periodtoscan);
+            }
+
+            return bestBurnTime;
+        }
 
     }
 #endif
