@@ -27,6 +27,9 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.3.1.0		-	KSP Version: 1.0.4
+- Fix added for long drop down lists when theres lots of planets (Issue #33)
+
 Version 1.3.0.1		-	KSP Version: 1.0.2
 - changed version file to handle patches for CKAN
 
