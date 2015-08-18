@@ -85,44 +85,56 @@ namespace TransferWindowPlanner
         TransferDetails transTemp;
 
         double width, height;
-
+        private PlanetariumCamera cam;
         private LineRenderer line = null;
         private GameObject obj = new GameObject("Line");
         private Boolean drawLine = false;
         internal override void Start()
         {
             LogFormatted("OnStart");
-            
+
+            obj.layer = 9;
             line = obj.AddComponent<LineRenderer>();
+            //line.material = new Material(Shader.Find("Particles/Additive"));
+            //line.SetColors(Color.red, Color.yellow);
+            line.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            //line.SetColors(Color.blue, Color.blue);
             line.SetColors(Color.red, Color.red);
             line.transform.parent = null;
             line.useWorldSpace = true;
-            line.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
-            //line.SetColors(Color.blue, Color.blue);
             line.SetWidth(10, 10);
-            line.SetVertexCount(5);
+            line.SetVertexCount(2);
             line.enabled = false;
 
+            cam = (PlanetariumCamera)GameObject.FindObjectOfType(typeof(PlanetariumCamera));
+        }
+
+        internal override void FixedUpdate()
+        {
+            if (MapView.MapIsEnabled && drawLine)
+            {
+                line.enabled = true;
+                line.SetPosition(0, ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[0].transform.position));
+                line.SetPosition(1, ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[1].transform.position));
+
+                line.SetWidth((float)intTest1 /1000 * cam.Distance, (float)intTest1/1000 * cam.Distance);
+                //float scale = (float)(0.004 * cam.Distance);
+                //line.SetWidth(scale, scale);
+            }
+            else
+            {
+                line.enabled = false;
+            }
+        }
+
+        internal override void OnGUIEvery()
+        {
         }
 
         internal override void DrawWindow(int id)
         {
             try
             {
-                if (drawLine)
-                {
-                    line.enabled = true;
-                    line.SetPosition(0, ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[0].transform.position));
-                    line.SetPosition(1, ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[1].transform.position));
-                    //float scale = (float)(0.004 * cam.Distance);
-                    //line.SetWidth(scale, scale);
-                }
-                else
-                {
-                    line.enabled = false;
-                }
-
-
                 DrawTextBox(ref intTest1);
                 DrawTextBox(ref intTest2);
                 DrawTextBox(ref intTest3);

@@ -353,22 +353,22 @@ namespace TransferWindowPlanner
                 if (game != null && game.flightState != null && game.compatible)
                 {
                     HighLogic.CurrentGame = game;
-                    HighLogic.LoadScene(GameScenes.SPACECENTER);
+                    //HighLogic.LoadScene(GameScenes.SPACECENTER);
 
-                    //Int32 FirstVessel;
-                    //Boolean blnFoundVessel = false;
-                    //for (FirstVessel = 0; FirstVessel < game.flightState.protoVessels.Count; FirstVessel++)
-                    //{
-                    //    if (game.flightState.protoVessels[FirstVessel].vesselType != VesselType.SpaceObject &&
-                    //        game.flightState.protoVessels[FirstVessel].vesselType != VesselType.Unknown)
-                    //    {
-                    //        blnFoundVessel = true;
-                    //        break;
-                    //    }
-                    //}
-                    //if (!blnFoundVessel)
-                    //    FirstVessel = 0;
-                    //FlightDriver.StartAndFocusVessel(game, FirstVessel);
+                    Int32 FirstVessel;
+                    Boolean blnFoundVessel = false;
+                    for (FirstVessel = 0; FirstVessel < game.flightState.protoVessels.Count; FirstVessel++)
+                    {
+                        if (game.flightState.protoVessels[FirstVessel].vesselType != VesselType.SpaceObject &&
+                            game.flightState.protoVessels[FirstVessel].vesselType != VesselType.Unknown)
+                        {
+                            blnFoundVessel = true;
+                            break;
+                        }
+                    }
+                    if (!blnFoundVessel)
+                        FirstVessel = 0;
+                    FlightDriver.StartAndFocusVessel(game, FirstVessel);
                 }
 
                 //CheatOptions.InfiniteFuel = true;
