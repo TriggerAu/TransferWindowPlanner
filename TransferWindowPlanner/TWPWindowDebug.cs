@@ -72,10 +72,10 @@ namespace TransferWindowPlanner
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
-        public Int32 intTest1 = 10000;
-        public Int32 intTest2 = 0;
-        public Int32 intTest3 = 0;
-        public Int32 intTest4 = 101;
+        public Int32 intTest1 = 10;
+        public Int32 intTest2 = 300;
+        public Int32 intTest3 = 6;
+        public Int32 intTest4 = 15;
         public Int32 intTest5 = 0;
         public Int32 intPlotDeparturePerDay = 1;
         public Int32 intPlotTravelPointsPerDay = 1;
@@ -86,49 +86,124 @@ namespace TransferWindowPlanner
 
         double width, height;
         private PlanetariumCamera cam;
-        private LineRenderer line = null;
+        private LineRenderer lineStart = null;
+        private LineRenderer lineAngle = null;
+        private LineRenderer lineArc = null;
         private GameObject obj = new GameObject("Line");
+        private GameObject obj2 = new GameObject("Line2");
+        private GameObject obj3 = new GameObject("Line3");
         private Boolean drawLine = false;
         internal override void Start()
         {
             LogFormatted("OnStart");
 
             obj.layer = 9;
-            line = obj.AddComponent<LineRenderer>();
+            lineStart = obj.AddComponent<LineRenderer>();
             //line.material = new Material(Shader.Find("Particles/Additive"));
             //line.SetColors(Color.red, Color.yellow);
-            line.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            lineStart.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
             //line.SetColors(Color.blue, Color.blue);
-            line.SetColors(Color.red, Color.red);
-            line.transform.parent = null;
-            line.useWorldSpace = true;
-            line.SetWidth(10, 10);
-            line.SetVertexCount(2);
-            line.enabled = false;
+            lineStart.SetColors(Color.red, Color.red);
+            lineStart.transform.parent = null;
+            lineStart.useWorldSpace = true;
+            lineStart.SetWidth(10, 10);
+            lineStart.SetVertexCount(2);
+            lineStart.enabled = false;
+
+            obj2.layer = 9;
+
+            lineAngle = obj2.AddComponent<LineRenderer>();
+            lineAngle.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            lineAngle.SetColors(Color.red, Color.red);
+            lineAngle.transform.parent = null;
+            lineAngle.useWorldSpace = true;
+            lineAngle.SetWidth(10, 10);
+            lineAngle.SetVertexCount(2);
+            lineAngle.enabled = false;
+
+            obj3.layer = 9;
+
+            lineArc = obj3.AddComponent<LineRenderer>();
+            lineArc.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            lineArc.SetColors(Color.red, Color.red);
+            lineArc.transform.parent = null;
+            lineArc.useWorldSpace = true;
+            lineArc.SetWidth(10, 10);
+            lineArc.SetVertexCount(ArcVertexCount);
+            lineArc.enabled = false;
 
             cam = (PlanetariumCamera)GameObject.FindObjectOfType(typeof(PlanetariumCamera));
         }
+
+        Int32 ArcVertexCount = 72;
+        CelestialBody bodyOrigin = FlightGlobals.Bodies[6];
+        CelestialBody bodyDest = FlightGlobals.Bodies[15];
 
         internal override void FixedUpdate()
         {
             if (MapView.MapIsEnabled && drawLine)
             {
-                line.enabled = true;
-                line.SetPosition(0, ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[0].transform.position));
-                line.SetPosition(1, ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[1].transform.position));
+                bodyOrigin = FlightGlobals.Bodies[intTest3];
+                bodyDest = FlightGlobals.Bodies[intTest4];
 
-                line.SetWidth((float)intTest1 /1000 * cam.Distance, (float)intTest1/1000 * cam.Distance);
+                Vector3d vectStart = bodyOrigin.transform.position - bodyOrigin.referenceBody.transform.position;
+                Double vectOriginMag = vectStart.magnitude;
+
+                Vector3d vectAngle = Quaternion.AngleAxis(-(float)this.intTest2, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+                vectAngle = vectAngle.normalized * bodyDest.orbit.ApR * 1.2;
+                Double vectDestMag = vectAngle.magnitude;
+                vectAngle = bodyOrigin.referenceBody.transform.position + vectAngle;
+
+
+                lineStart.enabled = true;
+                lineStart.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
+                this.lineStart.SetPosition(1, ScaledSpace.LocalToScaledSpace(bodyOrigin.transform.position));
+
+
+                lineStart.SetWidth((float)intTest1 /1000 * cam.Distance, (float)intTest1/1000 * cam.Distance);
                 //float scale = (float)(0.004 * cam.Distance);
                 //line.SetWidth(scale, scale);
+
+                lineAngle.enabled = true;
+                lineAngle.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
+                lineAngle.SetPosition(1, ScaledSpace.LocalToScaledSpace(vectAngle));
+                lineAngle.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
+
+                //get the smaller of the two values
+                Double shortest = Math.Min(vectOriginMag, vectDestMag) * 0.9;
+
+                lineArc.enabled = true;
+                lineArc.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
+
+                //now we draw an arc from a to b at that distance minus a smidge
+                for (int i = 0; i < ArcVertexCount; i++)
+                {
+                    Vector3d vectArc = Quaternion.AngleAxis(-(float)this.intTest2/(ArcVertexCount-1) * i, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+                    vectArc = vectArc.normalized * shortest;
+                    vectArc = bodyOrigin.referenceBody.transform.position + vectArc;
+
+                    lineArc.SetPosition(i, ScaledSpace.LocalToScaledSpace(vectArc));
+
+                }
+
+                //cam.camera.WorldToScreenPoint(bodyOrigin.transform.position);
+
             }
             else
             {
-                line.enabled = false;
+                lineStart.enabled = false;
+                lineAngle.enabled = false;
+                lineArc.enabled = false;
             }
         }
 
         internal override void OnGUIEvery()
         {
+            if (drawLine)
+            {
+                //Label the angle
+                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(bodyOrigin.transform.position).x, cam.camera.WorldToScreenPoint(bodyOrigin.transform.position).y, 100, 30), String.Format("{0:0.00}°", this.intTest2));
+            }
         }
 
         internal override void DrawWindow(int id)
@@ -140,6 +215,9 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest3);
                 DrawTextBox(ref intTest4);
                 //DrawTextBox(ref intTest5);
+
+
+                DrawLabel("Position:{0}", cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[15].transform.position)));
 
                 ///////////////RANGE Work//////////////////////
                 //DrawTextBox(ref intPlotDeparturePerDay);
@@ -229,7 +307,7 @@ namespace TransferWindowPlanner
                 //    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
 
                 //    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    
+
                 //}
                 //DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
 
