@@ -136,9 +136,9 @@ namespace TransferWindowPlanner
         }
 
         Int32 ArcVertexCount = 72;
-        CelestialBody bodyOrigin = FlightGlobals.Bodies[6];
-        CelestialBody bodyDest = FlightGlobals.Bodies[15];
-
+        CelestialBody bodyOrigin = FlightGlobals.Bodies[3];
+        CelestialBody bodyDest = FlightGlobals.Bodies[2];
+        Vector3d vectAngle;
         internal override void FixedUpdate()
         {
             if (MapView.MapIsEnabled && drawLine)
@@ -149,7 +149,7 @@ namespace TransferWindowPlanner
                 Vector3d vectStart = bodyOrigin.transform.position - bodyOrigin.referenceBody.transform.position;
                 Double vectOriginMag = vectStart.magnitude;
 
-                Vector3d vectAngle = Quaternion.AngleAxis(-(float)this.intTest2, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+                vectAngle = Quaternion.AngleAxis(-(float)this.intTest2, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
                 vectAngle = vectAngle.normalized * bodyDest.orbit.ApR * 1.2;
                 Double vectDestMag = vectAngle.magnitude;
                 vectAngle = bodyOrigin.referenceBody.transform.position + vectAngle;
@@ -202,7 +202,7 @@ namespace TransferWindowPlanner
             if (drawLine)
             {
                 //Label the angle
-                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(bodyOrigin.transform.position).x, cam.camera.WorldToScreenPoint(bodyOrigin.transform.position).y, 100, 30), String.Format("{0:0.00}°", this.intTest2));
+                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).x, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).y, 100, 30), String.Format("{0:0.00}°", this.intTest2));
             }
         }
 
