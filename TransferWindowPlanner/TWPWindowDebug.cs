@@ -69,13 +69,15 @@ namespace TransferWindowPlanner
 #if DEBUG
     class TWPWindowDebug : MonoBehaviourWindowPlus
     {
+        internal AngleRenderPhase PhaseAngle;
+
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
         public Int32 intTest1 = 10;
         public Int32 intTest2 = 300;
-        public Int32 intTest3 = 6;
-        public Int32 intTest4 = 15;
+        public Int32 intTest3 = 2;
+        public Int32 intTest4 = 3;
         public Int32 intTest5 = 0;
         public Int32 intPlotDeparturePerDay = 1;
         public Int32 intPlotTravelPointsPerDay = 1;
@@ -96,6 +98,8 @@ namespace TransferWindowPlanner
         internal override void Start()
         {
             LogFormatted("OnStart");
+
+            PhaseAngle = AddComponent<AngleRenderPhase>();
 
             obj.layer = 9;
             lineStart = obj.AddComponent<LineRenderer>();
@@ -139,7 +143,7 @@ namespace TransferWindowPlanner
         CelestialBody bodyOrigin = FlightGlobals.Bodies[3];
         CelestialBody bodyDest = FlightGlobals.Bodies[2];
         Vector3d vectAngle;
-        internal override void FixedUpdate()
+        internal override void LateUpdate()
         {
             if (MapView.MapIsEnabled && drawLine)
             {
@@ -334,9 +338,23 @@ namespace TransferWindowPlanner
 
                 if (GUILayout.Button("ToggleLine"))
                 {
-                    drawLine = !drawLine;
-                    LogFormatted("LineEnabled:{0}", drawLine);
+                    if (!PhaseAngle.isDrawing)
+                    {
+                        PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
+                            FlightGlobals.Bodies[intTest4]);
+                        PhaseAngle.AngleValue = 120;
+                    } else
+                    {
+                        PhaseAngle.HideAngle();
+                    }
+
+                    //drawLine = !drawLine;
+                    LogFormatted("LineEnabled:{0}", PhaseAngle.isDrawing);
                 }
+
+
+                //DrawLabel("Bpdy:{0}-{1}", bodyOrigin.transform.position, PhaseAngle.vectPointStart);
+                //DrawLabel("Pivot:{0}-{1}", bodyOrigin.referenceBody.transform.position, PhaseAngle.vectPointPivot);
 
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
