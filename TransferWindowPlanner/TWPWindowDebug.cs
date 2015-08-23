@@ -99,7 +99,10 @@ namespace TransferWindowPlanner
         {
             LogFormatted("OnStart");
 
-            PhaseAngle = AddComponent<AngleRenderPhase>();
+            //PhaseAngle = AddComponent<AngleRenderPhase>();
+
+            PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
+
 
             obj.layer = 9;
             lineStart = obj.AddComponent<LineRenderer>();
@@ -342,7 +345,7 @@ namespace TransferWindowPlanner
                     {
                         PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
                             FlightGlobals.Bodies[intTest4]);
-                        PhaseAngle.AngleValue = 120;
+                        //PhaseAngle.AngleValue = 120;
                     } else
                     {
                         PhaseAngle.HideAngle();
