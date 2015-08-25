@@ -75,7 +75,7 @@ namespace TransferWindowPlanner
         internal Settings settings;
 
         public Int32 intTest1 = 10;
-        public Int32 intTest2 = 300;
+        public Int32 intTest2 = 10;
         public Int32 intTest3 = 2;
         public Int32 intTest4 = 3;
         public Int32 intTest5 = 0;
@@ -104,113 +104,115 @@ namespace TransferWindowPlanner
             PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
 
 
-            obj.layer = 9;
-            lineStart = obj.AddComponent<LineRenderer>();
-            //line.material = new Material(Shader.Find("Particles/Additive"));
-            //line.SetColors(Color.red, Color.yellow);
-            lineStart.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
-            //line.SetColors(Color.blue, Color.blue);
-            lineStart.SetColors(Color.red, Color.red);
-            lineStart.transform.parent = null;
-            lineStart.useWorldSpace = true;
-            lineStart.SetWidth(10, 10);
-            lineStart.SetVertexCount(2);
-            lineStart.enabled = false;
 
-            obj2.layer = 9;
 
-            lineAngle = obj2.AddComponent<LineRenderer>();
-            lineAngle.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
-            lineAngle.SetColors(Color.red, Color.red);
-            lineAngle.transform.parent = null;
-            lineAngle.useWorldSpace = true;
-            lineAngle.SetWidth(10, 10);
-            lineAngle.SetVertexCount(2);
-            lineAngle.enabled = false;
+            //obj.layer = 9;
+            //lineStart = obj.AddComponent<LineRenderer>();
+            ////line.material = new Material(Shader.Find("Particles/Additive"));
+            ////line.SetColors(Color.red, Color.yellow);
+            //lineStart.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            ////line.SetColors(Color.blue, Color.blue);
+            //lineStart.SetColors(Color.red, Color.red);
+            //lineStart.transform.parent = null;
+            //lineStart.useWorldSpace = true;
+            //lineStart.SetWidth(10, 10);
+            //lineStart.SetVertexCount(2);
+            //lineStart.enabled = false;
 
-            obj3.layer = 9;
+            //obj2.layer = 9;
 
-            lineArc = obj3.AddComponent<LineRenderer>();
-            lineArc.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
-            lineArc.SetColors(Color.red, Color.red);
-            lineArc.transform.parent = null;
-            lineArc.useWorldSpace = true;
-            lineArc.SetWidth(10, 10);
-            lineArc.SetVertexCount(ArcVertexCount);
-            lineArc.enabled = false;
+            //lineAngle = obj2.AddComponent<LineRenderer>();
+            //lineAngle.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            //lineAngle.SetColors(Color.red, Color.red);
+            //lineAngle.transform.parent = null;
+            //lineAngle.useWorldSpace = true;
+            //lineAngle.SetWidth(10, 10);
+            //lineAngle.SetVertexCount(2);
+            //lineAngle.enabled = false;
 
-            cam = (PlanetariumCamera)GameObject.FindObjectOfType(typeof(PlanetariumCamera));
+            //obj3.layer = 9;
+
+            //lineArc = obj3.AddComponent<LineRenderer>();
+            //lineArc.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            //lineArc.SetColors(Color.red, Color.red);
+            //lineArc.transform.parent = null;
+            //lineArc.useWorldSpace = true;
+            //lineArc.SetWidth(10, 10);
+            //lineArc.SetVertexCount(ArcVertexCount);
+            //lineArc.enabled = false;
+
+            //cam = (PlanetariumCamera)GameObject.FindObjectOfType(typeof(PlanetariumCamera));
         }
 
-        Int32 ArcVertexCount = 72;
-        CelestialBody bodyOrigin = FlightGlobals.Bodies[3];
-        CelestialBody bodyDest = FlightGlobals.Bodies[2];
-        Vector3d vectAngle;
-        internal override void LateUpdate()
-        {
-            if (MapView.MapIsEnabled && drawLine)
-            {
-                bodyOrigin = FlightGlobals.Bodies[intTest3];
-                bodyDest = FlightGlobals.Bodies[intTest4];
+        ////Int32 ArcVertexCount = 72;
+        ////CelestialBody bodyOrigin = FlightGlobals.Bodies[3];
+        ////CelestialBody bodyDest = FlightGlobals.Bodies[2];
+        ////Vector3d vectAngle;
+        //internal override void LateUpdate()
+        //{
+        //    if (MapView.MapIsEnabled && drawLine)
+        //    {
+        //        bodyOrigin = FlightGlobals.Bodies[intTest3];
+        //        bodyDest = FlightGlobals.Bodies[intTest4];
 
-                Vector3d vectStart = bodyOrigin.transform.position - bodyOrigin.referenceBody.transform.position;
-                Double vectOriginMag = vectStart.magnitude;
+        //        Vector3d vectStart = bodyOrigin.transform.position - bodyOrigin.referenceBody.transform.position;
+        //        Double vectOriginMag = vectStart.magnitude;
 
-                vectAngle = Quaternion.AngleAxis(-(float)this.intTest2, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
-                vectAngle = vectAngle.normalized * bodyDest.orbit.ApR * 1.2;
-                Double vectDestMag = vectAngle.magnitude;
-                vectAngle = bodyOrigin.referenceBody.transform.position + vectAngle;
-
-
-                lineStart.enabled = true;
-                lineStart.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
-                this.lineStart.SetPosition(1, ScaledSpace.LocalToScaledSpace(bodyOrigin.transform.position));
+        //        vectAngle = Quaternion.AngleAxis(-(float)this.intTest2, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+        //        vectAngle = vectAngle.normalized * bodyDest.orbit.ApR * 1.2;
+        //        Double vectDestMag = vectAngle.magnitude;
+        //        vectAngle = bodyOrigin.referenceBody.transform.position + vectAngle;
 
 
-                lineStart.SetWidth((float)intTest1 /1000 * cam.Distance, (float)intTest1/1000 * cam.Distance);
-                //float scale = (float)(0.004 * cam.Distance);
-                //line.SetWidth(scale, scale);
+        //        lineStart.enabled = true;
+        //        lineStart.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
+        //        this.lineStart.SetPosition(1, ScaledSpace.LocalToScaledSpace(bodyOrigin.transform.position));
 
-                lineAngle.enabled = true;
-                lineAngle.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
-                lineAngle.SetPosition(1, ScaledSpace.LocalToScaledSpace(vectAngle));
-                lineAngle.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
 
-                //get the smaller of the two values
-                Double shortest = Math.Min(vectOriginMag, vectDestMag) * 0.9;
+        //        lineStart.SetWidth((float)intTest1 /1000 * cam.Distance, (float)intTest1/1000 * cam.Distance);
+        //        //float scale = (float)(0.004 * cam.Distance);
+        //        //line.SetWidth(scale, scale);
 
-                lineArc.enabled = true;
-                lineArc.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
+        //        lineAngle.enabled = true;
+        //        lineAngle.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
+        //        lineAngle.SetPosition(1, ScaledSpace.LocalToScaledSpace(vectAngle));
+        //        lineAngle.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
 
-                //now we draw an arc from a to b at that distance minus a smidge
-                for (int i = 0; i < ArcVertexCount; i++)
-                {
-                    Vector3d vectArc = Quaternion.AngleAxis(-(float)this.intTest2/(ArcVertexCount-1) * i, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
-                    vectArc = vectArc.normalized * shortest;
-                    vectArc = bodyOrigin.referenceBody.transform.position + vectArc;
+        //        //get the smaller of the two values
+        //        Double shortest = Math.Min(vectOriginMag, vectDestMag) * 0.9;
 
-                    lineArc.SetPosition(i, ScaledSpace.LocalToScaledSpace(vectArc));
+        //        lineArc.enabled = true;
+        //        lineArc.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
 
-                }
+        //        //now we draw an arc from a to b at that distance minus a smidge
+        //        for (int i = 0; i < ArcVertexCount; i++)
+        //        {
+        //            Vector3d vectArc = Quaternion.AngleAxis(-(float)this.intTest2/(ArcVertexCount-1) * i, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+        //            vectArc = vectArc.normalized * shortest;
+        //            vectArc = bodyOrigin.referenceBody.transform.position + vectArc;
 
-                //cam.camera.WorldToScreenPoint(bodyOrigin.transform.position);
+        //            lineArc.SetPosition(i, ScaledSpace.LocalToScaledSpace(vectArc));
 
-            }
-            else
-            {
-                lineStart.enabled = false;
-                lineAngle.enabled = false;
-                lineArc.enabled = false;
-            }
-        }
+        //        }
+
+        //        //cam.camera.WorldToScreenPoint(bodyOrigin.transform.position);
+
+        //    }
+        //    else
+        //    {
+        //        lineStart.enabled = false;
+        //        lineAngle.enabled = false;
+        //        lineArc.enabled = false;
+        //    }
+        //}
 
         internal override void OnGUIEvery()
         {
-            if (drawLine)
-            {
-                //Label the angle
-                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).x, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).y, 100, 30), String.Format("{0:0.00}°", this.intTest2));
-            }
+            //if (drawLine)
+            //{
+            //    //Label the angle
+            //    GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).x, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).y, 100, 30), String.Format("{0:0.00}°", this.intTest2));
+            //}
         }
 
         internal override void DrawWindow(int id)
@@ -223,8 +225,25 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest4);
                 //DrawTextBox(ref intTest5);
 
+                try
+                {
+                    DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosOrigin)).magnitude);
+                    DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosOrigin));
+                    DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosOrigin)));
 
-                DrawLabel("Position:{0}", cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(FlightGlobals.Bodies[15].transform.position)));
+                    
+
+                    DrawLabel("Scale:{0}", PhaseAngle.lineArc.material.mainTextureScale);
+
+                    PhaseAngle.lineArc.material.mainTextureScale = new Vector2(intTest1 * 100f/ (PhaseAngle.cam.Distance/2), 1);
+                    //PhaseAngle.StartWidth = intTest1;
+                    //PhaseAngle.EndWidth = intTest2;
+                }
+                catch (Exception)
+                {
+
+                    
+                }
 
                 ///////////////RANGE Work//////////////////////
                 //DrawTextBox(ref intPlotDeparturePerDay);

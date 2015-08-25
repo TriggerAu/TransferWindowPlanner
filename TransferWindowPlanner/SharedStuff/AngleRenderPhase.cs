@@ -63,9 +63,9 @@ namespace TransferWindowPlanner
         public Single AngleTargetValue { get; set; }
 
 
-        private Vector3d vectPosPivot;
-        private Vector3d vectPosOrigin;
-        private Vector3d vectPosEnd;
+        internal Vector3d vectPosPivot;
+        internal Vector3d vectPosOrigin;
+        internal Vector3d vectPosEnd;
         private Vector3d vectPosTarget;
         private Vector3d vectPosPivotWorking;
         private Vector3d vectPosEndWorking;
@@ -80,12 +80,12 @@ namespace TransferWindowPlanner
 
         private LineRenderer lineStart = null;
         private LineRenderer lineEnd = null;
-        private LineRenderer lineArc = null;
+        internal LineRenderer lineArc = null;
         private LineRenderer lineTarget = null;
         private LineRenderer lineTargetArc = null;
 
 
-        private PlanetariumCamera cam;
+        internal PlanetariumCamera cam;
 
         internal Int32 ArcPoints = 72;
         internal Int32 StartWidth = 10;
@@ -101,12 +101,14 @@ namespace TransferWindowPlanner
             //Get the orbit lines material so things look similar
             Material orbitLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
 
+            Material dottedLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).dottedLineMaterial;
+
             //init all the lines
             lineStart = InitLine(objLineStart, Color.blue, 2, 10, orbitLines);
             lineEnd = InitLine(objLineEnd, Color.blue, 2, 10, orbitLines);
-            lineArc = InitLine(objLineArc, Color.blue, ArcPoints, 10, orbitLines);
-            lineTarget = InitLine(objLineTarget, Color.blue, 2, 10, orbitLines);
-            lineTargetArc = InitLine(objLineTargetArc, Color.blue, ArcPoints, 10, orbitLines);
+            lineArc = InitLine(objLineArc, Color.blue, ArcPoints, 10, dottedLines);
+            lineTarget = InitLine(objLineTarget, Color.green, 2, 10, orbitLines);
+            lineTargetArc = InitLine(objLineTargetArc, Color.green, ArcPoints, 10, dottedLines);
 
             //get the map camera - well need this for distance/width calcs
             cam = (PlanetariumCamera)GameObject.FindObjectOfType(typeof(PlanetariumCamera));
@@ -318,8 +320,13 @@ namespace TransferWindowPlanner
         {
             line.SetPosition(0, ScaledSpace.LocalToScaledSpace(pointStart));
             line.SetPosition(1, ScaledSpace.LocalToScaledSpace(pointEnd));
-            line.SetWidth((Single)StartWidth / 1000 * (Single)(cam.transform.position - pointStart).magnitude, (Single)EndWidth / 1000 * (Single)(cam.transform.position - pointEnd).magnitude);
+            //line.SetWidth((Single)StartWidth / 1000 * (Single)(cam.transform.position - pointStart).magnitude, (Single)EndWidth / 1000 * (Single)(cam.transform.position - pointEnd).magnitude);
             line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+
+            //Double distToStart = ScaledSpace.LocalToScaledSpace(pointStart).magnitude;
+            //Double distToEnd = ScaledSpace.LocalToScaledSpace(pointEnd).magnitude;
+            //line.SetWidth((float)StartWidth / 10000f * (Single)distToStart, (float)EndWidth / 10000f * (Single)distToEnd);
+
             line.enabled = true;
         }
 
