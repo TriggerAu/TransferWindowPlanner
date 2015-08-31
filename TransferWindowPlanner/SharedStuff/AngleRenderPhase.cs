@@ -36,6 +36,8 @@ namespace TransferWindowPlanner
         private Boolean _isBecomingVisible_ArcDone = false;
         private Boolean _isBecomingVisible_TargetArcDone = false;
 
+        private Boolean _isHiding = false;
+
         /// <summary>
         /// Is the angle in the process of being hidden
         /// </summary>
@@ -60,16 +62,18 @@ namespace TransferWindowPlanner
         /// <summary>
         /// The target Angle to Draw - if we have a target
         /// </summary>
-        public Single AngleTargetValue { get; set; }
+        public Double AngleTargetValue { get; set; }
 
 
-        internal Vector3d vectPosPivot;
-        internal Vector3d vectPosOrigin;
-        internal Vector3d vectPosEnd;
-        private Vector3d vectPosTarget;
+        internal Vector3d vectPosWorldPivot;
+        internal Vector3d vectPosWorldOrigin;
+        internal Vector3d vectPosWorldEnd;
+        private Vector3d vectPosWorldTarget;
         private Vector3d vectPosPivotWorking;
         private Vector3d vectPosEndWorking;
         private Vector3d vectPosTargetWorking;
+
+        private Double _PhaseAngleCurrent;
 
 
         private GameObject objLineStart = new GameObject("LineStart");
@@ -91,6 +95,8 @@ namespace TransferWindowPlanner
         internal Int32 StartWidth = 10;
         internal Int32 EndWidth = 10;
 
+        private GUIStyle styleLabelEnd;
+        private GUIStyle styleLabelTarget;
 
         internal override void Start()
         {
@@ -106,9 +112,16 @@ namespace TransferWindowPlanner
             //init all the lines
             lineStart = InitLine(objLineStart, Color.blue, 2, 10, orbitLines);
             lineEnd = InitLine(objLineEnd, Color.blue, 2, 10, orbitLines);
-            lineArc = InitLine(objLineArc, Color.blue, ArcPoints, 10, dottedLines);
+            lineArc = InitLine(objLineArc, Color.blue, ArcPoints, 10, orbitLines);
             lineTarget = InitLine(objLineTarget, Color.green, 2, 10, orbitLines);
-            lineTargetArc = InitLine(objLineTargetArc, Color.green, ArcPoints, 10, dottedLines);
+            lineTargetArc = InitLine(objLineTargetArc, Color.green, ArcPoints, 10, orbitLines);
+
+            styleLabelEnd = new GUIStyle();
+            styleLabelEnd.normal.textColor = Color.white;
+            styleLabelEnd.alignment = TextAnchor.MiddleCenter;
+            styleLabelTarget = new GUIStyle();
+            styleLabelTarget.normal.textColor = Color.white;
+            styleLabelTarget.alignment = TextAnchor.MiddleCenter;
 
             //get the map camera - well need this for distance/width calcs
             cam = (PlanetariumCamera)GameObject.FindObjectOfType(typeof(PlanetariumCamera));
@@ -160,6 +173,12 @@ namespace TransferWindowPlanner
         }
 
 
+        public void DrawAngle(CelestialBody bodyOrigin, CelestialBody bodyTarget,Double angleTarget)
+        {
+            DrawAngle(bodyOrigin, bodyTarget);
+            AngleTargetValue = angleTarget;
+            ShowTargetAngle = true;
+        }
         public void DrawAngle(CelestialBody bodyOrigin, CelestialBody bodyTarget)
         {
             ShowTargetAngle = false;
@@ -176,7 +195,9 @@ namespace TransferWindowPlanner
 
         public void HideAngle()
         {
-            isDrawing = false;
+            StartDrawing = DateTime.Now;
+            _isHiding = true;
+            //isDrawing = false;
         }
 
         //keeps angles in the range 0 to 360
@@ -206,8 +227,14 @@ namespace TransferWindowPlanner
                 Vector3d vectStart = bodyOrigin.transform.position - bodyOrigin.referenceBody.transform.position;
                 Double vectStartMag = vectStart.magnitude;
                 
-                //noew work out the angle
-                Double _PhaseAngleCurrent = ClampDegrees180(LambertSolver.CurrentPhaseAngle(bodyOrigin.orbit,bodyTarget.orbit));
+                //now work out the angle
+                //Double _PhaseAngleCurrent = ClampDegrees180(LambertSolver.CurrentPhaseAngle(bodyOrigin.orbit,bodyTarget.orbit));
+                _PhaseAngleCurrent = LambertSolver.CurrentPhaseAngle(bodyOrigin.orbit, bodyTarget.orbit);
+                if (bodyTarget.orbit.semiMajorAxis < bodyOrigin.orbit.semiMajorAxis)
+                {
+                    _PhaseAngleCurrent = _PhaseAngleCurrent - 360;
+                }
+
 
                 //And therefore the 2nd arm of the angle
                 Vector3d vectEnd = Quaternion.AngleAxis(-(Single)_PhaseAngleCurrent, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
@@ -219,12 +246,38 @@ namespace TransferWindowPlanner
                 Vector3d vectPointEnd = bodyOrigin.referenceBody.transform.position + vectEnd;
 
                 //and heres the three points
-                vectPosPivot = bodyOrigin.referenceBody.transform.position;
-                vectPosOrigin = bodyOrigin.transform.position;
-                vectPosEnd = vectPointEnd;
+                vectPosWorldPivot = bodyOrigin.referenceBody.transform.position;
+                vectPosWorldOrigin = bodyOrigin.transform.position;
+                vectPosWorldEnd = vectPointEnd;
+
+                if (ShowTargetAngle) {
+                    Vector3d vectTarget = Quaternion.AngleAxis(-(Single)AngleTargetValue, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+                    vectPosWorldTarget = vectTarget.normalized * vectEndMag * 0.9;
+                    vectPosWorldTarget += bodyOrigin.referenceBody.transform.position;
+                }
 
                 //Are we Showing, Hiding or Static State
-                if (isBecomingVisible) {
+                if (_isHiding) {
+                    Single pctDone = (Single)(DateTime.Now - StartDrawing).TotalSeconds / 0.25f;
+                    if (pctDone >= 1)
+                    {
+                        _isHiding = false;
+                        isDrawing = false;
+                    }
+                    vectPosPivotWorking = bodyOrigin.transform.position - Mathf.Lerp(0, (Single)vectStartMag, Mathf.Clamp01(pctDone)) * vectStart.normalized;
+
+                    DrawLine(lineStart, vectPosWorldPivot, vectPosWorldPivot + (vectPosWorldOrigin - vectPosWorldPivot).normalized * Mathf.Lerp((Single)vectStartMag,0,pctDone));
+                    DrawLine(lineEnd, vectPosWorldPivot, vectPosWorldPivot + (vectPosWorldEnd - vectPosWorldPivot).normalized * Mathf.Lerp((Single)vectEndMag, 0, pctDone));
+
+                    DrawArc(lineArc, vectStart, _PhaseAngleCurrent, Mathf.Lerp((Single)bodyOrigin.orbit.radius, 0, pctDone), Mathf.Lerp((Single)bodyTarget.orbit.radius, 0, pctDone));
+
+                    if (ShowTargetAngle)
+                    {
+                        DrawLine(lineTarget, vectPosWorldPivot, vectPosWorldPivot + (vectPosWorldTarget - vectPosWorldPivot).normalized * Mathf.Lerp((Single)vectEndMag, 0, pctDone));
+                        DrawArc(lineTargetArc, vectStart, AngleTargetValue, Mathf.Lerp((Single)bodyOrigin.orbit.radius * 0.9f, 0, pctDone), Mathf.Lerp((Single)bodyTarget.orbit.radius * 0.9f, 0, pctDone));
+                    }
+
+                } else if (isBecomingVisible) {
                     if (!_isBecomingVisible_LinesDone)
                     {
                         Single pctDone = (Single)(DateTime.Now - StartDrawing).TotalSeconds / 0.5f;
@@ -236,7 +289,7 @@ namespace TransferWindowPlanner
 
                         vectPosPivotWorking = bodyOrigin.transform.position - Mathf.Lerp(0, (Single)vectStartMag, Mathf.Clamp01(pctDone)) * vectStart.normalized;
 
-                        DrawLine(lineStart, vectPosPivotWorking, vectPosOrigin);
+                        DrawLine(lineStart, vectPosPivotWorking, vectPosWorldOrigin);
                     }
                     else if (!_isBecomingVisible_ArcDone)
                     {
@@ -249,11 +302,12 @@ namespace TransferWindowPlanner
                         Double vectEndMagWorking = Mathf.Lerp((Single)vectStartMag, (Single)vectEndMag, Mathf.Clamp01(pctDone));
                         Double PhaseAngleWorking = ClampDegrees180(Mathf.Lerp(0, (Single)_PhaseAngleCurrent, Mathf.Clamp01(pctDone)));
                         vectPosEndWorking = (Vector3d)(Quaternion.AngleAxis(-(Single)PhaseAngleWorking, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart).normalized * vectEndMagWorking;
+                        vectPosEndWorking += bodyOrigin.referenceBody.transform.position;
 
                         //draw the origin and end lines
-                        DrawLine(lineStart, vectPosPivot, vectPosOrigin);
-                        DrawLine(lineEnd, vectPosPivot, vectPosEndWorking);
-                        DrawArc(lineArc, vectStart, PhaseAngleWorking, vectStartMag, vectEndMag);
+                        DrawLine(lineStart, vectPosWorldPivot, vectPosWorldOrigin);
+                        DrawLine(lineEnd, vectPosWorldPivot, vectPosEndWorking);
+                        DrawArc(lineArc, vectStart, PhaseAngleWorking, bodyOrigin.orbit.radius, bodyTarget.orbit.radius);
                     }
                     else if(!_isBecomingVisible_TargetArcDone)
                     {
@@ -266,11 +320,20 @@ namespace TransferWindowPlanner
                         {
                             Single pctDone = (Single)(DateTime.Now - StartDrawing).TotalSeconds / 0.5f;
                             if (pctDone >= 1)
+                            {
                                 _isBecomingVisible_TargetArcDone = true;
+                                _isBecomingVisible = false;
+                            }
 
-                            DrawLine(lineStart, vectPosPivot, vectPosOrigin);
-                            DrawLine(lineEnd, vectPosPivot, vectPosEnd);
-                            DrawLine(lineTarget, vectPosPivot, vectPosTargetWorking);
+                            Double PhaseAngleWorking = Mathf.Lerp(0, (Single)AngleTargetValue, Mathf.Clamp01(pctDone));
+                            vectPosTargetWorking = (Vector3d)(Quaternion.AngleAxis(-(Single)PhaseAngleWorking, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart).normalized * vectEndMag * 0.9;
+                            vectPosTargetWorking += bodyOrigin.referenceBody.transform.position;
+
+                            DrawLine(lineStart, vectPosWorldPivot, vectPosWorldOrigin);
+                            DrawLine(lineEnd, vectPosWorldPivot, vectPosWorldEnd);
+                            DrawArc(lineArc, vectStart, _PhaseAngleCurrent, bodyOrigin.orbit.radius, bodyTarget.orbit.radius);
+                            DrawLine(lineTarget, vectPosWorldPivot, vectPosTargetWorking );
+                            DrawArc(lineTargetArc, vectStart, PhaseAngleWorking, bodyOrigin.orbit.radius * 0.9, bodyTarget.orbit.radius * 0.9);
                         }
 
                     }
@@ -279,14 +342,15 @@ namespace TransferWindowPlanner
 
                 } else
                 {
-                    DrawLine(lineStart, vectPosPivot, vectPosOrigin);
-                    DrawLine(lineEnd, vectPosPivot, vectPosEnd);
+                    DrawLine(lineStart, vectPosWorldPivot, vectPosWorldOrigin);
+                    DrawLine(lineEnd, vectPosWorldPivot, vectPosWorldEnd);
 
-                    DrawArc(lineArc, vectStart, _PhaseAngleCurrent,vectStartMag, vectEndMag);
+                    DrawArc(lineArc, vectStart, _PhaseAngleCurrent, bodyOrigin.orbit.radius, bodyTarget.orbit.radius);//  vectStartMag, vectEndMag);
 
                     if (ShowTargetAngle)
                     {
-                        DrawLine(lineTarget, vectPosPivot, vectPosTarget);
+                        DrawLine(lineTarget, vectPosWorldPivot, vectPosWorldTarget);
+                        DrawArc(lineTargetArc, vectStart , AngleTargetValue , bodyOrigin.orbit.radius * 0.9, bodyTarget.orbit.radius * 0.9);
                     }
                 }
             }
@@ -299,6 +363,15 @@ namespace TransferWindowPlanner
                 lineTargetArc.enabled = false;
             }
 
+        }
+
+        internal override void OnGUIEvery()
+        {
+            if (MapView.MapIsEnabled && isDrawing && !_isBecomingVisible && !_isHiding)
+            {
+                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).y - 15, 100, 30), String.Format("{0:0.00}°", _PhaseAngleCurrent),styleLabelEnd);
+                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).y - 15, 100, 30), String.Format("{0:0.00}°", AngleTargetValue),styleLabelTarget);
+            }
         }
 
         private void DrawArc(LineRenderer line, Vector3d vectStart, Double Angle, Double StartLength, Double EndLength)

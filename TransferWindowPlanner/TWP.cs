@@ -353,8 +353,8 @@ namespace TransferWindowPlanner
                 if (game != null && game.flightState != null && game.compatible)
                 {
                     HighLogic.CurrentGame = game;
-                    //HighLogic.LoadScene(GameScenes.SPACECENTER);
-
+                    HighLogic.LoadScene(GameScenes.TRACKSTATION);
+                    return;
                     Int32 FirstVessel;
                     Boolean blnFoundVessel = false;
                     for (FirstVessel = 0; FirstVessel < game.flightState.protoVessels.Count; FirstVessel++)

@@ -227,9 +227,9 @@ namespace TransferWindowPlanner
 
                 try
                 {
-                    DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosOrigin)).magnitude);
-                    DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosOrigin));
-                    DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosOrigin)));
+                    DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)).magnitude);
+                    DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin));
+                    DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosWorldOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)));
 
                     
 
@@ -363,7 +363,8 @@ namespace TransferWindowPlanner
                     if (!PhaseAngle.isDrawing)
                     {
                         PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
-                            FlightGlobals.Bodies[intTest4]);
+                            FlightGlobals.Bodies[intTest4],
+                            intTest2);
                         //PhaseAngle.AngleValue = 120;
                     } else
                     {
