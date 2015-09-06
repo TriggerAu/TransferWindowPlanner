@@ -157,7 +157,14 @@ namespace TransferWindowPlanner
         internal override void OnDestroy()
         {
             base.OnDestroy();
-
+            
+            _isBecomingVisible = false;
+            _isBecomingVisible_LinesDone = false;
+            _isBecomingVisible_ArcDone = false;
+            _isBecomingVisible_TargetArcDone = false;
+            _isHiding = false;
+            isDrawing = false;
+            
             //Bin the objects
             lineStart = null;
             lineEnd = null;
@@ -403,11 +410,5 @@ namespace TransferWindowPlanner
             line.enabled = true;
         }
 
-        internal override void FixedUpdate()
-        {
-            base.FixedUpdate();
-
-
-        }
     }
 }

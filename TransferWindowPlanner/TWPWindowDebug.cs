@@ -70,13 +70,14 @@ namespace TransferWindowPlanner
     class TWPWindowDebug : MonoBehaviourWindowPlus
     {
         internal AngleRenderPhase PhaseAngle;
+        internal AngleRenderEject EjectAngle;
 
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
         public Int32 intTest1 = 10;
-        public Int32 intTest2 = 10;
-        public Int32 intTest3 = 2;
+        public Int32 intTest2 = 45;
+        public Int32 intTest3 = 1;
         public Int32 intTest4 = 3;
         public Int32 intTest5 = 0;
         public Int32 intPlotDeparturePerDay = 1;
@@ -102,7 +103,7 @@ namespace TransferWindowPlanner
             //PhaseAngle = AddComponent<AngleRenderPhase>();
 
             PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
-
+            EjectAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderEject>();
 
 
 
@@ -227,11 +228,18 @@ namespace TransferWindowPlanner
 
                 try
                 {
-                    DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)).magnitude);
-                    DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin));
-                    DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosWorldOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)));
+                    DrawLabel("body Vel:{0}", EjectAngle.bodyOrigin.orbit.getOrbitalVelocityAtUT(Planetarium.GetUniversalTime()));
 
-                    
+                    DrawLabel("VectStart:{0}", EjectAngle.vectPosWorldOrigin);
+                    DrawLabel("VectPivot:{0}", EjectAngle.vectPosWorldPivot);
+                    DrawLabel("VectEnd:{0}", EjectAngle.vectPosWorldEnd);
+                    DrawLabel("Angle:{0}", EjectAngle.AngleTargetValue);
+
+                    //DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)).magnitude);
+                    //DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin));
+                    //DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosWorldOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)));
+
+
 
                     DrawLabel("Scale:{0}", PhaseAngle.lineArc.material.mainTextureScale);
 
@@ -360,16 +368,27 @@ namespace TransferWindowPlanner
 
                 if (GUILayout.Button("ToggleLine"))
                 {
-                    if (!PhaseAngle.isDrawing)
+                    if (!EjectAngle.isDrawing)
                     {
-                        PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
-                            FlightGlobals.Bodies[intTest4],
+                        EjectAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
                             intTest2);
                         //PhaseAngle.AngleValue = 120;
-                    } else
-                    {
-                        PhaseAngle.HideAngle();
                     }
+                    else
+                    {
+                        EjectAngle.HideAngle();
+                    }
+
+                    //if (!PhaseAngle.isDrawing)
+                    //{
+                    //    PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
+                    //        FlightGlobals.Bodies[intTest4],
+                    //        intTest2);
+                    //    //PhaseAngle.AngleValue = 120;
+                    //} else
+                    //{
+                    //    PhaseAngle.HideAngle();
+                    //}
 
                     //drawLine = !drawLine;
                     LogFormatted("LineEnabled:{0}", PhaseAngle.isDrawing);
