@@ -233,7 +233,8 @@ namespace TransferWindowPlanner
                     DrawLabel("VectStart:{0}", EjectAngle.vectPosWorldOrigin);
                     DrawLabel("VectPivot:{0}", EjectAngle.vectPosWorldPivot);
                     DrawLabel("VectEnd:{0}", EjectAngle.vectPosWorldEnd);
-                    DrawLabel("Angle:{0}", EjectAngle.AngleTargetValue);
+                    DrawLabel("Length:{0}", (EjectAngle.vectPosWorldPivot - EjectAngle.vectPosWorldOrigin).magnitude);
+                    
 
                     //DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)).magnitude);
                     //DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin));
