@@ -372,7 +372,7 @@ namespace TransferWindowPlanner
                     if (!EjectAngle.isDrawing)
                     {
                         EjectAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
-                            intTest2);
+                            intTest2,true);
                         //PhaseAngle.AngleValue = 120;
                     }
                     else

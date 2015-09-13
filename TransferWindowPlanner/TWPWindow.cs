@@ -650,7 +650,6 @@ namespace TransferWindowPlanner
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0) {
                         vectSelected = new Vector2(vectMouse.x, vectMouse.y);
                         SetTransferDetails();
-
                     }
 
                 }
@@ -781,7 +780,7 @@ namespace TransferWindowPlanner
                     if (blnDisplayEject) { 
                         blnDisplayPhase = false;
                         mbTWP.PhaseAngle.HideAngle();
-                        mbTWP.EjectAngle.DrawAngle(cbOrigin,TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+                        mbTWP.EjectAngle.DrawAngle(cbOrigin,TransferSelected.EjectionAngle * LambertSolver.Rad2Deg,TransferSelected.EjectionAngleIsRetrograde);
                     }
                     else
                     {
