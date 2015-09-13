@@ -35,6 +35,9 @@ namespace TransferWindowPlanner
         // need two for unity skin
         internal TWPWindowSettingsBlockout windowSettingsBlockoutExtra;
 
+        internal AngleRenderPhase PhaseAngle;
+        internal AngleRenderEject EjectAngle;
+
         internal override void Awake()
         {
             LogFormatted("Awakening the TransferWindowPlanner (TWP)");
@@ -68,6 +71,10 @@ namespace TransferWindowPlanner
             OnGUIAppLauncherReady();
             //GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
             GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
+
+            //Hook the Angle renderers
+            PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
+            EjectAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderEject>();
 
             //do the daily version check if required
             if (settings.DailyVersionCheck)

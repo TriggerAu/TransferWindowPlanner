@@ -97,11 +97,23 @@ namespace TransferWindowPlanner
             LogFormatted_DebugOnly("New Origin Selected:{0}",ddlOrigin.SelectedValue.Trim(' '));
 
             SetupDestinationControls();
+
+            HideAngles();
         }
         void ddlDestination_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
         {
             LogFormatted_DebugOnly("New Destination Selected:{0}", ddlDestination.SelectedValue.Trim(' '));
             SetupTransferParams();
+
+            HideAngles();
+        }
+
+        void HideAngles()
+        {
+            mbTWP.PhaseAngle.HideAngle();
+            mbTWP.EjectAngle.HideAngle();
+            blnDisplayPhase = false;
+            blnDisplayEject = false;
         }
 
         internal override void OnGUIOnceOnly()
@@ -744,7 +756,44 @@ namespace TransferWindowPlanner
                 ShowEjectionDetails = false;
             }
             GUILayout.EndHorizontal();
+
+            GUILayout.Space(50);
+
+            GUILayout.BeginHorizontal();
+            if (DrawToggle(ref blnDisplayPhase,"Show Phase Angles", Styles.styleButton)){
+                if (blnDisplayPhase)
+                {
+                    blnDisplayEject = false;
+                    mbTWP.EjectAngle.HideAngle();
+                    if (DepartureSelected >= 0 && TransferSelected != null) {
+                        mbTWP.PhaseAngle.DrawAngle(cbOrigin,cbDestination, TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
+                    } else {
+                        mbTWP.PhaseAngle.DrawAngle(cbOrigin, cbDestination);
+                    }
+                } else {
+                    mbTWP.PhaseAngle.HideAngle();
+                }
+            }
+            if (DepartureSelected >= 0 && TransferSelected != null)
+            {
+                if (DrawToggle(ref blnDisplayEject, "Show Ejection Angles", Styles.styleButton))
+                {
+                    if (blnDisplayEject) { 
+                        blnDisplayPhase = false;
+                        mbTWP.PhaseAngle.HideAngle();
+                        mbTWP.EjectAngle.DrawAngle(cbOrigin,TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+                    }
+                    else
+                    {
+                        mbTWP.EjectAngle.HideAngle();
+                    }
+                }
+            }
+            GUILayout.EndHorizontal();
         }
+
+        private Boolean blnDisplayPhase = false;
+        private Boolean blnDisplayEject = false;
 
         internal void ResetWindow()
         {
@@ -757,6 +806,7 @@ namespace TransferWindowPlanner
 
             SetDepartureMinToYesterday();
             SetupDestinationControls();
+            HideAngles();
         }
         
         internal override void OnGUIEvery()

@@ -200,6 +200,7 @@ namespace TransferWindowPlanner
             _isBecomingVisible_LinesDone = false;
             _isBecomingVisible_ArcDone = false;
             _isBecomingVisible_VesselVectDone = false;
+            _isHiding = false;
         }
 
         public void HideAngle()

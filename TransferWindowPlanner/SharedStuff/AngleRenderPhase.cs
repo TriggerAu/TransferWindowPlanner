@@ -198,6 +198,7 @@ namespace TransferWindowPlanner
             _isBecomingVisible_LinesDone = false;
             _isBecomingVisible_ArcDone = false;
             _isBecomingVisible_TargetArcDone = false;
+            _isHiding = false;
         }
 
         public void HideAngle()
@@ -307,7 +308,7 @@ namespace TransferWindowPlanner
                         }
 
                         Double vectEndMagWorking = Mathf.Lerp((Single)vectStartMag, (Single)vectEndMag, Mathf.Clamp01(pctDone));
-                        Double PhaseAngleWorking = ClampDegrees180(Mathf.Lerp(0, (Single)_PhaseAngleCurrent, Mathf.Clamp01(pctDone)));
+                        Double PhaseAngleWorking = Mathf.Lerp(0, (Single)_PhaseAngleCurrent, Mathf.Clamp01(pctDone));
                         vectPosEndWorking = (Vector3d)(Quaternion.AngleAxis(-(Single)PhaseAngleWorking, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart).normalized * vectEndMagWorking;
                         vectPosEndWorking += bodyOrigin.referenceBody.transform.position;
 
@@ -377,7 +378,9 @@ namespace TransferWindowPlanner
             if (MapView.MapIsEnabled && isDrawing && !_isBecomingVisible && !_isHiding)
             {
                 GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).y - 15, 100, 30), String.Format("{0:0.00}°", _PhaseAngleCurrent),styleLabelEnd);
-                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).y - 15, 100, 30), String.Format("{0:0.00}°", AngleTargetValue),styleLabelTarget);
+
+                if(ShowTargetAngle)
+                    GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).y - 15, 100, 30), String.Format("{0:0.00}°", AngleTargetValue),styleLabelTarget);
             }
         }
 
