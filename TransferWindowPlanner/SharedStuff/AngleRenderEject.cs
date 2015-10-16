@@ -103,7 +103,13 @@ namespace TransferWindowPlanner
         {
             base.Start();
 
-            LogFormatted("Initializing Angle Render");
+            if (!TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
+            {
+                this.enabled = false;
+                return;
+            }
+
+            LogFormatted("Initializing EjectAngle Render");
 
             //Get the orbit lines material so things look similar
             Material orbitLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
@@ -231,6 +237,12 @@ namespace TransferWindowPlanner
         {
             base.OnPreCull();
 
+            //not sure if this is right - but its working
+            if (!TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
+            {
+                return;
+            }
+
             if (MapView.MapIsEnabled && isDrawing)
             {
                 //Get the Planets Velocity Vector
@@ -280,13 +292,13 @@ namespace TransferWindowPlanner
                     }
                     vectPosPivotWorking = bodyOrigin.transform.position - Mathf.Lerp(0, (Single)vectStartMag, Mathf.Clamp01(pctDone)) * vectStart.normalized;
 
-                    DrawLine(lineStart, vectPosWorldPivot + (DrawToRetrograde? vectOrbitPrograde.normalized * Mathf.Lerp((Single)vectStartMag, 0, pctDone) : new Vector3d()), vectPosWorldPivot + (vectPosWorldOrigin - vectPosWorldPivot).normalized * Mathf.Lerp((Single)vectStartMag, 0, pctDone));
+                    DrawLine(lineStart, vectPosWorldPivot + (DrawToRetrograde ? vectOrbitPrograde.normalized * Mathf.Lerp((Single)vectStartMag, 0, pctDone) : new Vector3d()), vectPosWorldPivot + (vectPosWorldOrigin - vectPosWorldPivot).normalized * Mathf.Lerp((Single)vectStartMag, 0, pctDone));
                     DrawLine(lineEnd, vectPosWorldPivot, vectPosWorldPivot + (vectPosWorldEnd - vectPosWorldPivot).normalized * Mathf.Lerp((Single)vectEndMag, 0, pctDone));
 
-                    DrawArc(lineArc, vectStart, AngleTargetValue, Mathf.Lerp((Single)bodyOrigin.Radius*3, 0, pctDone), Mathf.Lerp((Single)bodyOrigin.Radius*3, 0, pctDone));
+                    DrawArc(lineArc, vectStart, AngleTargetValue, Mathf.Lerp((Single)bodyOrigin.Radius * 3, 0, pctDone), Mathf.Lerp((Single)bodyOrigin.Radius * 3, 0, pctDone));
 
                     Vector3d vectVesselStart = bodyOrigin.transform.position + (vectEnd * 3 / 4);
-                    Vector3d vectVesselEnd = (Vector3d)(Quaternion.AngleAxis(-(Single)90, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectEnd).normalized * (Mathf.Lerp((Single)bodyOrigin.Radius * 3f,0, Mathf.Clamp01(pctDone)));
+                    Vector3d vectVesselEnd = (Vector3d)(Quaternion.AngleAxis(-(Single)90, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectEnd).normalized * (Mathf.Lerp((Single)bodyOrigin.Radius * 3f, 0, Mathf.Clamp01(pctDone)));
                     vectVesselEnd += vectVesselStart;
                     DrawLine(lineVesselVect, vectVesselStart, vectVesselEnd);
 
@@ -350,21 +362,21 @@ namespace TransferWindowPlanner
                         Vector3d vectVesselEnd = (Vector3d)(Quaternion.AngleAxis(-(Single)90, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectEnd).normalized * (Mathf.Lerp(0, (Single)bodyOrigin.Radius * 3f, Mathf.Clamp01(pctDone)));
                         vectVesselEnd += vectVesselStart;
                         DrawLine(lineVesselVect, vectVesselStart, vectVesselEnd);
-                        
+
                     }
                 }
                 else
                 {
                     DrawLine(lineStart, vectPosWorldPivot + (DrawToRetrograde ? vectOrbitPrograde : new Vector3d()), vectPosWorldOrigin);
                     //Arrow heads
-                    DrawLineArrow(lineStartArrow1, lineStartArrow2, vectPosWorldPivot, vectPosWorldOrbitArrow, bodyOrigin.orbit.GetOrbitNormal().xzy, (bodyOrigin.Radius * 2/3));
+                    DrawLineArrow(lineStartArrow1, lineStartArrow2, vectPosWorldPivot, vectPosWorldOrbitArrow, bodyOrigin.orbit.GetOrbitNormal().xzy, (bodyOrigin.Radius * 2 / 3));
 
                     DrawLine(lineEnd, vectPosWorldPivot, vectPosWorldEnd);
                     DrawArc(lineArc, vectStart, AngleTargetValue, bodyOrigin.Radius * 3, bodyOrigin.Radius * 3);//  vectStartMag, vectEndMag);
 
 
                     Vector3d vectVesselStart = bodyOrigin.transform.position + (vectEnd * 3 / 4);
-                    Vector3d vectVesselEnd = (Vector3d)(Quaternion.AngleAxis(-(Single)90, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectEnd).normalized * bodyOrigin.Radius * 3 ;
+                    Vector3d vectVesselEnd = (Vector3d)(Quaternion.AngleAxis(-(Single)90, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectEnd).normalized * bodyOrigin.Radius * 3;
                     vectVesselEnd += vectVesselStart;
                     DrawLine(lineVesselVect, vectVesselStart, vectVesselEnd);
                     DrawLineArrow(lineVesselVectArrow1, lineVesselVectArrow2, vectVesselStart, vectVesselEnd, bodyOrigin.orbit.GetOrbitNormal().xzy, (bodyOrigin.Radius * 2 / 3));
@@ -388,9 +400,9 @@ namespace TransferWindowPlanner
         {
             if (MapView.MapIsEnabled && isDrawing && !_isBecomingVisible && !_isHiding)
             {
-                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).y - 15, 100, 30), String.Format("{0:0.00}°\r\n{1}", AngleTargetValue, DrawToRetrograde?"to retrograde":"to prograde"), styleLabelEnd);
+                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldEnd)).y - 15, 100, 30), String.Format("{0:0.00}°\r\n{1}", AngleTargetValue, DrawToRetrograde ? "to retrograde" : "to prograde"), styleLabelEnd);
 
-                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldOrbitLabel)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldOrbitLabel)).y - 15, 100, 30), "Orbit",styleLabelTarget);
+                GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldOrbitLabel)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldOrbitLabel)).y - 15, 100, 30), "Orbit", styleLabelTarget);
 
                 if (VesselOrbit != null)
                 {

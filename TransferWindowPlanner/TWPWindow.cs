@@ -758,37 +758,47 @@ namespace TransferWindowPlanner
 
             GUILayout.Space(50);
 
-            GUILayout.BeginHorizontal();
-            if (DrawToggle(ref blnDisplayPhase,"Show Phase Angles", Styles.styleButton)){
-                if (blnDisplayPhase)
-                {
-                    blnDisplayEject = false;
-                    mbTWP.EjectAngle.HideAngle();
-                    if (DepartureSelected >= 0 && TransferSelected != null) {
-                        mbTWP.PhaseAngle.DrawAngle(cbOrigin,cbDestination, TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
-                    } else {
-                        mbTWP.PhaseAngle.DrawAngle(cbOrigin, cbDestination);
-                    }
-                } else {
-                    mbTWP.PhaseAngle.HideAngle();
-                }
-            }
-            if (DepartureSelected >= 0 && TransferSelected != null)
+            if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene) && MapView.MapIsEnabled)
             {
-                if (DrawToggle(ref blnDisplayEject, "Show Ejection Angles", Styles.styleButton))
+                GUILayout.BeginHorizontal();
+                if (DrawToggle(ref blnDisplayPhase, "Show Phase Angles", "ButtonToggle"))
                 {
-                    if (blnDisplayEject) { 
-                        blnDisplayPhase = false;
-                        mbTWP.PhaseAngle.HideAngle();
-                        mbTWP.EjectAngle.DrawAngle(cbOrigin,TransferSelected.EjectionAngle * LambertSolver.Rad2Deg,TransferSelected.EjectionAngleIsRetrograde);
+                    if (blnDisplayPhase)
+                    {
+                        blnDisplayEject = false;
+                        mbTWP.EjectAngle.HideAngle();
+                        if (DepartureSelected >= 0 && TransferSelected != null)
+                        {
+                            mbTWP.PhaseAngle.DrawAngle(cbOrigin, cbDestination, TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
+                        }
+                        else
+                        {
+                            mbTWP.PhaseAngle.DrawAngle(cbOrigin, cbDestination);
+                        }
                     }
                     else
                     {
-                        mbTWP.EjectAngle.HideAngle();
+                        mbTWP.PhaseAngle.HideAngle();
                     }
                 }
+                if (DepartureSelected >= 0 && TransferSelected != null)
+                {
+                    if (DrawToggle(ref blnDisplayEject, "Show Ejection Angles", "ButtonToggle"))
+                    {
+                        if (blnDisplayEject)
+                        {
+                            blnDisplayPhase = false;
+                            mbTWP.PhaseAngle.HideAngle();
+                            mbTWP.EjectAngle.DrawAngle(cbOrigin,TransferSelected.EjectionAngle * LambertSolver.Rad2Deg,TransferSelected.EjectionAngleIsRetrograde);
+                        }
+                        else
+                        {
+                            mbTWP.EjectAngle.HideAngle();
+                        }
+                    }
+                }
+                GUILayout.EndHorizontal();
             }
-            GUILayout.EndHorizontal();
         }
 
         private Boolean blnDisplayPhase = false;

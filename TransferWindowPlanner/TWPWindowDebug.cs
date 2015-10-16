@@ -69,8 +69,8 @@ namespace TransferWindowPlanner
 #if DEBUG
     class TWPWindowDebug : MonoBehaviourWindowPlus
     {
-        internal AngleRenderPhase PhaseAngle;
-        internal AngleRenderEject EjectAngle;
+        //internal AngleRenderPhase PhaseAngle;
+        //internal AngleRenderEject EjectAngle;
 
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
@@ -102,8 +102,8 @@ namespace TransferWindowPlanner
 
             //PhaseAngle = AddComponent<AngleRenderPhase>();
 
-            PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
-            EjectAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderEject>();
+            //PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
+            //EjectAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderEject>();
 
 
 
@@ -226,33 +226,33 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest4);
                 //DrawTextBox(ref intTest5);
 
-                try
-                {
-                    DrawLabel("body Vel:{0}", EjectAngle.bodyOrigin.orbit.getOrbitalVelocityAtUT(Planetarium.GetUniversalTime()));
+                //try
+                //{
+                //    //DrawLabel("body Vel:{0}", EjectAngle.bodyOrigin.orbit.getOrbitalVelocityAtUT(Planetarium.GetUniversalTime()));
 
-                    DrawLabel("VectStart:{0}", EjectAngle.vectPosWorldOrigin);
-                    DrawLabel("VectPivot:{0}", EjectAngle.vectPosWorldPivot);
-                    DrawLabel("VectEnd:{0}", EjectAngle.vectPosWorldEnd);
-                    DrawLabel("Length:{0}", (EjectAngle.vectPosWorldPivot - EjectAngle.vectPosWorldOrigin).magnitude);
+                //    //DrawLabel("VectStart:{0}", EjectAngle.vectPosWorldOrigin);
+                //    //DrawLabel("VectPivot:{0}", EjectAngle.vectPosWorldPivot);
+                //    //DrawLabel("VectEnd:{0}", EjectAngle.vectPosWorldEnd);
+                //    //DrawLabel("Length:{0}", (EjectAngle.vectPosWorldPivot - EjectAngle.vectPosWorldOrigin).magnitude);
                     
 
-                    //DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)).magnitude);
-                    //DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin));
-                    //DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosWorldOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)));
+                //    //DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)).magnitude);
+                //    //DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin));
+                //    //DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosWorldOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)));
 
 
 
-                    DrawLabel("Scale:{0}", PhaseAngle.lineArc.material.mainTextureScale);
+                //    DrawLabel("Scale:{0}", PhaseAngle.lineArc.material.mainTextureScale);
 
-                    PhaseAngle.lineArc.material.mainTextureScale = new Vector2(intTest1 * 100f/ (PhaseAngle.cam.Distance/2), 1);
-                    //PhaseAngle.StartWidth = intTest1;
-                    //PhaseAngle.EndWidth = intTest2;
-                }
-                catch (Exception)
-                {
+                //    PhaseAngle.lineArc.material.mainTextureScale = new Vector2(intTest1 * 100f/ (PhaseAngle.cam.Distance/2), 1);
+                //    //PhaseAngle.StartWidth = intTest1;
+                //    //PhaseAngle.EndWidth = intTest2;
+                //}
+                //catch (Exception)
+                //{
 
                     
-                }
+                //}
 
                 ///////////////RANGE Work//////////////////////
                 //DrawTextBox(ref intPlotDeparturePerDay);
@@ -367,33 +367,33 @@ namespace TransferWindowPlanner
                 DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected / KSPDateStructure.SecondsPerDay, mbTWP.windowMain.TravelSelected / KSPDateStructure.SecondsPerDay);
 
 
-                if (GUILayout.Button("ToggleLine"))
-                {
-                    if (!EjectAngle.isDrawing)
-                    {
-                        EjectAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
-                            intTest2,true);
-                        //PhaseAngle.AngleValue = 120;
-                    }
-                    else
-                    {
-                        EjectAngle.HideAngle();
-                    }
+                //if (GUILayout.Button("ToggleLine"))
+                //{
+                //    //if (!EjectAngle.isDrawing)
+                //    //{
+                //    //    EjectAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
+                //    //        intTest2,true);
+                //    //    //PhaseAngle.AngleValue = 120;
+                //    //}
+                //    //else
+                //    //{
+                //    //    EjectAngle.HideAngle();
+                //    //}
 
-                    //if (!PhaseAngle.isDrawing)
-                    //{
-                    //    PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
-                    //        FlightGlobals.Bodies[intTest4],
-                    //        intTest2);
-                    //    //PhaseAngle.AngleValue = 120;
-                    //} else
-                    //{
-                    //    PhaseAngle.HideAngle();
-                    //}
+                //    //if (!PhaseAngle.isDrawing)
+                //    //{
+                //    //    PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
+                //    //        FlightGlobals.Bodies[intTest4],
+                //    //        intTest2);
+                //    //    //PhaseAngle.AngleValue = 120;
+                //    //} else
+                //    //{
+                //    //    PhaseAngle.HideAngle();
+                //    //}
 
-                    //drawLine = !drawLine;
-                    LogFormatted("LineEnabled:{0}", PhaseAngle.isDrawing);
-                }
+                //    //drawLine = !drawLine;
+                //    LogFormatted("LineEnabled:{0}", PhaseAngle.isDrawing);
+                //}
 
 
                 //DrawLabel("Bpdy:{0}-{1}", bodyOrigin.transform.position, PhaseAngle.vectPointStart);
