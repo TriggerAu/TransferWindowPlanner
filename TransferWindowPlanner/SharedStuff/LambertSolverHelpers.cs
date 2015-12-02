@@ -135,7 +135,7 @@ namespace TransferWindowPlanner
                 if (EjectionAngleIsRetrograde)
                     strret += " to retrograde";
                 else
-                    strret += "to prograde";
+                    strret += " to prograde";
 
                 return strret;
             }

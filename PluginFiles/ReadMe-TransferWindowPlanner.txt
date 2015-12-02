@@ -27,6 +27,12 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.4.0.0		-	KSP Version: 1.0.5
+- adjusted angle names, etc to make em consistent - to retrograde, to prograde, etc
+- fixed issues with log spam and map view (Issue #35)
+- fixed issue with KACAlarms and margins (Issue #38)
+- Added new Angle Renderer to display phase and ejection angles
+
 Version 1.3.1.0		-	KSP Version: 1.0.4
 - Fix added for long drop down lists when theres lots of planets (Issue #33)
 
