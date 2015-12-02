@@ -446,7 +446,7 @@ namespace TransferWindowPlanner
                 {
                     String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled,
                         String.Format("{0} -> {1}", mbTWP.windowMain.TransferSelected.Origin.bodyName, mbTWP.windowMain.TransferSelected.Destination.bodyName),
-                        mbTWP.windowMain.TransferSelected.DepartureTime);
+                        (mbTWP.windowMain.TransferSelected.DepartureTime - settings.KACMargin * 60 * 60));
 
 
                     KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
