@@ -13,7 +13,7 @@ using TWP_KACWrapper;
 
 namespace TransferWindowPlanner
 {
-    [WindowInitials(Caption="Transfer Window Planner",
+    [WindowInitials(Caption= "Transfer Window Planner (Dev)",
         Visible=false,
         DragEnabled=true,
         TooltipsEnabled=true,
@@ -631,7 +631,17 @@ namespace TransferWindowPlanner
 
                     Int32 iCurrent = (Int32)((vectMouse.y - PlotPosition.y) * PlotWidth + (vectMouse.x - PlotPosition.x));
 
+                    //GUILayout.BeginVertical(GUILayout.Width(120));
+                    //GUI.Label()
                     GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[iCurrent]), SkinsLibrary.CurrentTooltip);
+                    {
+                        vectSelected = new Vector2(vectMouse.x, vectMouse.y);
+                        DepartureSelected = DepartureMin + (vectSelected.x - PlotPosition.x) * xResolution;
+                        TravelSelected = TravelMax - (vectSelected.y - PlotPosition.y) * yResolution;
+                        double today = Planetarium.GetUniversalTime();
+
+                        GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 40, 120, 15), String.Format("{0:0} days to arrival", (DepartureSelected+TravelSelected-today)/KSPDateStructure.SecondsPerDay), SkinsLibrary.CurrentTooltip);
+                    }
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0) {
                         vectSelected = new Vector2(vectMouse.x, vectMouse.y);
