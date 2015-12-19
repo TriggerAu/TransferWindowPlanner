@@ -97,11 +97,23 @@ namespace TransferWindowPlanner
             LogFormatted_DebugOnly("New Origin Selected:{0}",ddlOrigin.SelectedValue.Trim(' '));
 
             SetupDestinationControls();
+
+            HideAngles();
         }
         void ddlDestination_OnSelectionChanged(MonoBehaviourWindowPlus.DropDownList sender, int OldIndex, int NewIndex)
         {
             LogFormatted_DebugOnly("New Destination Selected:{0}", ddlDestination.SelectedValue.Trim(' '));
             SetupTransferParams();
+
+            HideAngles();
+        }
+
+        void HideAngles()
+        {
+            mbTWP.PhaseAngle.HideAngle();
+            mbTWP.EjectAngle.HideAngle();
+            blnDisplayPhase = false;
+            blnDisplayEject = false;
         }
 
         internal override void OnGUIOnceOnly()
@@ -434,7 +446,7 @@ namespace TransferWindowPlanner
                 {
                     String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled,
                         String.Format("{0} -> {1}", mbTWP.windowMain.TransferSelected.Origin.bodyName, mbTWP.windowMain.TransferSelected.Destination.bodyName),
-                        mbTWP.windowMain.TransferSelected.DepartureTime);
+                        (mbTWP.windowMain.TransferSelected.DepartureTime - settings.KACMargin * 60 * 60));
 
 
                     KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
@@ -478,7 +490,8 @@ namespace TransferWindowPlanner
             GUILayout.BeginVertical();
             //GUILayout.Label(String.Format("{0:0}", KSPTime.PrintDate(new KSPTime(TransferSelected.DepartureTime + TransferSelected.TravelTime), KSPTime.PrintTimeFormat.DateTimeString)), Styles.styleTextYellow);
             GUILayout.Label(new KSPDateTime(TransferSelected.DepartureTime + TransferSelected.TravelTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat), Styles.styleTextYellow);
-            GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            //GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg), Styles.styleTextYellow);
+            GUILayout.Label(TransferSelected.EjectionAngleText, Styles.styleTextYellow);
             GUILayout.Label(String.Format("{0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg), Styles.styleTextYellow);
             if (ShowEjectionDetails) {
                 GUILayout.Label(String.Format("{0:0.0} m/s", TransferSelected.EjectionDVNormal), Styles.styleTextYellow);
@@ -548,7 +561,8 @@ namespace TransferWindowPlanner
             Message = Message.AppendLine("Arrive at:      {0}", new KSPDateTime(TransferSelected.DepartureTime + TransferSelected.TravelTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
             Message = Message.AppendLine("       UT:      {0:0}", TransferSelected.DepartureTime + TransferSelected.TravelTime);
             Message = Message.AppendLine("Phase Angle:    {0:0.00}°", TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
-            Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+            //Message = Message.AppendLine("Ejection Angle: {0:0.00}°", TransferSelected.EjectionAngle * LambertSolver.Rad2Deg);
+            Message = Message.AppendLine("Ejection Angle: {0}", TransferSelected.EjectionAngleText);
             Message = Message.AppendLine("Ejection Inc.:  {0:0.00}°", TransferSelected.EjectionInclination * LambertSolver.Rad2Deg);
             Message = Message.AppendLine("Ejection Δv:    {0:0} m/s", TransferSelected.DVEjection);
             Message = Message.AppendLine("Prograde Δv:    {0:0.0} m/s", TransferSelected.EjectionDVPrograde);
@@ -646,7 +660,6 @@ namespace TransferWindowPlanner
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0) {
                         vectSelected = new Vector2(vectMouse.x, vectMouse.y);
                         SetTransferDetails();
-
                     }
 
                 }
@@ -752,7 +765,54 @@ namespace TransferWindowPlanner
                 ShowEjectionDetails = false;
             }
             GUILayout.EndHorizontal();
+
+            GUILayout.Space(50);
+
+            if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene) && MapView.MapIsEnabled)
+            {
+                GUILayout.BeginHorizontal();
+                if (DrawToggle(ref blnDisplayPhase, "Show Phase Angles", "ButtonToggle"))
+                {
+                    if (blnDisplayPhase)
+                    {
+                        blnDisplayEject = false;
+                        mbTWP.EjectAngle.HideAngle();
+                        if (DepartureSelected >= 0 && TransferSelected != null)
+                        {
+                            mbTWP.PhaseAngle.DrawAngle(cbOrigin, cbDestination, TransferSelected.PhaseAngle * LambertSolver.Rad2Deg);
+                        }
+                        else
+                        {
+                            mbTWP.PhaseAngle.DrawAngle(cbOrigin, cbDestination);
+                        }
+                    }
+                    else
+                    {
+                        mbTWP.PhaseAngle.HideAngle();
+                    }
+                }
+                if (DepartureSelected >= 0 && TransferSelected != null)
+                {
+                    if (DrawToggle(ref blnDisplayEject, "Show Ejection Angles", "ButtonToggle"))
+                    {
+                        if (blnDisplayEject)
+                        {
+                            blnDisplayPhase = false;
+                            mbTWP.PhaseAngle.HideAngle();
+                            mbTWP.EjectAngle.DrawAngle(cbOrigin,TransferSelected.EjectionAngle * LambertSolver.Rad2Deg,TransferSelected.EjectionAngleIsRetrograde);
+                        }
+                        else
+                        {
+                            mbTWP.EjectAngle.HideAngle();
+                        }
+                    }
+                }
+                GUILayout.EndHorizontal();
+            }
         }
+
+        private Boolean blnDisplayPhase = false;
+        private Boolean blnDisplayEject = false;
 
         internal void ResetWindow()
         {
@@ -765,6 +825,7 @@ namespace TransferWindowPlanner
 
             SetDepartureMinToYesterday();
             SetupDestinationControls();
+            HideAngles();
         }
         
         internal override void OnGUIEvery()
