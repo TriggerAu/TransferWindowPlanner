@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -87,22 +90,24 @@ if exist "R:\~Games\KSP_Win_PlugInTest_Minimal\KSP.exe" (
 	set GAMEPATH="D:\~Games\KSP_Win_PlugInTest"
 ) else if exist "C:\~Games\KSP_Win_PlugInTest\KSP.exe" (
 	set GAMEPATH="C:\~Games\KSP_Win_PlugInTest"
+) else if exist "C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\KSP.exe" (
+	set GAMEPATH="C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program"
 )else (
 	echo "Cant find KSP"
 	exit 1
 )
-
 echo Gamepath: %25GAMEPATH%25
 echo ConfigName: $(ConfigurationName)
 set DestPath="%25GAMEPATH%25\GameData\TriggerTech\$(ProjectName)"
 set Binary="%25GAMEPATH%25\KSP.exe"
 
-if not $(ConfigurationName)==Debug goto DEBUGREBUILDCONFIG
+rem if not $(ConfigurationName)==Debug goto DEBUGREBUILDCONFIG
 :DEBUGCONFIG
 rem Copy DLL and run KSP
-
+echo DPATH: %25DestPath%25
+echo TPATH: $(TargetPath) end
+rem copy "$(TargetPath)" "C:\Program Files (x86)\Steam\SteamApps\common\Kerbal Space Program\GameData\TriggerTech\TransferWindowPlanner"
 copy "$(TargetPath)" "%25DestPath%25"
-rem copy "$(TargetDir)$(TargetName).pdb" "%25DestPath%25"
 rem "C:\Program Files (x86)\Unity\Editor\Data\MonoBleedingEdge\bin\cli.bat" "C:\Program Files (x86)\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.0\pdb2mdb.exe" "%25DestPath%25\$(TargetFileName)"
 
 rem and then run the game
