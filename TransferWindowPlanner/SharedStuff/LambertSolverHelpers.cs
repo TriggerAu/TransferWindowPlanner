@@ -126,6 +126,21 @@ namespace TransferWindowPlanner
         /// </summary>
         public Double EjectionAngle { get; set; }
 
+        public Boolean EjectionAngleIsRetrograde { get; set; }
+        public String EjectionAngleText
+        {
+            get
+            {
+                String strret = String.Format("{0:0.00}°", EjectionAngle * LambertSolver.Rad2Deg);
+                if (EjectionAngleIsRetrograde)
+                    strret += " to retrograde";
+                else
+                    strret += " to prograde";
+
+                return strret;
+            }
+        }
+
         /// <summary>
         /// This calculates the details of the Ejection Angles for the Eject burn
         /// </summary>
@@ -145,6 +160,21 @@ namespace TransferWindowPlanner
             Double theta = Math.Acos((a * (1 - e * e) - rsoi) / (e * rsoi));
             theta += Math.Asin(v1 * initialOrbitRadius / (vsoi * rsoi));
             EjectionAngle = EjectionAngleCalc(EjectionDeltaVector, theta, OriginVelocity.normalized);
+
+            MonoBehaviourExtended.LogFormatted("{0}",EjectionAngle);
+
+            if (Destination.orbit.semiMajorAxis < Origin.orbit.semiMajorAxis)
+            {
+                EjectionAngleIsRetrograde = true;
+                EjectionAngle -= Math.PI;
+                if (EjectionAngle < 0)
+                    EjectionAngle += 2 * Math.PI;
+            }
+            else
+            {
+                EjectionAngleIsRetrograde = false;
+            }
+
         }
 
         /// <summary>
@@ -204,7 +234,13 @@ namespace TransferWindowPlanner
                 phaseAngle = 360 - phaseAngle;
             }
 
-            return LambertSolver.Deg2Rad * ((phaseAngle + 360) % 360);
+            if (o2.semiMajorAxis < o1.semiMajorAxis)
+            {
+                phaseAngle = phaseAngle - 360;
+            }
+
+            return LambertSolver.Deg2Rad * phaseAngle;
+            //return LambertSolver.Deg2Rad * ((phaseAngle + 360) % 360);
         }
 
 
@@ -225,7 +261,8 @@ namespace TransferWindowPlanner
                 Message = Message.AppendLine("Arrive at:      {0}", new KSPDateTime(this.DepartureTime + this.TravelTime).ToStringStandard(DateStringFormatsEnum.DateTimeFormat));
                 Message = Message.AppendLine("       UT:      {0:0}", this.DepartureTime + this.TravelTime);
                 Message = Message.AppendLine("Phase Angle:    {0:0.00}°", this.PhaseAngle * LambertSolver.Rad2Deg);
-                Message = Message.AppendLine("Ejection Angle: {0:0.00}°", this.EjectionAngle * LambertSolver.Rad2Deg);
+                //Message = Message.AppendLine("Ejection Angle: {0:0.00}°", this.EjectionAngle * LambertSolver.Rad2Deg);
+                Message = Message.AppendLine("Ejection Angle: {0}", this.EjectionAngleText);
                 Message = Message.AppendLine("Ejection Inc.:  {0:0.00}°", this.EjectionInclination * LambertSolver.Rad2Deg);
                 Message = Message.AppendLine("Ejection Δv:    {0:0} m/s", this.DVEjection);
                 Message = Message.AppendLine("Prograde Δv:    {0:0.0} m/s", this.EjectionDVPrograde);
