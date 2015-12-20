@@ -645,7 +645,17 @@ namespace TransferWindowPlanner
 
                     Int32 iCurrent = (Int32)((vectMouse.y - PlotPosition.y) * PlotWidth + (vectMouse.x - PlotPosition.x));
 
-                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[iCurrent]), SkinsLibrary.CurrentTooltip);
+                    //GUILayout.BeginVertical(GUILayout.Width(120)); + //GUI.Label() +
+                    var tooltipString = String.Format("{0:0}m/s", DeltaVs[iCurrent]);
+                    {
+                        vectSelected = new Vector2(vectMouse.x, vectMouse.y);
+                        DepartureSelected = DepartureMin + (vectSelected.x - PlotPosition.x) * xResolution;
+                        TravelSelected = TravelMax - (vectSelected.y - PlotPosition.y) * yResolution;
+                        double today = Planetarium.GetUniversalTime();
+                        tooltipString = tooltipString.AppendLine(String.Format("{0:0} days to arrival", (DepartureSelected + TravelSelected - today) / KSPDateStructure.SecondsPerDay));
+                    }
+
+                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 120, 30), tooltipString, SkinsLibrary.CurrentTooltip);
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0) {
                         vectSelected = new Vector2(vectMouse.x, vectMouse.y);
