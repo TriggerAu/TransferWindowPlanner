@@ -9,7 +9,8 @@ using TWP_KACWrapper;
 
 namespace TransferWindowPlanner
 {
-    [WindowInitials(Caption= "Transfer Window Planner",
+    //I put this in just so I could tell that I was using a local development version instead of the master version.
+    [WindowInitials(Caption= "Transfer Window Planner (Dev)",
         Visible=false,
         DragEnabled=true,
         TooltipsEnabled=true,
