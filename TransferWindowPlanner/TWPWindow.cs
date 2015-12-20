@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using System.ComponentModel;
-
-using KSP;
 using UnityEngine;
 using KSPPluginFramework;
 
@@ -13,6 +9,7 @@ using TWP_KACWrapper;
 
 namespace TransferWindowPlanner
 {
+    //I put this in just so I could tell that I was using a local development version instead of the master version.
     [WindowInitials(Caption= "Transfer Window Planner (Dev)",
         Visible=false,
         DragEnabled=true,
@@ -647,15 +644,16 @@ namespace TransferWindowPlanner
 
                     //GUILayout.BeginVertical(GUILayout.Width(120));
                     //GUI.Label()
-                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 80, 15), String.Format("{0:0}m/s", DeltaVs[iCurrent]), SkinsLibrary.CurrentTooltip);
+                    var tooltipString = String.Format("{0:0}m/s", DeltaVs[iCurrent]);
                     {
                         vectSelected = new Vector2(vectMouse.x, vectMouse.y);
                         DepartureSelected = DepartureMin + (vectSelected.x - PlotPosition.x) * xResolution;
                         TravelSelected = TravelMax - (vectSelected.y - PlotPosition.y) * yResolution;
                         double today = Planetarium.GetUniversalTime();
 
-                        GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 40, 120, 15), String.Format("{0:0} days to arrival", (DepartureSelected+TravelSelected-today)/KSPDateStructure.SecondsPerDay), SkinsLibrary.CurrentTooltip);
+                        tooltipString = tooltipString.AppendLine(String.Format("{0:0} days to arrival", (DepartureSelected + TravelSelected - today) / KSPDateStructure.SecondsPerDay));
                     }
+                    GUI.Label(new Rect(vectMouse.x + 5, vectMouse.y - 20, 120, 30), tooltipString, SkinsLibrary.CurrentTooltip);
 
                     if (Event.current.type == EventType.MouseDown && Event.current.button == 0) {
                         vectSelected = new Vector2(vectMouse.x, vectMouse.y);
