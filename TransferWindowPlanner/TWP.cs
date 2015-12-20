@@ -180,7 +180,7 @@ namespace TransferWindowPlanner
                 LogFormatted("Initialising the Toolbar Icon");
                 btnReturn = ToolbarManager.Instance.add(_ClassName, "btnToolbarIcon");
                 SetToolbarIcon(btnReturn);
-                btnReturn.ToolTip = "Transfer Window Planner (Dev)";
+                btnReturn.ToolTip = "Transfer Window Planner";
                 btnReturn.OnClick += (e) =>
                 {
                     windowMain.Visible = !windowMain.Visible;
