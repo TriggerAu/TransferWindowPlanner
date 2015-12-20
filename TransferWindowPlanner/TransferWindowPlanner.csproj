@@ -54,6 +54,7 @@
     <Compile Include="Framework\MonoBehaviourExtended.cs" />
     <Compile Include="Framework\MonoBehaviourWindow.cs" />
     <Compile Include="Framework\SkinsLibrary.cs" />
+    <Compile Include="SharedStuff\AngleRenderEject.cs" />
     <Compile Include="SharedStuff\AngleRenderPhase.cs" />
     <Compile Include="SharedStuff\KACWrapper.cs" />
     <Compile Include="SharedStuff\AppLauncher.cs" />
