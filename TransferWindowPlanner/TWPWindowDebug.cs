@@ -69,13 +69,16 @@ namespace TransferWindowPlanner
 #if DEBUG
     class TWPWindowDebug : MonoBehaviourWindowPlus
     {
+        //internal AngleRenderPhase PhaseAngle;
+        //internal AngleRenderEject EjectAngle;
+
         internal TransferWindowPlanner mbTWP;
         internal Settings settings;
 
-        public Int32 intTest1 = 10000;
-        public Int32 intTest2 = 0;
-        public Int32 intTest3 = 0;
-        public Int32 intTest4 = 101;
+        public Int32 intTest1 = 10;
+        public Int32 intTest2 = 45;
+        public Int32 intTest3 = 1;
+        public Int32 intTest4 = 3;
         public Int32 intTest5 = 0;
         public Int32 intPlotDeparturePerDay = 1;
         public Int32 intPlotTravelPointsPerDay = 1;
@@ -85,6 +88,133 @@ namespace TransferWindowPlanner
         TransferDetails transTemp;
 
         double width, height;
+        private PlanetariumCamera cam;
+        private LineRenderer lineStart = null;
+        private LineRenderer lineAngle = null;
+        private LineRenderer lineArc = null;
+        private GameObject obj = new GameObject("Line");
+        private GameObject obj2 = new GameObject("Line2");
+        private GameObject obj3 = new GameObject("Line3");
+        private Boolean drawLine = false;
+        internal override void Start()
+        {
+            LogFormatted("OnStart");
+
+            //PhaseAngle = AddComponent<AngleRenderPhase>();
+
+            //PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
+            //EjectAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderEject>();
+
+
+
+            //obj.layer = 9;
+            //lineStart = obj.AddComponent<LineRenderer>();
+            ////line.material = new Material(Shader.Find("Particles/Additive"));
+            ////line.SetColors(Color.red, Color.yellow);
+            //lineStart.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            ////line.SetColors(Color.blue, Color.blue);
+            //lineStart.SetColors(Color.red, Color.red);
+            //lineStart.transform.parent = null;
+            //lineStart.useWorldSpace = true;
+            //lineStart.SetWidth(10, 10);
+            //lineStart.SetVertexCount(2);
+            //lineStart.enabled = false;
+
+            //obj2.layer = 9;
+
+            //lineAngle = obj2.AddComponent<LineRenderer>();
+            //lineAngle.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            //lineAngle.SetColors(Color.red, Color.red);
+            //lineAngle.transform.parent = null;
+            //lineAngle.useWorldSpace = true;
+            //lineAngle.SetWidth(10, 10);
+            //lineAngle.SetVertexCount(2);
+            //lineAngle.enabled = false;
+
+            //obj3.layer = 9;
+
+            //lineArc = obj3.AddComponent<LineRenderer>();
+            //lineArc.material = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
+            //lineArc.SetColors(Color.red, Color.red);
+            //lineArc.transform.parent = null;
+            //lineArc.useWorldSpace = true;
+            //lineArc.SetWidth(10, 10);
+            //lineArc.SetVertexCount(ArcVertexCount);
+            //lineArc.enabled = false;
+
+            //cam = (PlanetariumCamera)GameObject.FindObjectOfType(typeof(PlanetariumCamera));
+        }
+
+        ////Int32 ArcVertexCount = 72;
+        ////CelestialBody bodyOrigin = FlightGlobals.Bodies[3];
+        ////CelestialBody bodyDest = FlightGlobals.Bodies[2];
+        ////Vector3d vectAngle;
+        //internal override void LateUpdate()
+        //{
+        //    if (MapView.MapIsEnabled && drawLine)
+        //    {
+        //        bodyOrigin = FlightGlobals.Bodies[intTest3];
+        //        bodyDest = FlightGlobals.Bodies[intTest4];
+
+        //        Vector3d vectStart = bodyOrigin.transform.position - bodyOrigin.referenceBody.transform.position;
+        //        Double vectOriginMag = vectStart.magnitude;
+
+        //        vectAngle = Quaternion.AngleAxis(-(float)this.intTest2, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+        //        vectAngle = vectAngle.normalized * bodyDest.orbit.ApR * 1.2;
+        //        Double vectDestMag = vectAngle.magnitude;
+        //        vectAngle = bodyOrigin.referenceBody.transform.position + vectAngle;
+
+
+        //        lineStart.enabled = true;
+        //        lineStart.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
+        //        this.lineStart.SetPosition(1, ScaledSpace.LocalToScaledSpace(bodyOrigin.transform.position));
+
+
+        //        lineStart.SetWidth((float)intTest1 /1000 * cam.Distance, (float)intTest1/1000 * cam.Distance);
+        //        //float scale = (float)(0.004 * cam.Distance);
+        //        //line.SetWidth(scale, scale);
+
+        //        lineAngle.enabled = true;
+        //        lineAngle.SetPosition(0, ScaledSpace.LocalToScaledSpace(bodyOrigin.referenceBody.transform.position));
+        //        lineAngle.SetPosition(1, ScaledSpace.LocalToScaledSpace(vectAngle));
+        //        lineAngle.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
+
+        //        //get the smaller of the two values
+        //        Double shortest = Math.Min(vectOriginMag, vectDestMag) * 0.9;
+
+        //        lineArc.enabled = true;
+        //        lineArc.SetWidth((float)intTest1 / 1000 * cam.Distance, (float)intTest1 / 1000 * cam.Distance);
+
+        //        //now we draw an arc from a to b at that distance minus a smidge
+        //        for (int i = 0; i < ArcVertexCount; i++)
+        //        {
+        //            Vector3d vectArc = Quaternion.AngleAxis(-(float)this.intTest2/(ArcVertexCount-1) * i, bodyOrigin.orbit.GetOrbitNormal().xzy) * vectStart;
+        //            vectArc = vectArc.normalized * shortest;
+        //            vectArc = bodyOrigin.referenceBody.transform.position + vectArc;
+
+        //            lineArc.SetPosition(i, ScaledSpace.LocalToScaledSpace(vectArc));
+
+        //        }
+
+        //        //cam.camera.WorldToScreenPoint(bodyOrigin.transform.position);
+
+        //    }
+        //    else
+        //    {
+        //        lineStart.enabled = false;
+        //        lineAngle.enabled = false;
+        //        lineArc.enabled = false;
+        //    }
+        //}
+
+        internal override void OnGUIEvery()
+        {
+            //if (drawLine)
+            //{
+            //    //Label the angle
+            //    GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).x, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectAngle)).y, 100, 30), String.Format("{0:0.00}°", this.intTest2));
+            //}
+        }
 
         internal override void DrawWindow(int id)
         {
@@ -95,6 +225,34 @@ namespace TransferWindowPlanner
                 DrawTextBox(ref intTest3);
                 DrawTextBox(ref intTest4);
                 //DrawTextBox(ref intTest5);
+
+                //try
+                //{
+                //    //DrawLabel("body Vel:{0}", EjectAngle.bodyOrigin.orbit.getOrbitalVelocityAtUT(Planetarium.GetUniversalTime()));
+
+                //    //DrawLabel("VectStart:{0}", EjectAngle.vectPosWorldOrigin);
+                //    //DrawLabel("VectPivot:{0}", EjectAngle.vectPosWorldPivot);
+                //    //DrawLabel("VectEnd:{0}", EjectAngle.vectPosWorldEnd);
+                //    //DrawLabel("Length:{0}", (EjectAngle.vectPosWorldPivot - EjectAngle.vectPosWorldOrigin).magnitude);
+                    
+
+                //    //DrawLabel("cam:{0} - {1}", PhaseAngle.cam.Distance, (ScaledSpace.LocalToScaledSpace(PhaseAngle.cam.transform.position) - ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)).magnitude);
+                //    //DrawLabel("cam2:{0} - {1} - {2}", PhaseAngle.cam.transform.position, PhaseAngle.cam.target.transform.position, ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin));
+                //    //DrawLabel("cam3:{0} - {1} ", PhaseAngle.cam.camera.WorldToScreenPoint(PhaseAngle.vectPosWorldOrigin), PhaseAngle.cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(PhaseAngle.vectPosWorldOrigin)));
+
+
+
+                //    DrawLabel("Scale:{0}", PhaseAngle.lineArc.material.mainTextureScale);
+
+                //    PhaseAngle.lineArc.material.mainTextureScale = new Vector2(intTest1 * 100f/ (PhaseAngle.cam.Distance/2), 1);
+                //    //PhaseAngle.StartWidth = intTest1;
+                //    //PhaseAngle.EndWidth = intTest2;
+                //}
+                //catch (Exception)
+                //{
+
+                    
+                //}
 
                 ///////////////RANGE Work//////////////////////
                 //DrawTextBox(ref intPlotDeparturePerDay);
@@ -184,7 +342,7 @@ namespace TransferWindowPlanner
                 //    alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
 
                 //    LogFormatted("{0}======{1}", alarmNew.XferOriginBodyName, alarmNew.XferTargetBodyName);
-                    
+
                 //}
                 //DrawLabel("Windowpadding:{0}", SkinsLibrary.CurrentSkin.window.padding);
 
@@ -209,84 +367,114 @@ namespace TransferWindowPlanner
                 DrawLabel("Departure:{0:0}, Travel:{1:0}", mbTWP.windowMain.DepartureSelected / KSPDateStructure.SecondsPerDay, mbTWP.windowMain.TravelSelected / KSPDateStructure.SecondsPerDay);
 
 
+                //if (GUILayout.Button("ToggleLine"))
+                //{
+                //    //if (!EjectAngle.isDrawing)
+                //    //{
+                //    //    EjectAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
+                //    //        intTest2,true);
+                //    //    //PhaseAngle.AngleValue = 120;
+                //    //}
+                //    //else
+                //    //{
+                //    //    EjectAngle.HideAngle();
+                //    //}
 
+                //    //if (!PhaseAngle.isDrawing)
+                //    //{
+                //    //    PhaseAngle.DrawAngle(FlightGlobals.Bodies[intTest3],
+                //    //        FlightGlobals.Bodies[intTest4],
+                //    //        intTest2);
+                //    //    //PhaseAngle.AngleValue = 120;
+                //    //} else
+                //    //{
+                //    //    PhaseAngle.HideAngle();
+                //    //}
+
+                //    //drawLine = !drawLine;
+                //    LogFormatted("LineEnabled:{0}", PhaseAngle.isDrawing);
+                //}
+
+
+                //DrawLabel("Bpdy:{0}-{1}", bodyOrigin.transform.position, PhaseAngle.vectPointStart);
+                //DrawLabel("Pivot:{0}-{1}", bodyOrigin.referenceBody.transform.position, PhaseAngle.vectPointPivot);
 
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
-                if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel != null)
-                {
-                    if (GUILayout.Button("FindUT"))
-                    {
-                        dblEjectAt = Utilities.timeOfEjectionAngle(FlightGlobals.ActiveVessel.orbit, mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.EjectionAngle * LambertSolver.Rad2Deg,intTest1 , out dblOutAngle);
-                        intTest5 = (Int32)dblEjectAt;
-                    }
-                    DrawLabel("UT: {0:0}", dblEjectAt);
-                    DrawLabel("Angle: {0:0.000}", dblOutAngle);
+                //if (mbTWP.windowMain.TransferSelected != null && FlightGlobals.ActiveVessel != null)
+                //{
+                //    if (GUILayout.Button("FindUT"))
+                //    {
+                //        dblEjectAt = Utilities.timeOfEjectionAngle(FlightGlobals.ActiveVessel.orbit, mbTWP.windowMain.TransferSelected.DepartureTime, mbTWP.windowMain.TransferSelected.EjectionAngle * LambertSolver.Rad2Deg,intTest1 , out dblOutAngle);
+                //        intTest5 = (Int32)dblEjectAt;
+                //    }
+                //    DrawLabel("UT: {0:0}", dblEjectAt);
+                //    DrawLabel("Angle: {0:0.000}", dblOutAngle);
 
-                    DrawLabel("UTSelect: {0:0}", mbTWP.windowMain.TransferSelected.DepartureTime);
-                    DrawLabel("OrbitPeriod: {0:0}", FlightGlobals.ActiveVessel.orbit.period);
-                    DrawLabel("Scan: {0:0}->{1:0}", mbTWP.windowMain.TransferSelected.DepartureTime - FlightGlobals.ActiveVessel.orbit.period / 2, mbTWP.windowMain.TransferSelected.DepartureTime + FlightGlobals.ActiveVessel.orbit.period / 2);
+                //    DrawLabel("UTSelect: {0:0}", mbTWP.windowMain.TransferSelected.DepartureTime);
+                //    DrawLabel("OrbitPeriod: {0:0}", FlightGlobals.ActiveVessel.orbit.period);
+                //    DrawLabel("Scan: {0:0}->{1:0}", mbTWP.windowMain.TransferSelected.DepartureTime - FlightGlobals.ActiveVessel.orbit.period / 2, mbTWP.windowMain.TransferSelected.DepartureTime + FlightGlobals.ActiveVessel.orbit.period / 2);
 
-                    Double dblEjectAt2;
-                    Vector3d vectEject = new Vector3d();
+                //    Double dblEjectAt2;
+                //    Vector3d vectEject = new Vector3d();
 
-                    if (GUILayout.Button("NewTransfer"))
-                    {
-                        
-                        transTemp = new TransferDetails();
-                        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
-                            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, mbTWP.windowMain.TransferSpecs.InitialOrbitAltitude, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
+                //    if (GUILayout.Button("NewTransfer"))
+                //    {
 
-                        try
-                        {
-                            transTemp.CalcEjectionValues();
-                        }
-                        catch (Exception ex)
-                        {
-                            LogFormatted("Wouldnt Create EjectionValues :(\r\n{0}\r\n{1}", ex.Message, ex.StackTrace);
-                        }
+                //        transTemp = new TransferDetails();
+                //        LambertSolver.TransferDeltaV(mbTWP.windowMain.TransferSelected.Origin, mbTWP.windowMain.TransferSelected.Destination,
+                //            intTest5, mbTWP.windowMain.TransferSelected.TravelTime, mbTWP.windowMain.TransferSpecs.InitialOrbitAltitude, mbTWP.windowMain.TransferSpecs.FinalOrbitAltitude, out transTemp);
 
-                        LogFormatted("XFer: {0}", transTemp.TransferInitalVelocity);
-                        LogFormatted("Origin: {0}", transTemp.OriginVelocity);
-                        LogFormatted("Diff: {0}", (Vector3d)(transTemp.OriginVelocity - transTemp.TransferInitalVelocity));
-                        LogFormatted("Eject: {0}", transTemp.EjectionDeltaVector);
-                        LogFormatted("VesselOrbit: {0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
-                        LogFormatted("VesselOrbit(m/s): {0}", transTemp.OriginVesselOrbitalSpeed);
-                        //LogFormatted("oVel: {0}", LambertSolver.oVel);
+                //        try
+                //        {
+                //            transTemp.CalcEjectionValues();
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            LogFormatted("Wouldnt Create EjectionValues :(\r\n{0}\r\n{1}", ex.Message, ex.StackTrace);
+                //        }
 
-                        LogFormatted("A");
+                //        LogFormatted("XFer: {0}", transTemp.TransferInitalVelocity);
+                //        LogFormatted("Origin: {0}", transTemp.OriginVelocity);
+                //        LogFormatted("Diff: {0}", (Vector3d)(transTemp.OriginVelocity - transTemp.TransferInitalVelocity));
+                //        LogFormatted("Eject: {0}", transTemp.EjectionDeltaVector);
+                //        LogFormatted("VesselOrbit: {0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
+                //        LogFormatted("VesselOrbit(m/s): {0}", transTemp.OriginVesselOrbitalSpeed);
+                //        //LogFormatted("oVel: {0}", LambertSolver.oVel);
 
-
-                        dblEjectAt2 = timeOfLeastDVBurn(FlightGlobals.ActiveVessel.orbit, dblEjectAt, mbTWP.windowMain.TransferSelected.TransferInitalVelocity, 8, out vectEject);
-
-                        
-                        //now massage that with the vessels vector at that UT!
+                //        LogFormatted("A");
 
 
-                        //LogFormatted("OrbVelocity:{0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
-                    }
+                //        dblEjectAt2 = timeOfLeastDVBurn(FlightGlobals.ActiveVessel.orbit, dblEjectAt, mbTWP.windowMain.TransferSelected.TransferInitalVelocity, 8, out vectEject);
 
-                    if (transTemp != null)
-                    {
-                        //DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
-                        DrawLabel("TransferInit:{0} - {1}", transTemp.TransferInitalVelocity.magnitude, transTemp.TransferInitalVelocity);
-                        DrawLabel("Transtemp:{0} - {1}", transTemp.EjectionDeltaVector.magnitude, transTemp.EjectionDeltaVector);
-                        DrawLabel("Eject:{0} - {1}", vectEject.magnitude, vectEject);
 
-                        GUILayout.Label(transTemp.TransferDetailsText);
-                        if (GUILayout.Button("Newnode"))
-                        {
-                            FlightGlobals.ActiveVessel.patchedConicSolver.maneuverNodes.Clear();
-                            ManeuverNode mNode = FlightGlobals.ActiveVessel.patchedConicSolver.AddManeuverNode(transTemp.DepartureTime);
-                            mNode.DeltaV = new Vector3d(0, transTemp.EjectionDVNormal, transTemp.EjectionDVPrograde);
-                            FlightGlobals.ActiveVessel.patchedConicSolver.UpdateFlightPlan();
+                //        //now massage that with the vessels vector at that UT!
 
-                        }
 
-                    }
+                //        //LogFormatted("OrbVelocity:{0}", FlightGlobals.ActiveVessel.orbit.getOrbitalVelocityAtUT(transTemp.DepartureTime));
+                //    }
 
-                }
+                //    if (transTemp != null)
+                //    {
+                //        //DrawLabel("v1:{0:0.000}  edv:{1:0.000}", LambertSolver.v1out, LambertSolver.vedvout);
+                //        DrawLabel("TransferInit:{0} - {1}", transTemp.TransferInitalVelocity.magnitude, transTemp.TransferInitalVelocity);
+                //        DrawLabel("Transtemp:{0} - {1}", transTemp.EjectionDeltaVector.magnitude, transTemp.EjectionDeltaVector);
+                //        DrawLabel("Eject:{0} - {1}", vectEject.magnitude, vectEject);
+
+                //        GUILayout.Label(transTemp.TransferDetailsText);
+                //        if (GUILayout.Button("Newnode"))
+                //        {
+                //            FlightGlobals.ActiveVessel.patchedConicSolver.maneuverNodes.Clear();
+                //            ManeuverNode mNode = FlightGlobals.ActiveVessel.patchedConicSolver.AddManeuverNode(transTemp.DepartureTime);
+                //            mNode.DeltaV = new Vector3d(0, transTemp.EjectionDVNormal, transTemp.EjectionDVPrograde);
+                //            FlightGlobals.ActiveVessel.patchedConicSolver.UpdateFlightPlan();
+
+                //        }
+
+                //    }
+
+                //}
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
                 /////////////////////////////////Making ManNode/////////////////////////////
@@ -467,7 +655,7 @@ namespace TransferWindowPlanner
 
                 //}
 
-                
+
             }
             catch (Exception ex)
             {
