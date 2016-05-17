@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using KSP;
+using KSP.UI.Screens;
 using UnityEngine;
 using KSPPluginFramework;
 
@@ -17,14 +17,10 @@ namespace TransferWindowPlanner
         void OnGUIAppLauncherReady()
         {
             MonoBehaviourExtended.LogFormatted_DebugOnly("AppLauncherReady");
-            if (ApplicationLauncher.Ready)
+            if (settings.ButtonStyleChosen == Settings.ButtonStyleEnum.Launcher )
             {
-                if (settings.ButtonStyleChosen == Settings.ButtonStyleEnum.Launcher )
-                {
-                    btnAppLauncher = InitAppLauncherButton();
-                }
+                btnAppLauncher = InitAppLauncherButton();
             }
-            else { LogFormatted("App Launcher-Not Actually Ready"); }
         }
 
         void OnGameSceneLoadRequestedForAppLauncher(GameScenes SceneToLoad)

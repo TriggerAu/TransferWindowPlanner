@@ -56,9 +56,6 @@ namespace TransferWindowPlanner
                 windowSettings.ddlSettingsCalendar.SelectedIndex = (Int32)settings.SelectedCalendar;
             } 
 
-            //plug us in to the draw queue and start the worker
-            RenderingManager.AddToPostDrawQueue(1, DrawGUI);
-
 
             //Get whether the toolbar is there
             settings.BlizzyToolbarIsAvailable = ToolbarManager.ToolbarAvailable;
@@ -92,8 +89,6 @@ namespace TransferWindowPlanner
 
             if (windowMain.bw!=null && windowMain.bw.IsBusy)
                 windowMain.bw.CancelAsync();
-
-            RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
             Destroy(PhaseAngle);
             Destroy(EjectAngle);
@@ -268,6 +263,12 @@ namespace TransferWindowPlanner
             //Set the current Skin
             SkinsLibrary.SetCurrent(settings.SelectedSkin.ToString());
 
+        }
+
+        internal override void OnGUIEvery()
+        {
+            base.OnGUIEvery();
+            DrawGUI();
         }
 
         internal Boolean MouseOverAnyWindow = false;
