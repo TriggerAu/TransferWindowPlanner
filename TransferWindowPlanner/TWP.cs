@@ -60,7 +60,6 @@ namespace TransferWindowPlanner
             //Rem out for unity5
             //RenderingManager.AddToPostDrawQueue(1, DrawGUI);
 
-
             //Get whether the toolbar is there
             settings.BlizzyToolbarIsAvailable = ToolbarManager.ToolbarAvailable;
 
@@ -294,10 +293,18 @@ namespace TransferWindowPlanner
 
         }
 
-        //internal override void OnGUIEvery()
-        //{
-        //    DrawGUI();
-        //}
+//<<<<<<< HEAD
+//        //internal override void OnGUIEvery()
+//        //{
+//        //    DrawGUI();
+//        //}
+//=======
+//        internal override void OnGUIEvery()
+//        {
+//            base.OnGUIEvery();
+//            DrawGUI();
+//        }
+//>>>>>>> 15b9b77aec9478043455e403e8b60e350906450f
 
         internal Boolean MouseOverAnyWindow = false;
         internal Boolean InputLockExists = false;

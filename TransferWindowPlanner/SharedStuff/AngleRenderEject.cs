@@ -406,7 +406,7 @@ namespace TransferWindowPlanner
 
                 if (VesselOrbit != null)
                 {
-                    //GUI.Label(new Rect(cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).x - 50, Screen.height - cam.camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).y - 15, 100, 30), String.Format("{0:0.00}°", AngleTargetValue),styleLabelTarget);
+                    //GUI.Label(new Rect(PlanetariumCamera.Camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).x - 50, Screen.height - PlanetariumCamera.Camera.WorldToScreenPoint(ScaledSpace.LocalToScaledSpace(vectPosWorldTarget)).y - 15, 100, 30), String.Format("{0:0.00}°", AngleTargetValue),styleLabelTarget);
                 }
             }
         }
