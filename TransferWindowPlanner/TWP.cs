@@ -293,18 +293,10 @@ namespace TransferWindowPlanner
 
         }
 
-//<<<<<<< HEAD
-//        //internal override void OnGUIEvery()
-//        //{
-//        //    DrawGUI();
-//        //}
-//=======
-//        internal override void OnGUIEvery()
-//        {
-//            base.OnGUIEvery();
-//            DrawGUI();
-//        }
-//>>>>>>> 15b9b77aec9478043455e403e8b60e350906450f
+        //internal override void OnGUIEvery()
+        //{
+        //    DrawGUI();
+        //}
 
         internal Boolean MouseOverAnyWindow = false;
         internal Boolean InputLockExists = false;
