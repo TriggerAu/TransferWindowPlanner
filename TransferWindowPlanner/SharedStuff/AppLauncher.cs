@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using KSP;
+using KSP.UI.Screens;
 using UnityEngine;
 using KSPPluginFramework;
 

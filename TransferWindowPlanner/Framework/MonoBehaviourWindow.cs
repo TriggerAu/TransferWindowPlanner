@@ -180,12 +180,12 @@ namespace KSPPluginFramework
                     if (value)
                     {
                         LogFormatted_DebugOnly("Adding Window to PostDrawQueue-{0}", WindowID);
-                        RenderingManager.AddToPostDrawQueue(5, this.DrawGUI);
+                        //RenderingManager.AddToPostDrawQueue(5, this.DrawGUI);
                     }
                     else
                     {
                         LogFormatted_DebugOnly("Removing Window from PostDrawQueue", WindowID);
-                        RenderingManager.RemoveFromPostDrawQueue(5, this.DrawGUI);
+                        //RenderingManager.RemoveFromPostDrawQueue(5, this.DrawGUI);
                     }
 
                     //raise event if theres one registered
@@ -200,6 +200,14 @@ namespace KSPPluginFramework
         internal void ClampToScreenNow()
         {
             WindowRect = WindowRect.ClampToScreen(ClampToScreenOffset);
+        }
+
+
+        internal override void OnGUIEvery()
+        {
+            base.OnGUIEvery();
+            if (Visible)
+                DrawGUI();
         }
 
         /// <summary>
