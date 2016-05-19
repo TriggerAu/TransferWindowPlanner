@@ -177,16 +177,17 @@ namespace KSPPluginFramework
             {
                 if (_Visible != value)
                 {
-                    if (value)
-                    {
-                        LogFormatted_DebugOnly("Adding Window to PostDrawQueue-{0}", WindowID);
-                        //RenderingManager.AddToPostDrawQueue(5, this.DrawGUI);
-                    }
-                    else
-                    {
-                        LogFormatted_DebugOnly("Removing Window from PostDrawQueue", WindowID);
-                        //RenderingManager.RemoveFromPostDrawQueue(5, this.DrawGUI);
-                    }
+					//Rem out for unity5
+                    //if (value)
+                    //{
+                    //    LogFormatted_DebugOnly("Adding Window to PostDrawQueue-{0}", WindowID);
+                    //    RenderingManager.AddToPostDrawQueue(5, this.DrawGUI);
+                    //}
+                    //else
+                    //{
+                    //    LogFormatted_DebugOnly("Removing Window from PostDrawQueue", WindowID);
+                    //    RenderingManager.RemoveFromPostDrawQueue(5, this.DrawGUI);
+                    //}
 
                     //raise event if theres one registered
                     if (onWindowVisibleChanged != null)
@@ -201,7 +202,6 @@ namespace KSPPluginFramework
         {
             WindowRect = WindowRect.ClampToScreen(ClampToScreenOffset);
         }
-
 
         internal override void OnGUIEvery()
         {
