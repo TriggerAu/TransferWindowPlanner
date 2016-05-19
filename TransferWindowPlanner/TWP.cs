@@ -57,8 +57,8 @@ namespace TransferWindowPlanner
             } 
 
             //plug us in to the draw queue and start the worker
-            RenderingManager.AddToPostDrawQueue(1, DrawGUI);
-
+            //Rem out for unity5
+            //RenderingManager.AddToPostDrawQueue(1, DrawGUI);
 
             //Get whether the toolbar is there
             settings.BlizzyToolbarIsAvailable = ToolbarManager.ToolbarAvailable;
@@ -70,9 +70,13 @@ namespace TransferWindowPlanner
             }
 
             //Hook the App Launcher
-            OnGUIAppLauncherReady();
-            //GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherDestroyed.Add(DestroyAppLauncherButton);
+
             GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
+
+            GameEvents.onShowUI.Add(OnShowUI);
+            GameEvents.onHideUI.Add(OnHideUI);
 
             //Hook the Angle renderers
             if (lstScenesForAngles.Contains(HighLogic.LoadedScene))
@@ -93,12 +97,19 @@ namespace TransferWindowPlanner
             if (windowMain.bw!=null && windowMain.bw.IsBusy)
                 windowMain.bw.CancelAsync();
 
-            RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
+            //Rem out for unity5
+            //RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
             Destroy(PhaseAngle);
             Destroy(EjectAngle);
 
-            //GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherDestroyed.Remove(DestroyAppLauncherButton);
+            GameEvents.onGameSceneLoadRequested.Remove(OnGameSceneLoadRequestedForAppLauncher);
+
+            GameEvents.onShowUI.Remove(OnShowUI);
+            GameEvents.onHideUI.Remove(OnHideUI);
+
             DestroyAppLauncherButton();
 
             DestroyToolbarButton(btnToolbar);
@@ -106,8 +117,20 @@ namespace TransferWindowPlanner
             DestroyAPIHooks();
         }
 
+        private void OnShowUI()
+        {
+             LogFormatted_DebugOnly("OnShowGUI Fired");
+             windowMain.Visible = true;
+        }
 
-        internal override void Start()
+        private void OnHideUI()
+        {
+            LogFormatted_DebugOnly("OnHideGUI Fired");
+            windowMain.Visible = false;
+        }
+
+
+    internal override void Start()
         {
             if (AssemblyLoader.loadedAssemblies
                         .Select(a => a.assembly.GetExportedTypes())
@@ -269,6 +292,11 @@ namespace TransferWindowPlanner
             SkinsLibrary.SetCurrent(settings.SelectedSkin.ToString());
 
         }
+
+        //internal override void OnGUIEvery()
+        //{
+        //    DrawGUI();
+        //}
 
         internal Boolean MouseOverAnyWindow = false;
         internal Boolean InputLockExists = false;
