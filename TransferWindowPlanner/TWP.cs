@@ -75,8 +75,8 @@ namespace TransferWindowPlanner
 
             GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
 
-            GameEvents.onShowUI.Add(OnShowUI);
-            GameEvents.onHideUI.Add(OnHideUI);
+            // Need this one to handle the hideUI cancelling via pause menu
+            GameEvents.onGameUnpause.Add(OnUnpause);
 
             //Hook the Angle renderers
             if (lstScenesForAngles.Contains(HighLogic.LoadedScene))
@@ -107,8 +107,8 @@ namespace TransferWindowPlanner
             GameEvents.onGUIApplicationLauncherDestroyed.Remove(DestroyAppLauncherButton);
             GameEvents.onGameSceneLoadRequested.Remove(OnGameSceneLoadRequestedForAppLauncher);
 
-            GameEvents.onShowUI.Remove(OnShowUI);
-            GameEvents.onHideUI.Remove(OnHideUI);
+            // Need this one to handle the hideUI cancelling via pause menu
+            GameEvents.onGameUnpause.Remove(OnUnpause);
 
             DestroyAppLauncherButton();
 
@@ -117,20 +117,18 @@ namespace TransferWindowPlanner
             DestroyAPIHooks();
         }
 
-        private void OnShowUI()
+
+        private void OnUnpause()
         {
-             LogFormatted_DebugOnly("OnShowGUI Fired");
-             windowMain.Visible = true;
+            LogFormatted_DebugOnly("OnUnpause");
+            windowMain.blnFlightUIVisible = true;
+            windowDebug.blnFlightUIVisible = true;
+            windowSettings.blnFlightUIVisible = true;
+            windowSettingsBlockout.blnFlightUIVisible = true;
+            windowSettingsBlockoutExtra.blnFlightUIVisible = true;
         }
 
-        private void OnHideUI()
-        {
-            LogFormatted_DebugOnly("OnHideGUI Fired");
-            windowMain.Visible = false;
-        }
-
-
-    internal override void Start()
+        internal override void Start()
         {
             if (AssemblyLoader.loadedAssemblies
                         .Select(a => a.assembly.GetExportedTypes())
