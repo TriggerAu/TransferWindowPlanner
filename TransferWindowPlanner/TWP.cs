@@ -122,10 +122,12 @@ namespace TransferWindowPlanner
         {
             LogFormatted_DebugOnly("OnUnpause");
             windowMain.blnFlightUIVisible = true;
-            windowDebug.blnFlightUIVisible = true;
             windowSettings.blnFlightUIVisible = true;
             windowSettingsBlockout.blnFlightUIVisible = true;
             windowSettingsBlockoutExtra.blnFlightUIVisible = true;
+#if DEBUG
+            windowDebug.blnFlightUIVisible = true;
+#endif
         }
 
         internal override void Start()
@@ -188,7 +190,7 @@ namespace TransferWindowPlanner
             InitDebugWindow();
         }
 
-        #region Toolbar Stuff
+#region Toolbar Stuff
         /// <summary>
         /// initialises a Toolbar Button for this mod
         /// </summary>
@@ -252,7 +254,7 @@ namespace TransferWindowPlanner
             }
             btnToDestroy = null;
         }
-        #endregion
+#endregion
 
 #if DEBUG
         internal TWPWindowDebug windowDebug;
