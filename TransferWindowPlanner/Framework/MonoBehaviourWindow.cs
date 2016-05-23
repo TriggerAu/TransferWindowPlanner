@@ -83,7 +83,8 @@ namespace KSPPluginFramework
             //just some debugging stuff here
             LogFormatted_DebugOnly("New MBWindow Awakened");
 
-            //base.Awake();
+            blnFlightUIVisible = true;
+
         }
 
         /// <summary>
@@ -206,10 +207,25 @@ namespace KSPPluginFramework
         internal override void OnGUIEvery()
         {
             base.OnGUIEvery();
-            if (Visible)
+
+            //If the window is visible and the UI is visible and the pause menu isnt open then draw the window
+            if (Visible && blnFlightUIVisible && !(HighLogic.LoadedScene == GameScenes.FLIGHT && PauseMenu.isOpen)) {
                 DrawGUI();
+            }
         }
 
+        #region UIToggle Stuff
+        internal Boolean blnFlightUIVisible = true;
+
+        internal override void Update()
+        {
+            base.Update();
+            if (GameSettings.TOGGLE_UI.GetKeyDown() && HighLogic.LoadedScene == GameScenes.FLIGHT)
+            {
+                blnFlightUIVisible = !blnFlightUIVisible;
+            }
+        }
+        #endregion
         /// <summary>
         /// This is the Code that draws the window and sets the skin
         /// !!!! You have to set the skin before drawing the window or you will scratch your head for ever
