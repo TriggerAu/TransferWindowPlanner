@@ -57,8 +57,8 @@ namespace TransferWindowPlanner
             } 
 
             //plug us in to the draw queue and start the worker
-            RenderingManager.AddToPostDrawQueue(1, DrawGUI);
-
+            //Rem out for unity5
+            //RenderingManager.AddToPostDrawQueue(1, DrawGUI);
 
             //Get whether the toolbar is there
             settings.BlizzyToolbarIsAvailable = ToolbarManager.ToolbarAvailable;
@@ -70,9 +70,13 @@ namespace TransferWindowPlanner
             }
 
             //Hook the App Launcher
-            OnGUIAppLauncherReady();
-            //GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherReady.Add(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherDestroyed.Add(DestroyAppLauncherButton);
+
             GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequestedForAppLauncher);
+
+            // Need this one to handle the hideUI cancelling via pause menu
+            GameEvents.onGameUnpause.Add(OnUnpause);
 
             //Hook the Angle renderers
             if (lstScenesForAngles.Contains(HighLogic.LoadedScene))
@@ -93,12 +97,19 @@ namespace TransferWindowPlanner
             if (windowMain.bw!=null && windowMain.bw.IsBusy)
                 windowMain.bw.CancelAsync();
 
-            RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
+            //Rem out for unity5
+            //RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
             Destroy(PhaseAngle);
             Destroy(EjectAngle);
 
-            //GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
+            GameEvents.onGUIApplicationLauncherDestroyed.Remove(DestroyAppLauncherButton);
+            GameEvents.onGameSceneLoadRequested.Remove(OnGameSceneLoadRequestedForAppLauncher);
+
+            // Need this one to handle the hideUI cancelling via pause menu
+            GameEvents.onGameUnpause.Remove(OnUnpause);
+
             DestroyAppLauncherButton();
 
             DestroyToolbarButton(btnToolbar);
@@ -106,6 +117,18 @@ namespace TransferWindowPlanner
             DestroyAPIHooks();
         }
 
+
+        private void OnUnpause()
+        {
+            LogFormatted_DebugOnly("OnUnpause");
+            windowMain.blnFlightUIVisible = true;
+            windowSettings.blnFlightUIVisible = true;
+            windowSettingsBlockout.blnFlightUIVisible = true;
+            windowSettingsBlockoutExtra.blnFlightUIVisible = true;
+#if DEBUG
+            windowDebug.blnFlightUIVisible = true;
+#endif
+        }
 
         internal override void Start()
         {
@@ -167,7 +190,7 @@ namespace TransferWindowPlanner
             InitDebugWindow();
         }
 
-        #region Toolbar Stuff
+#region Toolbar Stuff
         /// <summary>
         /// initialises a Toolbar Button for this mod
         /// </summary>
@@ -231,7 +254,7 @@ namespace TransferWindowPlanner
             }
             btnToDestroy = null;
         }
-        #endregion
+#endregion
 
 #if DEBUG
         internal TWPWindowDebug windowDebug;
@@ -269,6 +292,11 @@ namespace TransferWindowPlanner
             SkinsLibrary.SetCurrent(settings.SelectedSkin.ToString());
 
         }
+
+        //internal override void OnGUIEvery()
+        //{
+        //    DrawGUI();
+        //}
 
         internal Boolean MouseOverAnyWindow = false;
         internal Boolean InputLockExists = false;

@@ -27,6 +27,14 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.5.1.0		-	KSP Version: 1.1.2
+- Adjusted code to handle UIToggle and flight Pause menu
+
+Version 1.5.0.0		-	KSP Version: 1.1.2
+- Compiled against 1.1.2
+- tweaked angle stuff
+- integrated nanathan pull for ongui code
+
 Version 1.4.0.0		-	KSP Version: 1.0.5
 - adjusted angle names, etc to make em consistent - to retrograde, to prograde, etc
 - fixed issues with log spam and map view (Issue #35)

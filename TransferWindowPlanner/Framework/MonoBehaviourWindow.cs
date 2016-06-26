@@ -83,7 +83,8 @@ namespace KSPPluginFramework
             //just some debugging stuff here
             LogFormatted_DebugOnly("New MBWindow Awakened");
 
-            //base.Awake();
+            blnFlightUIVisible = true;
+
         }
 
         /// <summary>
@@ -177,16 +178,17 @@ namespace KSPPluginFramework
             {
                 if (_Visible != value)
                 {
-                    if (value)
-                    {
-                        LogFormatted_DebugOnly("Adding Window to PostDrawQueue-{0}", WindowID);
-                        RenderingManager.AddToPostDrawQueue(5, this.DrawGUI);
-                    }
-                    else
-                    {
-                        LogFormatted_DebugOnly("Removing Window from PostDrawQueue", WindowID);
-                        RenderingManager.RemoveFromPostDrawQueue(5, this.DrawGUI);
-                    }
+					//Rem out for unity5
+                    //if (value)
+                    //{
+                    //    LogFormatted_DebugOnly("Adding Window to PostDrawQueue-{0}", WindowID);
+                    //    RenderingManager.AddToPostDrawQueue(5, this.DrawGUI);
+                    //}
+                    //else
+                    //{
+                    //    LogFormatted_DebugOnly("Removing Window from PostDrawQueue", WindowID);
+                    //    RenderingManager.RemoveFromPostDrawQueue(5, this.DrawGUI);
+                    //}
 
                     //raise event if theres one registered
                     if (onWindowVisibleChanged != null)
@@ -202,6 +204,28 @@ namespace KSPPluginFramework
             WindowRect = WindowRect.ClampToScreen(ClampToScreenOffset);
         }
 
+        internal override void OnGUIEvery()
+        {
+            base.OnGUIEvery();
+
+            //If the window is visible and the UI is visible and the pause menu isnt open then draw the window
+            if (Visible && blnFlightUIVisible && !(HighLogic.LoadedScene == GameScenes.FLIGHT && PauseMenu.isOpen)) {
+                DrawGUI();
+            }
+        }
+
+        #region UIToggle Stuff
+        internal Boolean blnFlightUIVisible = true;
+
+        internal override void Update()
+        {
+            base.Update();
+            if (GameSettings.TOGGLE_UI.GetKeyDown() && HighLogic.LoadedScene == GameScenes.FLIGHT)
+            {
+                blnFlightUIVisible = !blnFlightUIVisible;
+            }
+        }
+        #endregion
         /// <summary>
         /// This is the Code that draws the window and sets the skin
         /// !!!! You have to set the skin before drawing the window or you will scratch your head for ever
