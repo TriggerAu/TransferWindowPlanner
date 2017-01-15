@@ -14,7 +14,7 @@ namespace TransferWindowPlanner
         internal static void CopyTextToClipboard(String CopyText)
         {
             TextEditor t = new TextEditor();
-            t.content = new GUIContent(CopyText);
+            t.text = new GUIContent(CopyText).text;
             t.SelectAll();
             t.Copy();
         }
