@@ -27,6 +27,10 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.6.1.0		-	KSP Version: 1.2.2
+- Moved settings to PluginData to help out for MM peeps
+- Tidied up some minor obselesence
+
 Version 1.6.0.0		-	KSP Version: 1.2.0
 - Recompile for 1.2
 
