@@ -110,8 +110,10 @@ namespace TransferWindowPlanner
 
         void HideAngles()
         {
-            mbTWP.PhaseAngle.HideAngle();
-            mbTWP.EjectAngle.HideAngle();
+            if (mbTWP.PhaseAngle != null)
+                mbTWP.PhaseAngle.HideAngle();
+            if (mbTWP.EjectAngle != null)
+                mbTWP.EjectAngle.HideAngle();
             blnDisplayPhase = false;
             blnDisplayEject = false;
         }
