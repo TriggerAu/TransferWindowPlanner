@@ -303,11 +303,17 @@ namespace TransferWindowPlanner
             LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitude, out TransferSelected);
             TransferSelected.CalcEjectionValues();
 
-            mbTWP.EjectAngle.AngleTargetValue = TransferSelected.EjectionAngle * LambertSolver.Rad2Deg;
-            mbTWP.EjectAngle.DrawToRetrograde = TransferSelected.EjectionAngleIsRetrograde;
-            mbTWP.PhaseAngle.AngleTargetValue = TransferSelected.PhaseAngle * LambertSolver.Rad2Deg;
-            if (!mbTWP.PhaseAngle.ShowTargetAngle)
-                mbTWP.PhaseAngle.ShowTargetAngle = true;
+            if (mbTWP.EjectAngle != null)
+            {
+                mbTWP.EjectAngle.AngleTargetValue = TransferSelected.EjectionAngle * LambertSolver.Rad2Deg;
+                mbTWP.EjectAngle.DrawToRetrograde = TransferSelected.EjectionAngleIsRetrograde;
+            }
+            if (mbTWP.PhaseAngle != null)
+            {
+                mbTWP.PhaseAngle.AngleTargetValue = TransferSelected.PhaseAngle * LambertSolver.Rad2Deg;
+                if (!mbTWP.PhaseAngle.ShowTargetAngle)
+                    mbTWP.PhaseAngle.ShowTargetAngle = true;
+            }
 
         }
 
