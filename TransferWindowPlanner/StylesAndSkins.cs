@@ -17,7 +17,7 @@ namespace TransferWindowPlanner
         internal static GUIStyle styleButton;
         private static GUIStyle styleButtonMain;
         private static GUIStyle styleButtonSettings;
-        private static GUIStyle styleButtonToggle;
+        internal static GUIStyle styleButtonToggle;
 
         private static GUIStyle styleButtonUnity;
         private static GUIStyle styleButtonMainUnity;

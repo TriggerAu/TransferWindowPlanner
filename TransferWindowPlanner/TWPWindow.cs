@@ -763,7 +763,7 @@ namespace TransferWindowPlanner
             if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene) && MapView.MapIsEnabled)
             {
                 GUILayout.BeginHorizontal();
-                if (DrawToggle(ref blnDisplayPhase, "Show Phase Angles", "ButtonToggle"))
+                if (DrawToggle(ref blnDisplayPhase, "Show Phase Angles", Styles.styleButtonToggle))
                 {
                     if (blnDisplayPhase)
                     {
@@ -785,7 +785,7 @@ namespace TransferWindowPlanner
                 }
                 if (DepartureSelected >= 0 && TransferSelected != null)
                 {
-                    if (DrawToggle(ref blnDisplayEject, "Show Ejection Angles", "ButtonToggle"))
+                    if (DrawToggle(ref blnDisplayEject, "Show Ejection Angles", Styles.styleButtonToggle))
                     {
                         if (blnDisplayEject)
                         {
