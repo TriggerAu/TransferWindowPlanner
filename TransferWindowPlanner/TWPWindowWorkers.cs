@@ -85,8 +85,8 @@ namespace TransferWindowPlanner
             kSpan.UT = TravelMax;
             strTravelMaxDays = ((Int32)kSpan.TotalDays).ToString();
 
-            strArrivalAltitude = (InitialOrbitAltitude / 1000).ToString();
-            strDepartureAltitude = (FinalOrbitAltitude / 1000).ToString();
+            strArrivalAltitude = (FinalOrbitAltitude / 1000).ToString();
+            strDepartureAltitude = (InitialOrbitAltitude / 1000).ToString();
         }
 
         internal Boolean Running = false;
