@@ -103,7 +103,7 @@ namespace TransferWindowPlanner
         {
             base.Start();
 
-            if (!TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
+            if (!TransferWindowPlanner.IsSceneForAngles())
             {
                 this.enabled = false;
                 return;
@@ -238,7 +238,7 @@ namespace TransferWindowPlanner
             base.OnPreCull();
 
             //not sure if this is right - but its working
-            if (!TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
+            if (!TransferWindowPlanner.IsSceneForAngles())
             {
                 return;
             }

@@ -110,8 +110,11 @@ namespace TransferWindowPlanner
 
         void HideAngles()
         {
-            mbTWP.PhaseAngle.HideAngle();
-            mbTWP.EjectAngle.HideAngle();
+            if(TransferWindowPlanner.IsSceneForAngles())
+            {
+                mbTWP.PhaseAngle.HideAngle();
+                mbTWP.EjectAngle.HideAngle();
+            }
             blnDisplayPhase = false;
             blnDisplayEject = false;
         }
@@ -758,7 +761,7 @@ namespace TransferWindowPlanner
 
             GUILayout.Space(50);
 
-            if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene) && MapView.MapIsEnabled)
+            if (TransferWindowPlanner.IsSceneForAngles() && MapView.MapIsEnabled)
             {
                 GUILayout.BeginHorizontal();
                 if (DrawToggle(ref blnDisplayPhase, "Show Phase Angles", "ButtonToggle"))

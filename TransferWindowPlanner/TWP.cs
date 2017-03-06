@@ -38,7 +38,7 @@ namespace TransferWindowPlanner
         internal AngleRenderPhase PhaseAngle;
         internal AngleRenderEject EjectAngle;
 
-        internal static List<GameScenes> lstScenesForAngles = new List<GameScenes>() { GameScenes.TRACKSTATION, GameScenes.FLIGHT };
+        private static List<GameScenes> lstScenesForAngles = new List<GameScenes>() { GameScenes.TRACKSTATION, GameScenes.FLIGHT };
 
         internal override void Awake()
         {
@@ -96,7 +96,7 @@ namespace TransferWindowPlanner
             GameEvents.onGameUnpause.Add(OnUnpause);
 
             //Hook the Angle renderers
-            if (lstScenesForAngles.Contains(HighLogic.LoadedScene))
+            if (IsSceneForAngles())
             {
                 PhaseAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderPhase>();
                 EjectAngle = MapView.MapCamera.gameObject.AddComponent<AngleRenderEject>();
@@ -105,6 +105,11 @@ namespace TransferWindowPlanner
             //do the daily version check if required
             if (settings.DailyVersionCheck)
                 settings.VersionCheck(false);
+        }
+
+        internal static bool IsSceneForAngles()
+        {
+            return lstScenesForAngles.Contains(HighLogic.LoadedScene);
         }
 
         internal override void OnDestroy()
