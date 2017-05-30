@@ -44,6 +44,10 @@ namespace TransferWindowPlanner
         {
             LogFormatted("Awakening the TransferWindowPlanner (TWP)");
 
+            LogFormatted("Checking for PluginData folder");
+            if (!System.IO.Directory.Exists(Resources.PathPlugin + "/PluginData"))
+                System.IO.Directory.CreateDirectory(Resources.PathPlugin + "/PluginData");
+
             LogFormatted("Loading Settings");
             settings = new Settings("PluginData/settings.cfg");
 			Boolean blnSettingsLoaded = settings.Load();
@@ -54,8 +58,6 @@ namespace TransferWindowPlanner
 				if (blnSettingsLoaded)
 				{
 					settings.FilePath = "PluginData/settings.cfg";
-					if (!System.IO.Directory.Exists(Resources.PathPlugin + "/PluginData"))
-						System.IO.Directory.CreateDirectory(Resources.PathPlugin + "/PluginData");
 					System.IO.File.Move(Resources.PathPlugin + "/settings.cfg", Resources.PathPlugin + "/PluginData/settings.cfg");
 				}
 			}
