@@ -17,34 +17,32 @@ namespace KSPPluginFramework
         static public Int32 EpochDayOfYear { get; private set; }
         /// <summary>What Year does UT 0 represent</summary>
         static public Int32 EpochYear { get; private set; }
-
-
+        
         static public KSPDateTime EpochAsKSPDateTime { 
             get {
                 return new KSPDateTime(EpochYear, EpochDayOfYear);
             }
         }
-
-
+        
         //Define the Calendar
         /// <summary>How many seconds (game UT) make up a minute</summary>
         static public Int32 SecondsPerMinute { get; private set; }
         /// <summary>How many minutes make up an hour</summary>
         static public Int32 MinutesPerHour { get; private set; }
         /// <summary>How many hours make up a day</summary>
-        static public Int32 HoursPerDay { get; private set; }
+        static public double HoursPerDay { get; private set; }
         /// <summary>How many days make up a year</summary>
-        static public Int32 DaysPerYear { get; private set; }
+        static public double DaysPerYear { get; private set; }
 
         /// <summary>How many seconds (game UT) make up an hour</summary>
         static public Int32 SecondsPerHour { get { return SecondsPerMinute * MinutesPerHour; } }
         /// <summary>How many seconds (game UT) make up a day</summary>
-        static public Int32 SecondsPerDay { get { return SecondsPerHour * HoursPerDay; } }
+        static public double SecondsPerDay { get { return SecondsPerHour * HoursPerDay; } }
         /// <summary>How many seconds (game UT) make up a year - not relevant for Earth time</summary>
-        static public Int32 SecondsPerYear { get { return SecondsPerDay * DaysPerYear; } }
+        static public double SecondsPerYear { get { return SecondsPerDay * DaysPerYear; } }
 
         /// <summary>How many seconds (game UT) make up a year - not relevant for Earth time</summary>
-        static public Int32 HoursPerYear { get { return HoursPerDay * DaysPerYear; } }
+        static public double HoursPerYear { get { return HoursPerDay * DaysPerYear; } }
 
         
         /// <summary>What Earth date does UT 0 represent</summary>
@@ -63,8 +61,8 @@ namespace KSPPluginFramework
             SecondsPerMinute = 60;
             MinutesPerHour = 60;
 
-            HoursPerDay = GameSettings.KERBIN_TIME ? 6 : 24;
-            DaysPerYear = GameSettings.KERBIN_TIME ? 426 : 365;
+            HoursPerDay = KSPUtil.dateTimeFormatter.Day / 3600; // GameSettings.KERBIN_TIME ? 6 : 24;
+            DaysPerYear = KSPUtil.dateTimeFormatter.Year / KSPUtil.dateTimeFormatter.Day; // GameSettings.KERBIN_TIME ? 426 : 365;
         }
 
         /// <summary>Sets the Date Structure to be Earth based - Accepts Epoch date as string</summary>
