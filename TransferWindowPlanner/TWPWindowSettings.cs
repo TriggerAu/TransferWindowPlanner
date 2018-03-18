@@ -43,13 +43,13 @@ namespace TransferWindowPlanner
 
             TooltipMouseOffset = new Vector2d(-10, 10);
 
-            ddlSettingsTab = new DropDownList(EnumExtensions.ToEnumDescriptions<SettingsTabs>(), this);
+            ddlSettingsTab = new DropDownList(KSPPluginFramework.EnumExtensions.ToEnumDescriptions<SettingsTabs>(), this);
 
-            ddlSettingsSkin = new DropDownList(EnumExtensions.ToEnumDescriptions<Settings.DisplaySkin>(), (Int32)settings.SelectedSkin, this);
+            ddlSettingsSkin = new DropDownList(KSPPluginFramework.EnumExtensions.ToEnumDescriptions<Settings.DisplaySkin>(), (Int32)settings.SelectedSkin, this);
             ddlSettingsSkin.OnSelectionChanged += ddlSettingsSkin_SelectionChanged;
-            ddlSettingsButtonStyle = new DropDownList(EnumExtensions.ToEnumDescriptions<Settings.ButtonStyleEnum>(), (Int32)settings.ButtonStyleChosen, this);
+            ddlSettingsButtonStyle = new DropDownList(KSPPluginFramework.EnumExtensions.ToEnumDescriptions<Settings.ButtonStyleEnum>(), (Int32)settings.ButtonStyleChosen, this);
             ddlSettingsButtonStyle.OnSelectionChanged += ddlSettingsButtonStyle_OnSelectionChanged;
-            ddlSettingsCalendar = new DropDownList(EnumExtensions.ToEnumDescriptions<CalendarTypeEnum>(), this);
+            ddlSettingsCalendar = new DropDownList(KSPPluginFramework.EnumExtensions.ToEnumDescriptions<CalendarTypeEnum>(), this);
             //NOTE:Pull out the custom option for now
             ddlSettingsCalendar.Items.Remove(CalendarTypeEnum.Custom.Description());
             ddlSettingsCalendar.OnSelectionChanged += ddlSettingsCalendar_OnSelectionChanged;
