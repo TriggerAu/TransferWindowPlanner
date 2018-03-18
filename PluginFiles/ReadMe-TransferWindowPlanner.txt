@@ -27,6 +27,9 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.6.3.0		-	KSP Version: 1.4.1
+- Recompile for 1.4.1
+
 Version 1.6.2.0		-	KSP Version: 1.3.0
 - Recompile for 1.3.0
 - Added guard clause to always create the PluginData folder if its missing
