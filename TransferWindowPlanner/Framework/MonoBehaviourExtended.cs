@@ -267,10 +267,16 @@ namespace KSPPluginFramework
         /// </summary>
         private void Awake()
         {
-            UnityEngine.Random.InitState((int)(DateTime.Now - DateTime.Now.Date).TotalSeconds);
+            if(!randomInitialized)
+            {
+                UnityEngine.Random.InitState((int)(DateTime.Now - DateTime.Now.Date).TotalMilliseconds);
+                randomInitialized = true;
+            }
 
             OnAwake();
         }
+
+        private static bool randomInitialized = false;
 
         internal virtual void OnAwake()
         {
