@@ -69,6 +69,8 @@ namespace TransferWindowPlanner
         [Persistent] internal Boolean ClickThroughProtect_Editor=true;
         [Persistent] internal Boolean ClickThroughProtect_Flight=true;
 
+        [Persistent] internal bool UseStockDateFormatters = true;
+
         //Version Stuff
         [Persistent] internal Boolean DailyVersionCheck = true;
         internal Boolean VersionAttentionFlag = false;
