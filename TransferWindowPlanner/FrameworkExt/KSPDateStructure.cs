@@ -20,7 +20,7 @@ namespace KSPPluginFramework
         
         static public KSPDateTime EpochAsKSPDateTime { 
             get {
-                return new KSPDateTime(EpochYear, EpochDayOfYear);
+                return new KSPDateTime(EpochYear * SecondsPerYear + EpochDayOfYear* SecondsPerDay);
             }
         }
         
@@ -50,7 +50,10 @@ namespace KSPPluginFramework
 
         /// <summary>What type of Calendar is being used - KSPStock, Earth, or custom</summary>
         static public CalendarTypeEnum CalendarType {get; private set;}
-        
+
+        /// <summary>Set true to use the KSP IDateTimeFormatter outputs where possible</summary>
+        static public bool UseStockDateFormatters = true;
+
         /// <summary>Sets the Date Structure to be stock KSP</summary>
         static public void SetKSPStockCalendar()
         {
@@ -132,6 +135,8 @@ namespace KSPPluginFramework
 
             Months = new List<KSPMonth>();
             //LeapDays = new List<KSPLeapDay>();
+
+            UseStockDateFormatters = true;
         }
 
         /// <summary>List of KSPMonth objects representing the months in the year</summary>
