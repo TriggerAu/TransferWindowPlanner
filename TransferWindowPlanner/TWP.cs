@@ -121,8 +121,14 @@ namespace TransferWindowPlanner
             //Rem out for unity5
             //RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
-            Destroy(PhaseAngle);
-            Destroy(EjectAngle);
+            if (PhaseAngle != null)
+            {
+                Destroy(PhaseAngle.gameObject);
+            }
+            if (EjectAngle != null)
+            {
+                Destroy(EjectAngle.gameObject);
+            }
 
             GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
             GameEvents.onGUIApplicationLauncherDestroyed.Remove(DestroyAppLauncherButton);

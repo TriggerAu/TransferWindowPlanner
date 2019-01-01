@@ -112,8 +112,12 @@ namespace TransferWindowPlanner
 
         void HideAngles()
         {
-            mbTWP.PhaseAngle.HideAngle();
-            mbTWP.EjectAngle.HideAngle();
+            if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
+            {
+                //only in the right scenes
+                mbTWP.PhaseAngle.HideAngle();
+                mbTWP.EjectAngle.HideAngle();
+            }
             blnDisplayPhase = false;
             blnDisplayEject = false;
         }

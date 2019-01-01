@@ -302,6 +302,7 @@ namespace TransferWindowPlanner
 
             LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitude, out TransferSelected);
             TransferSelected.CalcEjectionValues();
+
             if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
             {
                 mbTWP.EjectAngle.AngleTargetValue = TransferSelected.EjectionAngle * LambertSolver.Rad2Deg;
