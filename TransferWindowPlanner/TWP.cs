@@ -73,7 +73,9 @@ namespace TransferWindowPlanner
             if(settings.SelectedCalendar==CalendarTypeEnum.Earth) {
                 KSPDateStructure.SetEarthCalendar(settings.EarthEpoch);
                 windowSettings.ddlSettingsCalendar.SelectedIndex = (Int32)settings.SelectedCalendar;
-            } 
+            }
+
+            KSPDateStructure.UseStockDateFormatters = settings.UseStockDateFormatters;
 
             //plug us in to the draw queue and start the worker
             //Rem out for unity5
