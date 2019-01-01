@@ -67,7 +67,8 @@ namespace TransferWindowPlanner
 
         [Persistent] internal Boolean ClickThroughProtect_KSC=true;
         [Persistent] internal Boolean ClickThroughProtect_Editor=true;
-        [Persistent] internal Boolean ClickThroughProtect_Flight=true;
+        [Persistent] internal Boolean ClickThroughProtect_Flight = true;
+        [Persistent] internal Boolean ClickThroughProtect_Tracking = true;
 
         [Persistent] internal bool UseStockDateFormatters = true;
 

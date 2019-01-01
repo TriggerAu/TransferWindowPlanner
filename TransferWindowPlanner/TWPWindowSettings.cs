@@ -231,12 +231,17 @@ namespace TransferWindowPlanner
                 settings.Save();
             }
             if (DrawToggle(ref settings.ClickThroughProtect_Editor, "Prevent in Editors", Styles.styleToggle)) {
-                if (!settings.ClickThroughProtect_KSC && (HighLogic.LoadedScene == GameScenes.EDITOR))
+                if (!settings.ClickThroughProtect_Editor && (HighLogic.LoadedScene == GameScenes.EDITOR))
                     mbTWP.RemoveInputLock();
                 settings.Save();
             }
             if (DrawToggle(ref settings.ClickThroughProtect_Flight, "Prevent in Flight", Styles.styleToggle)) {
-                if (!settings.ClickThroughProtect_KSC && HighLogic.LoadedScene == GameScenes.FLIGHT)
+                if (!settings.ClickThroughProtect_Flight && HighLogic.LoadedScene == GameScenes.FLIGHT)
+                    mbTWP.RemoveInputLock();
+                settings.Save();
+            }
+            if (DrawToggle(ref settings.ClickThroughProtect_Tracking, "Prevent in Tracking Station", Styles.styleToggle)) {
+                if (!settings.ClickThroughProtect_Tracking && HighLogic.LoadedScene == GameScenes.TRACKSTATION)
                     mbTWP.RemoveInputLock();
                 settings.Save();
             }
