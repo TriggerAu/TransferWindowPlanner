@@ -40,7 +40,7 @@ namespace TransferWindowPlanner
 
         internal static List<GameScenes> lstScenesForAngles = new List<GameScenes>() { GameScenes.TRACKSTATION, GameScenes.FLIGHT };
 
-        internal override void Awake()
+        internal override void OnAwake()
         {
             LogFormatted("Awakening the TransferWindowPlanner (TWP)");
 

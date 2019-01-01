@@ -76,17 +76,17 @@ namespace TransferWindowPlanner
         private Double _PhaseAngleCurrent;
 
 
-        private GameObject objLineStart = new GameObject("LineStart");
-        private GameObject objLineEnd = new GameObject("LineEnd");
-        private GameObject objLineArc = new GameObject("LineArc");
-        private GameObject objLineTarget = new GameObject("LineTarget");
-        private GameObject objLineTargetArc = new GameObject("LineTargetArc");
+        private GameObject objLineStart;
+        private GameObject objLineEnd;
+        private GameObject objLineArc;
+        private GameObject objLineTarget;
+        private GameObject objLineTargetArc;
 
-        private LineRenderer lineStart = null;
-        private LineRenderer lineEnd = null;
-        internal LineRenderer lineArc = null;
-        private LineRenderer lineTarget = null;
-        private LineRenderer lineTargetArc = null;
+        private LineRenderer lineStart;
+        private LineRenderer lineEnd;
+        internal LineRenderer lineArc;
+        private LineRenderer lineTarget;
+        private LineRenderer lineTargetArc;
 
 
         internal PlanetariumCamera cam;
@@ -97,6 +97,24 @@ namespace TransferWindowPlanner
 
         private GUIStyle styleLabelEnd;
         private GUIStyle styleLabelTarget;
+
+        internal override void OnAwake()
+        {
+            base.OnAwake();
+
+            objLineStart = new GameObject("LineStart");
+            objLineEnd = new GameObject("LineEnd");
+            objLineArc = new GameObject("LineArc");
+            objLineTarget = new GameObject("LineTarget");
+            objLineTargetArc = new GameObject("LineTargetArc");
+
+            lineStart = null;
+            lineEnd = null;
+            lineArc = null;
+            lineTarget = null;
+            lineTargetArc = null;
+        }
+
 
         internal override void Start()
         {
@@ -112,7 +130,7 @@ namespace TransferWindowPlanner
             //Get the orbit lines material so things look similar
             Material orbitLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
 
-            Material dottedLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).dottedLineMaterial;
+            //Material dottedLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).dottedLineMaterial;    //Commented because usage removed
 
             //init all the lines
             lineStart = InitLine(objLineStart, Color.blue, 2, 10, orbitLines);
@@ -147,11 +165,16 @@ namespace TransferWindowPlanner
             LineRenderer lineReturn = objToAttach.AddComponent<LineRenderer>();
 
             lineReturn.material = linesMaterial;
-            lineReturn.SetColors(lineColor, lineColor);
+            //lineReturn.SetColors(lineColor, lineColor);
+            lineReturn.startColor = lineColor;
+            lineReturn.endColor = lineColor;
             lineReturn.transform.parent = null;
             lineReturn.useWorldSpace = true;
-            lineReturn.SetWidth(InitialWidth, InitialWidth);
-            lineReturn.SetVertexCount(VertexCount);
+            //lineReturn.SetWidth(InitialWidth, InitialWidth);
+            lineReturn.startWidth = InitialWidth;
+            lineReturn.endWidth = InitialWidth;
+            //lineReturn.SetVertexCount(VertexCount);
+            lineReturn.positionCount = VertexCount;
             lineReturn.enabled = false;
 
             return lineReturn;
@@ -405,7 +428,9 @@ namespace TransferWindowPlanner
 
                 line.SetPosition(i, ScaledSpace.LocalToScaledSpace(vectArc));
             }
-            line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            //line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            line.startWidth = 10f / 1000f * cam.Distance;
+            line.endWidth = 10f / 1000f * cam.Distance;
             line.enabled = true;
         }
 
@@ -414,7 +439,9 @@ namespace TransferWindowPlanner
             line.SetPosition(0, ScaledSpace.LocalToScaledSpace(pointStart));
             line.SetPosition(1, ScaledSpace.LocalToScaledSpace(pointEnd));
             //line.SetWidth((Single)StartWidth / 1000 * (Single)(cam.transform.position - pointStart).magnitude, (Single)EndWidth / 1000 * (Single)(cam.transform.position - pointEnd).magnitude);
-            line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            //line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            line.startWidth = 10f / 1000f * cam.Distance;
+            line.endWidth = 10f / 1000f * cam.Distance;
 
             //Double distToStart = ScaledSpace.LocalToScaledSpace(pointStart).magnitude;
             //Double distToEnd = ScaledSpace.LocalToScaledSpace(pointEnd).magnitude;

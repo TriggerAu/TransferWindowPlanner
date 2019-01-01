@@ -32,8 +32,10 @@ namespace TransferWindowPlanner
 
         internal Vector2 PlotPosition = new Vector2(372, 50);
 
-        internal override void Awake()
+        internal override void OnAwake()
         {
+            base.OnAwake();
+
             foreach (CelestialBody item in FlightGlobals.Bodies)
             {
                 //if(item.name!="Sun")
