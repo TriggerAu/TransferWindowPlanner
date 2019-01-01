@@ -35,8 +35,10 @@ namespace TransferWindowPlanner
             [Description("About...")]   About,
         }
         
-        internal override void Awake()
+        internal override void OnAwake()
         {
+            base.OnAwake();
+
             //WindowRect = new Rect(mbTWP.windowMain.WindowRect.x + mbTWP.windowMain.WindowRect.width, mbTWP.windowMain.WindowRect.y, 300, 200);
             WindowRect = new Rect(0, 0, WindowWidth, WindowHeight);
             settings = TransferWindowPlanner.settings;

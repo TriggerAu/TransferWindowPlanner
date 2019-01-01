@@ -57,7 +57,8 @@ namespace KSPPluginFramework
         //}
         static MonoBehaviourExtended()
         {
-            UnityEngine.Random.seed = (int)(DateTime.Now - DateTime.Now.Date).TotalSeconds;
+            //Must do this in awake now
+            //UnityEngine.Random.seed = (int)(DateTime.Now - DateTime.Now.Date).TotalSeconds;
         }
         #endregion
 
@@ -264,7 +265,14 @@ namespace KSPPluginFramework
         /// Trigger: Override this for initialization Code - this is before the Start Event
         ///          See this for info on order of execuction: http://docs.unity3d.com/Documentation/Manual/ExecutionOrder.html
         /// </summary>
-        internal virtual void Awake()
+        private void Awake()
+        {
+            UnityEngine.Random.InitState((int)(DateTime.Now - DateTime.Now.Date).TotalSeconds);
+
+            OnAwake();
+        }
+
+        internal virtual void OnAwake()
         {
             LogFormatted_DebugOnly("New MBExtended Awakened");
         }
