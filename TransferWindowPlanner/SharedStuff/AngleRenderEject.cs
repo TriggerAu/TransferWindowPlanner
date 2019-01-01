@@ -70,14 +70,14 @@ namespace TransferWindowPlanner
         private Vector3d vectPosPivotWorking;
         private Vector3d vectPosEndWorking;
 
-        private GameObject objLineStart = new GameObject("LineStart");
-        private GameObject objLineStartArrow1 = new GameObject("LineStartArrow1");
-        private GameObject objLineStartArrow2 = new GameObject("LineStartArrow2");
-        private GameObject objLineEnd = new GameObject("LineEnd");
-        private GameObject objLineArc = new GameObject("LineArc");
-        private GameObject objLineVesselVect = new GameObject("LineVesselVect");
-        private GameObject objLineVesselVectArrow1 = new GameObject("LineVesselVectArrow1");
-        private GameObject objLineVesselVectArrow2 = new GameObject("LineVesselVectArrow2");
+        private GameObject objLineStart;
+        private GameObject objLineStartArrow1;
+        private GameObject objLineStartArrow2;
+        private GameObject objLineEnd;
+        private GameObject objLineArc;
+        private GameObject objLineVesselVect;
+        private GameObject objLineVesselVectArrow1;
+        private GameObject objLineVesselVectArrow2;
 
         private LineRenderer lineStart = null;
         private LineRenderer lineStartArrow1 = null;
@@ -110,11 +110,19 @@ namespace TransferWindowPlanner
             }
 
             LogFormatted("Initializing EjectAngle Render");
+            objLineStart = new GameObject("LineStart");
+            objLineStartArrow1 = new GameObject("LineStartArrow1");
+            objLineStartArrow2 = new GameObject("LineStartArrow2");
+            objLineEnd = new GameObject("LineEnd");
+            objLineArc = new GameObject("LineArc");
+            objLineVesselVect = new GameObject("LineVesselVect");
+            objLineVesselVectArrow1 = new GameObject("LineVesselVectArrow1");
+            objLineVesselVectArrow2 = new GameObject("LineVesselVectArrow2");
 
             //Get the orbit lines material so things look similar
             Material orbitLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).orbitLinesMaterial;
 
-            Material dottedLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).dottedLineMaterial;
+            //Material dottedLines = ((MapView)GameObject.FindObjectOfType(typeof(MapView))).dottedLineMaterial;    //Commented because usage removed
 
             //init all the lines
             lineStart = InitLine(objLineStart, Color.blue, 2, 10, orbitLines);
@@ -154,11 +162,16 @@ namespace TransferWindowPlanner
             LineRenderer lineReturn = objToAttach.AddComponent<LineRenderer>();
 
             lineReturn.material = linesMaterial;
-            lineReturn.SetColors(lineColor, lineColor);
+            //lineReturn.SetColors(lineColor, lineColor);
+            lineReturn.startColor = lineColor;
+            lineReturn.endColor = lineColor;
             lineReturn.transform.parent = null;
             lineReturn.useWorldSpace = true;
-            lineReturn.SetWidth(InitialWidth, InitialWidth);
-            lineReturn.SetVertexCount(VertexCount);
+            //lineReturn.SetWidth(InitialWidth, InitialWidth);
+            lineReturn.startWidth = InitialWidth;
+            lineReturn.endWidth = InitialWidth;
+            //lineReturn.SetVertexCount(VertexCount);
+            lineReturn.positionCount = VertexCount;
             lineReturn.enabled = false;
 
             return lineReturn;
@@ -422,7 +435,9 @@ namespace TransferWindowPlanner
 
                 line.SetPosition(i, ScaledSpace.LocalToScaledSpace(vectArc));
             }
-            line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            //line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            line.startWidth = 10f / 1000f * cam.Distance;
+            line.endWidth = 10f / 1000f * cam.Distance;
             line.enabled = true;
         }
 
@@ -431,7 +446,9 @@ namespace TransferWindowPlanner
             line.SetPosition(0, ScaledSpace.LocalToScaledSpace(pointStart));
             line.SetPosition(1, ScaledSpace.LocalToScaledSpace(pointEnd));
             //line.SetWidth((Single)StartWidth / 1000 * (Single)(cam.transform.position - pointStart).magnitude, (Single)EndWidth / 1000 * (Single)(cam.transform.position - pointEnd).magnitude);
-            line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            //line.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            line.startWidth = 10f / 1000f * cam.Distance;
+            line.endWidth = 10f / 1000f * cam.Distance;
 
             //Double distToStart = ScaledSpace.LocalToScaledSpace(pointStart).magnitude;
             //Double distToEnd = ScaledSpace.LocalToScaledSpace(pointEnd).magnitude;
@@ -451,8 +468,12 @@ namespace TransferWindowPlanner
             line2.SetPosition(0, ScaledSpace.LocalToScaledSpace(pointEnd - vectArrow2));
             line2.SetPosition(1, ScaledSpace.LocalToScaledSpace(pointEnd));
             //line.SetWidth((Single)StartWidth / 1000 * (Single)(cam.transform.position - pointStart).magnitude, (Single)EndWidth / 1000 * (Single)(cam.transform.position - pointEnd).magnitude);
-            line1.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
-            line2.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            //line1.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            line1.startWidth = 10f / 1000f * cam.Distance;
+            line1.endWidth = 10f / 1000f * cam.Distance;
+            //line2.SetWidth((float)10 / 1000 * cam.Distance, (float)10 / 1000 * cam.Distance);
+            line2.startWidth = 10f / 1000f * cam.Distance;
+            line2.endWidth = 10f / 1000f * cam.Distance;
 
             //Double distToStart = ScaledSpace.LocalToScaledSpace(pointStart).magnitude;
             //Double distToEnd = ScaledSpace.LocalToScaledSpace(pointEnd).magnitude;
