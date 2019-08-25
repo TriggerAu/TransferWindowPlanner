@@ -234,17 +234,21 @@ namespace TransferWindowPlanner
                         /////////////// Long Running ////////////////////////////
                         //LogFormatted("{0}x{1} ({3}) = {2:0}", x, y, DeltaVs[iCurrent],iCurrent);
 
-                        if (DeltaVs[iCurrent] > maxDeltaV)
-                            maxDeltaV = DeltaVs[iCurrent];
-                        if (DeltaVs[iCurrent] < minDeltaV)
+                        if (!Double.IsNaN(DeltaVs[iCurrent]))
                         {
-                            minDeltaV = DeltaVs[iCurrent];
-                            minDeltaVPoint = new Vector2(x, y);
-                        }
+                            if (DeltaVs[iCurrent] > maxDeltaV)
+                                maxDeltaV = DeltaVs[iCurrent];
 
-                        logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                        sumlogDeltaV += logDeltaV;
-                        sumSqLogDeltaV += logDeltaV * logDeltaV;
+                            if (DeltaVs[iCurrent] < minDeltaV)
+                            {
+                                minDeltaV = DeltaVs[iCurrent];
+                                minDeltaVPoint = new Vector2(x, y);
+                            }
+
+                            logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                            sumlogDeltaV += logDeltaV;
+                            sumSqLogDeltaV += logDeltaV * logDeltaV;
+                        }
 
                         workingpercent = (x * PlotHeight + y) / (Double)(PlotHeight * PlotWidth);
                     }
@@ -263,7 +267,7 @@ namespace TransferWindowPlanner
                 //Calculate the ColorIndex for the plot - BUT DONT AFFECT TEXTURES ON THE BW THREAD
                 LogFormatted("Working out Log Values to determine DeltaV->Color Mapping");
 
-                logMinDeltaV = Math.Log(DeltaVs.Min());
+                logMinDeltaV = Math.Log(minDeltaV);
                 mean = sumlogDeltaV / DeltaVs.Length;
                 stddev = Math.Sqrt(sumSqLogDeltaV / DeltaVs.Length - mean * mean);
                 logMaxDeltaV = Math.Min(Math.Log(maxDeltaV), mean + 2 * stddev);
@@ -277,11 +281,18 @@ namespace TransferWindowPlanner
                     for (int x = 0; x < PlotWidth; x++)
                     {
                         iCurrent = (Int32)(y * PlotWidth + x);
-                        logDeltaV = Math.Log(DeltaVs[iCurrent]);
-                        double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
-                        Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
+                        if (Double.IsNaN(DeltaVs[iCurrent]))
+                        {
+                            DeltaVsColorIndex[iCurrent] = -1;
+                        }
+                        else
+                        {
+                            logDeltaV = Math.Log(DeltaVs[iCurrent]);
+                            double relativeDeltaV = (logDeltaV - logMinDeltaV) / (logMaxDeltaV - logMinDeltaV);
+                            Int32 ColorIndex = Math.Min((Int32)(Math.Floor(relativeDeltaV * DeltaVColorPalette.Count)), DeltaVColorPalette.Count - 1);
 
-                        DeltaVsColorIndex[iCurrent] = ColorIndex;
+                            DeltaVsColorIndex[iCurrent] = ColorIndex;
+                        }
                     }
                 }
 
@@ -301,17 +312,20 @@ namespace TransferWindowPlanner
             TravelSelected = TravelMax - (vectSelected.y - PlotPosition.y) * yResolution;
 
             LambertSolver.TransferDeltaV(cbOrigin, cbDestination, DepartureSelected, TravelSelected, InitialOrbitAltitude, FinalOrbitAltitude, out TransferSelected);
-            TransferSelected.CalcEjectionValues();
-
-            if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
+            if (TransferSelected != null)
             {
-                mbTWP.EjectAngle.AngleTargetValue = TransferSelected.EjectionAngle * LambertSolver.Rad2Deg;
-                mbTWP.EjectAngle.DrawToRetrograde = TransferSelected.EjectionAngleIsRetrograde;
-                mbTWP.PhaseAngle.AngleTargetValue = TransferSelected.PhaseAngle * LambertSolver.Rad2Deg;
-                if (!mbTWP.PhaseAngle.ShowTargetAngle)
-                    mbTWP.PhaseAngle.ShowTargetAngle = true;
-            }
+                //Only if its not a NaN
+                TransferSelected.CalcEjectionValues();
 
+                if (TransferWindowPlanner.lstScenesForAngles.Contains(HighLogic.LoadedScene))
+                {
+                    mbTWP.EjectAngle.AngleTargetValue = TransferSelected.EjectionAngle * LambertSolver.Rad2Deg;
+                    mbTWP.EjectAngle.DrawToRetrograde = TransferSelected.EjectionAngleIsRetrograde;
+                    mbTWP.PhaseAngle.AngleTargetValue = TransferSelected.PhaseAngle * LambertSolver.Rad2Deg;
+                    if (!mbTWP.PhaseAngle.ShowTargetAngle)
+                        mbTWP.PhaseAngle.ShowTargetAngle = true;
+                }
+            }
         }
 
         private void DrawPlotTexture(Double sumlogDeltaV, Double sumSqLogDeltaV, Double maxDeltaV)
@@ -334,7 +348,14 @@ namespace TransferWindowPlanner
                         ColorIndex = DeltaVsColorIndex[iCurrent];
 
                         //Data flows from left->right and top->bottom so need to reverse y (and cater to 0 based) when drawing the texture
-                        texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
+                        if (ColorIndex > -1)
+                        {
+                            texPlotArea.SetPixel(x, (PlotHeight - 1 - y), DeltaVColorPalette[ColorIndex]);
+                        }
+                        else
+                        {
+                            texPlotArea.SetPixel(x, (PlotHeight - 1 - y), Color.gray);
+                        }
                     }
                 }
             }
