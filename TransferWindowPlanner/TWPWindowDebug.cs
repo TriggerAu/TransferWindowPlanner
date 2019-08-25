@@ -92,12 +92,16 @@ namespace TransferWindowPlanner
         private LineRenderer lineStart = null;
         private LineRenderer lineAngle = null;
         private LineRenderer lineArc = null;
-        private GameObject obj = new GameObject("Line");
-        private GameObject obj2 = new GameObject("Line2");
-        private GameObject obj3 = new GameObject("Line3");
+        private GameObject obj = null;
+        private GameObject obj2 = null;
+        private GameObject obj3 = null;
         private Boolean drawLine = false;
         internal override void Start()
         {
+            obj = new GameObject("Line");
+            obj2 = new GameObject("Line2");
+            obj3 = new GameObject("Line3");
+
             LogFormatted("OnStart");
 
             //PhaseAngle = AddComponent<AngleRenderPhase>();

@@ -37,12 +37,7 @@ namespace KSPPluginFramework
         internal MonoBehaviourWindow()
             : base()
         {
-            //do the assembly name add so we get different windowIDs for multiple plugins
-            this.WindowID = UnityEngine.Random.Range(1000, 2000000) + _AssemblyName.GetHashCode();
-            this._Visible = false;
-            LogFormatted_DebugOnly("WindowID:{0}", WindowID);
-
-            //and look for any customattributes
+            //set any customattributes
             WindowInitialsAttribute[] attrs = (WindowInitialsAttribute[])Attribute.GetCustomAttributes(this.GetType(), typeof(WindowInitialsAttribute));
             foreach (WindowInitialsAttribute attr in attrs)
             {
@@ -78,13 +73,15 @@ namespace KSPPluginFramework
 
         #endregion
 
-        internal override void Awake()
+        internal override void OnAwake()
         {
-            //just some debugging stuff here
-            LogFormatted_DebugOnly("New MBWindow Awakened");
+            //do the assembly name add so we get different windowIDs for multiple plugins
+            this.WindowID = UnityEngine.Random.Range(1000, 2000000) + _AssemblyName.GetHashCode();
+            this._Visible = false;
+            LogFormatted_DebugOnly("New MBWindow Awakened - WindowID:{0}", WindowID);
 
+            ClampToScreenOffset = new RectOffset(0, 0, 0, 0);
             blnFlightUIVisible = true;
-
         }
 
         /// <summary>
@@ -165,7 +162,7 @@ namespace KSPPluginFramework
         /// <summary>
         /// How close to the edges it can get if clamping is enabled - this can be negative if you want to allow it to go off screen by a certain amount
         /// </summary>
-        internal RectOffset ClampToScreenOffset = new RectOffset(0, 0, 0, 0);
+        internal RectOffset ClampToScreenOffset;
 
         private Boolean _Visible;
         /// <summary>

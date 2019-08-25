@@ -35,8 +35,10 @@ namespace TransferWindowPlanner
             [Description("About...")]   About,
         }
         
-        internal override void Awake()
+        internal override void OnAwake()
         {
+            base.OnAwake();
+
             //WindowRect = new Rect(mbTWP.windowMain.WindowRect.x + mbTWP.windowMain.WindowRect.width, mbTWP.windowMain.WindowRect.y, 300, 200);
             WindowRect = new Rect(0, 0, WindowWidth, WindowHeight);
             settings = TransferWindowPlanner.settings;
@@ -229,12 +231,17 @@ namespace TransferWindowPlanner
                 settings.Save();
             }
             if (DrawToggle(ref settings.ClickThroughProtect_Editor, "Prevent in Editors", Styles.styleToggle)) {
-                if (!settings.ClickThroughProtect_KSC && (HighLogic.LoadedScene == GameScenes.EDITOR))
+                if (!settings.ClickThroughProtect_Editor && (HighLogic.LoadedScene == GameScenes.EDITOR))
                     mbTWP.RemoveInputLock();
                 settings.Save();
             }
             if (DrawToggle(ref settings.ClickThroughProtect_Flight, "Prevent in Flight", Styles.styleToggle)) {
-                if (!settings.ClickThroughProtect_KSC && HighLogic.LoadedScene == GameScenes.FLIGHT)
+                if (!settings.ClickThroughProtect_Flight && HighLogic.LoadedScene == GameScenes.FLIGHT)
+                    mbTWP.RemoveInputLock();
+                settings.Save();
+            }
+            if (DrawToggle(ref settings.ClickThroughProtect_Tracking, "Prevent in Tracking Station", Styles.styleToggle)) {
+                if (!settings.ClickThroughProtect_Tracking && HighLogic.LoadedScene == GameScenes.TRACKSTATION)
                     mbTWP.RemoveInputLock();
                 settings.Save();
             }
@@ -371,7 +378,7 @@ namespace TransferWindowPlanner
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Check Version Now"))
             {
-                settings.VersionCheck(true);
+                settings.VersionCheck(mbTWP, true);
                 //Hide the flag as we already have the window open;
                 settings.VersionAttentionFlag = false;
             }

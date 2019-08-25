@@ -27,6 +27,10 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.7.0.0		-	KSP Version: 1.7.3
+- Recompile for 1.7.x
+- Fixed disply issues when transfer was impossible - result was NaN (Issue #53)
+
 Version 1.6.3.0		-	KSP Version: 1.4.1
 - Recompile for 1.4.1
 

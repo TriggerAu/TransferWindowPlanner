@@ -40,7 +40,7 @@ namespace TransferWindowPlanner
 
         internal static List<GameScenes> lstScenesForAngles = new List<GameScenes>() { GameScenes.TRACKSTATION, GameScenes.FLIGHT };
 
-        internal override void Awake()
+        internal override void OnAwake()
         {
             LogFormatted("Awakening the TransferWindowPlanner (TWP)");
 
@@ -73,7 +73,9 @@ namespace TransferWindowPlanner
             if(settings.SelectedCalendar==CalendarTypeEnum.Earth) {
                 KSPDateStructure.SetEarthCalendar(settings.EarthEpoch);
                 windowSettings.ddlSettingsCalendar.SelectedIndex = (Int32)settings.SelectedCalendar;
-            } 
+            }
+
+            KSPDateStructure.UseStockDateFormatters = settings.UseStockDateFormatters;
 
             //plug us in to the draw queue and start the worker
             //Rem out for unity5
@@ -106,7 +108,7 @@ namespace TransferWindowPlanner
 
             //do the daily version check if required
             if (settings.DailyVersionCheck)
-                settings.VersionCheck(false);
+                settings.VersionCheck(this, false);
         }
 
         internal override void OnDestroy()
@@ -119,8 +121,14 @@ namespace TransferWindowPlanner
             //Rem out for unity5
             //RenderingManager.RemoveFromPostDrawQueue(1, DrawGUI);
 
-            Destroy(PhaseAngle);
-            Destroy(EjectAngle);
+            if (PhaseAngle != null)
+            {
+                Destroy(PhaseAngle.gameObject);
+            }
+            if (EjectAngle != null)
+            {
+                Destroy(EjectAngle.gameObject);
+            }
 
             GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
             GameEvents.onGUIApplicationLauncherDestroyed.Remove(DestroyAppLauncherButton);
@@ -327,7 +335,8 @@ namespace TransferWindowPlanner
             //}
 
             //Do this for control Locks
-            if (settings.ClickThroughProtect_KSC || settings.ClickThroughProtect_Editor || settings.ClickThroughProtect_Flight) {
+            if (settings.ClickThroughProtect_KSC || settings.ClickThroughProtect_Editor || settings.ClickThroughProtect_Flight || settings.ClickThroughProtect_Tracking)
+            {
                 MouseOverAnyWindow = false;
                 MouseOverAnyWindow = MouseOverAnyWindow || MouseOverWindow(windowMain.WindowRect, windowMain.Visible);
                 MouseOverAnyWindow = MouseOverAnyWindow || MouseOverWindow(windowSettings.WindowRect, windowSettings.Visible);
@@ -349,8 +358,7 @@ namespace TransferWindowPlanner
                         case GameScenes.SPACECENTER: AddLock = settings.ClickThroughProtect_KSC && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.EDITOR: AddLock = settings.ClickThroughProtect_Editor && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         case GameScenes.FLIGHT: AddLock = settings.ClickThroughProtect_Flight && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
-                        case GameScenes.TRACKSTATION:
-                            break;
+                        case GameScenes.TRACKSTATION: AddLock = settings.ClickThroughProtect_Tracking && !(InputLockManager.GetControlLock("TWPControlLock") != ControlTypes.None); break;
                         default:
                             break;
                     }
@@ -361,8 +369,7 @@ namespace TransferWindowPlanner
                             case GameScenes.SPACECENTER: InputLockManager.SetControlLock(ControlTypes.KSC_FACILITIES, "TWPControlLock"); break;
                             case GameScenes.EDITOR: InputLockManager.SetControlLock((ControlTypes.EDITOR_LOCK | ControlTypes.EDITOR_GIZMO_TOOLS), "TWPControlLock"); break;
                             case GameScenes.FLIGHT: InputLockManager.SetControlLock(ControlTypes.ALL_SHIP_CONTROLS, "TWPControlLock"); break;
-                            case GameScenes.TRACKSTATION:
-                                break;
+                            case GameScenes.TRACKSTATION: InputLockManager.SetControlLock(ControlTypes.TRACKINGSTATION_ALL | ControlTypes.MAP_UI, "TWPControlLock"); break;
                             default:
                                 break;
                         }
