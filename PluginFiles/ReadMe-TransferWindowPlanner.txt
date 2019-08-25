@@ -27,9 +27,17 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
-Version 1.7.0.0		-	KSP Version: 1.7.3
+Version 1.7.1.0		-	KSP Version: 1.7.3
 - Recompile for 1.7.x
-- Fixed disply issues when transfer was impossible - result was NaN (Issue #53)
+- Fixed display issues when transfer was impossible - result was NaN (Issue #53)
+- Fixed up some Date Formatting (Thanks to Aelfhe1m - Issue #51)
+- Fixed up some altitude swapping (Thanks to nanathan - Issue #50)
+- Fixed up some issues with the anglerendering (Thanks to codesquid - Issue #49)
+- Fixed up some issues with drawing angles when not in the right scene
+- Fixed issues with clamptoscreen for window
+- Updated KACWrapper
+- Added some ClickThrough locks for TS scene
+- Fixed updated version check
 
 Version 1.6.3.0		-	KSP Version: 1.4.1
 - Recompile for 1.4.1
