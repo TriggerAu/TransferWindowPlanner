@@ -123,11 +123,11 @@ namespace TransferWindowPlanner
 
             if (PhaseAngle != null)
             {
-                Destroy(PhaseAngle.gameObject);
+                Destroy(PhaseAngle);
             }
             if (EjectAngle != null)
             {
-                Destroy(EjectAngle.gameObject);
+                Destroy(EjectAngle);
             }
 
             GameEvents.onGUIApplicationLauncherReady.Remove(OnGUIAppLauncherReady);
