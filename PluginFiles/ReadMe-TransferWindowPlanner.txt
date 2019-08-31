@@ -27,6 +27,9 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.7.2.0		-	KSP Version: 1.7.3
+- Fix issue with camera being destroyed when leaving TS/map mode
+
 Version 1.7.1.0		-	KSP Version: 1.7.3
 - Recompile for 1.7.x
 - Fixed display issues when transfer was impossible - result was NaN (Issue #53)
