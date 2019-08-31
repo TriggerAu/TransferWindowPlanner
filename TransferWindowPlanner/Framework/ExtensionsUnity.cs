@@ -28,13 +28,22 @@ namespace KSPPluginFramework
             return r.ClampToScreen(new RectOffset(0, 0, 0, 0));
         }
 
+        /// <summary>
+        /// Ensure that the Rect remains within the screen bounds
+        /// </summary>
+        /// <param name="ScreenBorder">A Border to the screen bounds that the Rect will be clamped inside (can be negative)</param>
+        public static Rect ClampToScreen(this Rect r, RectOffset ScreenBorder)
+        {
+            return r.ClampToScreen(ScreenBorder, 1f);
+        }
 
         private static RectOffset zeroRectOffset;
         /// <summary>
         /// Ensure that the Rect remains within the screen bounds
         /// </summary>
         /// <param name="ScreenBorder">A Border to the screen bounds that the Rect will be clamped inside (can be negative)</param>
-        public static Rect ClampToScreen(this Rect r, RectOffset ScreenBorder)
+        /// <param name="scale">the UIScale to calc at</param>
+        public static Rect ClampToScreen(this Rect r, RectOffset ScreenBorder, float scale)
         {
             if (ScreenBorder == null)
             {
@@ -45,9 +54,18 @@ namespace KSPPluginFramework
                 }
                 ScreenBorder = zeroRectOffset;
             }
+            r.x = Mathf.Clamp(r.x * scale, ScreenBorder.left * scale, Screen.width - r.width * scale - ScreenBorder.right * scale) / scale;
+            r.y = Mathf.Clamp(r.y * scale, ScreenBorder.top * scale, Screen.height - r.height * scale - ScreenBorder.bottom * scale) / scale;
 
-            r.x = Mathf.Clamp(r.x, ScreenBorder.left, Screen.width - r.width - ScreenBorder.right);
-            r.y = Mathf.Clamp(r.y, ScreenBorder.top, Screen.height - r.height - ScreenBorder.bottom);
+            if (r.x < 0)
+            {
+                r.x = 0;
+            }
+
+            if (r.y < 0)
+            {
+                r.y = 0;
+            }
             return r;
         }
 
@@ -61,6 +79,12 @@ namespace KSPPluginFramework
         {
             GUIStyle gReturn = new GUIStyle(g);
             gReturn.padding.bottom = PaddingValue;
+            return gReturn;
+        }
+        public static GUIStyle PaddingChangeLeft(this GUIStyle g, Int32 PaddingValue)
+        {
+            GUIStyle gReturn = new GUIStyle(g);
+            gReturn.padding.left = PaddingValue;
             return gReturn;
         }
     }
