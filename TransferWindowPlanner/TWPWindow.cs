@@ -370,7 +370,7 @@ namespace TransferWindowPlanner
             }
 
             //close the settings window if we click elsewhere
-            if (!ShowMinimized && Event.current.type == EventType.mouseDown)
+            if (!ShowMinimized && Event.current.type == EventType.MouseDown)
             {
                 if (!mbTWP.windowSettings.WindowRect.Contains(Event.current.mousePosition))
                     mbTWP.windowSettings.Visible = false;
@@ -446,18 +446,18 @@ namespace TransferWindowPlanner
             }
 
             //Action Buttons
-            if (KACWrapper.APIReady)
+            if (KACWrapper.APIReady && !settings.OverrideKAC)
             {
                 if (GUI.Button(new Rect(10, WindowRect.height - 30, 132, 20), new GUIContent("  Add KAC Alarm", Resources.btnKAC)))
                 {
                     String tmpID = KACWrapper.KAC.CreateAlarm(KACWrapper.KACAPI.AlarmTypeEnum.TransferModelled,
                         String.Format("{0} -> {1}", mbTWP.windowMain.TransferSelected.Origin.bodyName, mbTWP.windowMain.TransferSelected.Destination.bodyName),
-                        (mbTWP.windowMain.TransferSelected.DepartureTime - settings.KACMargin * 60 * 60));
+                        (mbTWP.windowMain.TransferSelected.DepartureTime - settings.AlarmMargin * 60 * 60));
 
 
                     KACWrapper.KACAPI.KACAlarm alarmNew = KACWrapper.KAC.Alarms.First(a => a.ID == tmpID);
                     alarmNew.Notes = mbTWP.windowMain.GenerateTransferDetailsText();
-                    alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
+                    alarmNew.AlarmMargin = settings.AlarmMargin * 60 * 60;
                     alarmNew.AlarmAction = settings.KACAlarmAction;
                     alarmNew.XferOriginBodyName = mbTWP.windowMain.TransferSelected.Origin.bodyName;
                     alarmNew.XferTargetBodyName = mbTWP.windowMain.TransferSelected.Destination.bodyName;
@@ -471,13 +471,38 @@ namespace TransferWindowPlanner
             }
             else
             {
-                if (GUI.Button(new Rect(10, WindowRect.height - 30, 250, 20), new GUIContent("  Copy Transfer Details", Resources.btnCopy)))
+                if (GUI.Button(new Rect(10, WindowRect.height - 30, 132, 20), new GUIContent("  Add ACA Alarm", Resources.btnKAC)))
+                {
+                    AlarmTypeRaw raw = new AlarmTypeRaw();
+
+                    raw.title = String.Format("<color=yellow>{0}</color>@{2:0} -> <color=yellow>{1}</color>@{3:0}",
+                        mbTWP.windowMain.TransferSelected.Origin.bodyName,
+                        mbTWP.windowMain.TransferSelected.Destination.bodyName,
+                        TransferSpecs.InitialOrbitAltitude / 1000,
+                        TransferSpecs.FinalOrbitAltitude / 1000);
+
+                    raw.ut = mbTWP.windowMain.TransferSelected.DepartureTime - settings.AlarmMargin * 60 * 60;
+                    raw.description = $"Alarm Margin: {settings.AlarmMargin} hours<br>";  
+                    raw.description += mbTWP.windowMain.GenerateTransferDetailsText().Replace("\n", "<br>");
+                    // alarmNew.AlarmMargin = settings.KACMargin * 60 * 60;
+                    raw.actions.warp = AlarmActions.WarpEnum.KillWarp;
+
+                    //raw.sourceBody = mbTWP.windowMain.TransferSelected.Origin.bodyName;
+                    //raw.destBody = mbTWP.windowMain.TransferSelected.Destination.bodyName;
+
+                    if (raw.CanSetAlarm(KSP.UI.AlarmUIDisplayMode.Add))
+                    {
+                        AlarmClockScenario.AddAlarm(raw);
+                    }
+                }
+
+
+                if (GUI.Button(new Rect(132 + 15, WindowRect.height - 30, 120, 20), new GUIContent("  Copy Details", Resources.btnCopy)))
                 {
                     CopyAllDetailsToClipboard();
                 }
             }
-            
-            
+                       
             GUILayout.EndVertical();
 
             GUILayout.BeginVertical();
@@ -827,7 +852,7 @@ namespace TransferWindowPlanner
         internal override void OnGUIEvery()
         {
             //close the settings window if we click elsewhere
-            if (!ShowMinimized && Event.current.type == EventType.mouseDown)
+            if (!ShowMinimized && Event.current.type == EventType.MouseDown)
             {
                 if (!mbTWP.windowSettings.WindowRect.Contains(Event.current.mousePosition))
                     mbTWP.windowSettings.Visible = false;
