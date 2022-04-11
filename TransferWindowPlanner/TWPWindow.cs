@@ -370,7 +370,7 @@ namespace TransferWindowPlanner
             }
 
             //close the settings window if we click elsewhere
-            if (!ShowMinimized && Event.current.type == EventType.mouseDown)
+            if (!ShowMinimized && Event.current.type == EventType.MouseDown)
             {
                 if (!mbTWP.windowSettings.WindowRect.Contains(Event.current.mousePosition))
                     mbTWP.windowSettings.Visible = false;
@@ -827,7 +827,7 @@ namespace TransferWindowPlanner
         internal override void OnGUIEvery()
         {
             //close the settings window if we click elsewhere
-            if (!ShowMinimized && Event.current.type == EventType.mouseDown)
+            if (!ShowMinimized && Event.current.type == EventType.MouseDown)
             {
                 if (!mbTWP.windowSettings.WindowRect.Contains(Event.current.mousePosition))
                     mbTWP.windowSettings.Visible = false;

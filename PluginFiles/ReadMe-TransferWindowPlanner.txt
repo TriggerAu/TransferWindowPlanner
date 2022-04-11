@@ -27,6 +27,11 @@ LICENSE
 This work is licensed under an MIT license as outlined at the OSI site. Visit the documentation site for more details and Attribution
 
 VERSION HISTORY
+Version 1.8.0.0		-	KSP Version: 1.12.3
+- Recompile for 1.12.x
+- Backgroupnd fixes for framework
+- URI fixes for links and things
+
 Version 1.7.2.0		-	KSP Version: 1.7.3
 - Fix issue with camera being destroyed when leaving TS/map mode
 

@@ -374,9 +374,8 @@ namespace KSPPluginFramework
                             SelectedIndex = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / Items.Count));
                         else {
                             //do some maths to work out the actual index - Page Length + 1 for the pager row
-                            Int32 SelectedRow = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / (ListPageLength+1)));
-
-                            //LogFormatted("{0}-{1}-{2}-{3}-{4}", Event.current.mousePosition.y, rectListBox.y, rectListBox.height, ListPageLength, SelectedRow);
+                            Int32 SelectedRow = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / (ListPageLength + 1)));
+                            //Old one - Int32 SelectedRow = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / ListPageLength));
 
                             if (SelectedRow==0) {
                                 //this is the paging row...
@@ -418,7 +417,7 @@ namespace KSPPluginFramework
                 if (blnReturn) ListVisible = !ListVisible;
 
                 //get the drawn button rectangle
-                if (Event.current.type == EventType.repaint)
+                if (Event.current.type == EventType.Repaint)
                     rectButton = GUILayoutUtility.GetLastRect();
                 //draw a dropdown symbol on the right edge
                 if (DropDownGlyph != null)
@@ -530,7 +529,7 @@ namespace KSPPluginFramework
 
             internal Boolean CloseOnOutsideClick()
             {
-                if (ListVisible && Event.current.type == EventType.mouseDown && !rectListBox.Contains(Event.current.mousePosition))
+                if (ListVisible && Event.current.type == EventType.MouseDown && !rectListBox.Contains(Event.current.mousePosition))
                 {
                     ListVisible = false;
                     return true;
