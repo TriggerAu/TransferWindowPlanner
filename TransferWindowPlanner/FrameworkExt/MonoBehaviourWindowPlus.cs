@@ -417,7 +417,7 @@ namespace KSPPluginFramework
                 if (blnReturn) ListVisible = !ListVisible;
 
                 //get the drawn button rectangle
-                if (Event.current.type == EventType.repaint)
+                if (Event.current.type == EventType.Repaint)
                     rectButton = GUILayoutUtility.GetLastRect();
                 //draw a dropdown symbol on the right edge
                 if (DropDownGlyph != null)
@@ -529,7 +529,7 @@ namespace KSPPluginFramework
 
             internal Boolean CloseOnOutsideClick()
             {
-                if (ListVisible && Event.current.type == EventType.mouseDown && !rectListBox.Contains(Event.current.mousePosition))
+                if (ListVisible && Event.current.type == EventType.MouseDown && !rectListBox.Contains(Event.current.mousePosition))
                 {
                     ListVisible = false;
                     return true;
