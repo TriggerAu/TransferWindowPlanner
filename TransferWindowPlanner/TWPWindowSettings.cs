@@ -250,7 +250,33 @@ namespace TransferWindowPlanner
 
         private void DrawWindow_Alarm()
         {
-            GUILayout.Label("Kerbal Alarm Clock Options", Styles.styleTextHeading);
+            GUILayout.BeginVertical(Styles.styleSettingsArea);
+
+            GUILayout.Space(10);
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Margin", Styles.styleText, GUILayout.Width(85));
+            if (DrawTextBox(ref settings.AlarmMargin))
+                settings.Save();
+            GUILayout.Label("(hours)", Styles.styleTextYellow, GUILayout.Width(50));
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(10);
+            GUILayout.Label("Alarm Clock App (ACA)", Styles.styleTextHeading);
+
+            if (!TWP_KACWrapper.KACWrapper.AssemblyExists || !TWP_KACWrapper.KACWrapper.InstanceExists)
+            {
+                GUILayout.Label("Stock Alarm Clock App is used.", Styles.styleTextCenterGreen);
+            }
+            else
+            {
+                if (DrawToggle(ref settings.OverrideKAC, "use Stock ACA instead of KAC", Styles.styleToggle))
+                {
+                    settings.Save();
+                }
+            }
+            GUILayout.Space(10);
+            GUILayout.Label("Kerbal Alarm Clock (KAC)", Styles.styleTextHeading);
 
             if (!TWP_KACWrapper.KACWrapper.AssemblyExists)
             {
@@ -273,28 +299,18 @@ namespace TransferWindowPlanner
                 GUILayout.Label("You can access these in scenes where KAC is visible", Styles.styleTextGreen);
                 GUILayout.Space(10);
                 GUILayout.Label("Go on... Move along... Nothing to see...", Styles.styleTextGreen);
-
             }
             else
             {
                 //Alarm Area
-                GUILayout.BeginVertical(Styles.styleSettingsArea);
                 //if (KACWrapper.KAC.DrawAlarmActionChoice(ref KACAlarmAction, "On Alarm:", 108, 61))
                 if (KACWrapper.KAC.DrawAlarmActionChoice(ref settings.KACAlarmAction, "Action:", 90 , 38))
                     {
                     settings.Save();
                 }
-
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Margin", Styles.styleText,GUILayout.Width(85));
-                if (DrawTextBox(ref settings.KACMargin))
-                    settings.Save();
-                GUILayout.Label("(hours)", Styles.styleTextYellow, GUILayout.Width(50));
-
-                GUILayout.EndHorizontal();
-
-                GUILayout.EndVertical();
             }
+
+            GUILayout.EndVertical();
         }
 
         private void DrawWindow_Calendar()
