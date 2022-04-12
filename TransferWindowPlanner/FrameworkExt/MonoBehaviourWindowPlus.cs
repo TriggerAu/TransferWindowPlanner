@@ -374,9 +374,8 @@ namespace KSPPluginFramework
                             SelectedIndex = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / Items.Count));
                         else {
                             //do some maths to work out the actual index - Page Length + 1 for the pager row
-                            Int32 SelectedRow = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / (ListPageLength+1)));
-
-                            //LogFormatted("{0}-{1}-{2}-{3}-{4}", Event.current.mousePosition.y, rectListBox.y, rectListBox.height, ListPageLength, SelectedRow);
+                            Int32 SelectedRow = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / (ListPageLength + 1)));
+                            //Old one - Int32 SelectedRow = (Int32)Math.Floor((Event.current.mousePosition.y - rectListBox.y) / (rectListBox.height / ListPageLength));
 
                             if (SelectedRow==0) {
                                 //this is the paging row...
